@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:scrollbars="none">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+
+
+                <com.liu.learning.library.LoopViewPager
+                    android:id="@+id/viewPager"
+                    android:layout_width="match_parent"
+                    android:layout_height="180dip"
+                    app:gravity="right">
+                </com.liu.learning.library.LoopViewPager>
+
+                <LinearLayout
+                    android:id="@+id/hot_rank_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+
+                </LinearLayout>
+
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp">
+
+                    <View
+                        android:layout_width="@dimen/dpx6"
+                        android:layout_height="@dimen/dpx30"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerInParent="true"
+                        android:layout_marginBottom="5dp"
+                        android:layout_marginLeft="@dimen/dpx16"
+                        android:layout_marginTop="5dp"
+                        android:background="@mipmap/blue_vertical_line" />
+
+
+                    <TextView
+                        android:id="@+id/tv_findnewsort_sticky_group_title_book"
+                        android:layout_width="wrap_content"
+                        android:layout_height="fill_parent"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="@dimen/dpx40"
+                        android:gravity="center_vertical"
+                        android:text="作品打赏榜"
+                        android:textColor="@color/c4d4c49"
+                        android:textSize="@dimen/px30" />
+
+                    <LinearLayout
+                        android:id="@+id/home_more_book"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginRight="@dimen/dpx16"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/hot_rank_more"
+                            android:textColor="@color/c14acf0"
+                            android:textSize="@dimen/px24" />
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="@dimen/px14"
+                            android:background="@mipmap/blue_right_arrow" />
+                    </LinearLayout>
+
+
+                </RelativeLayout>
+                <com.ting.view.LeftGridView
+                    android:id="@+id/book_gridview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:scrollbars="none"
+                    android:listSelector="@null"
+                    android:layout_marginLeft="@dimen/dpx40"
+                    android:layout_marginRight="@dimen/dpx40"
+                    android:horizontalSpacing="@dimen/dpx40"
+                    android:numColumns="3">
+
+                </com.ting.view.LeftGridView>
+
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="@dimen/dpx20">
+
+                    <View
+                        android:layout_width="@dimen/dpx6"
+                        android:layout_height="@dimen/dpx30"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerInParent="true"
+                        android:layout_marginBottom="5dp"
+                        android:layout_marginLeft="@dimen/dpx16"
+                        android:layout_marginTop="5dp"
+                        android:background="@mipmap/blue_vertical_line" />
+
+
+                    <TextView
+                        android:id="@+id/tv_findnewsort_sticky_group_title_anchor"
+                        android:layout_width="wrap_content"
+                        android:layout_height="fill_parent"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="@dimen/dpx40"
+                        android:gravity="center_vertical"
+                        android:text="作品打赏榜"
+                        android:textColor="@color/c4d4c49"
+                        android:textSize="@dimen/px30" />
+
+                    <LinearLayout
+                        android:id="@+id/home_more_anchor"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginRight="@dimen/dpx16"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/hot_rank_more"
+                            android:textColor="@color/c14acf0"
+                            android:textSize="@dimen/px24" />
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="@dimen/px14"
+                            android:background="@mipmap/blue_right_arrow" />
+                    </LinearLayout>
+
+                </RelativeLayout>
+
+
+                <com.ting.view.LeftGridView
+                    android:id="@+id/anchor_gridview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:scrollbars="none"
+                    android:listSelector="@null"
+                    android:layout_marginLeft="@dimen/dpx40"
+                    android:layout_marginRight="@dimen/dpx40"
+                    android:horizontalSpacing="@dimen/dpx40"
+                    android:numColumns="3">
+
+                </com.ting.view.LeftGridView>
+
+            </LinearLayout>
+        </RelativeLayout>
+    </ScrollView>
+
+</LinearLayout>

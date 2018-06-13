@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <TextView
+            android:id="@+id/tv_error_empty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:drawablePadding="5dip"
+            android:drawableTop="@mipmap/error_empty"
+            android:gravity="center_horizontal"
+            android:textSize="18sp"
+            android:textColor="#999999"
+            android:visibility="gone"
+            android:text="暂无数据"/>
+
+
+        <LinearLayout
+            android:id="@+id/ll_error_service"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_centerInParent="true"
+            android:visibility="gone">
+
+
+            <TextView
+                android:id="@+id/tv_error_service"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:drawablePadding="5dip"
+                android:drawableTop="@mipmap/error_service"
+                android:gravity="center_horizontal"
+                android:textSize="18sp"
+                android:textColor="#999999"
+                android:text="服务器异常"/>
+
+
+            <Button
+                android:id="@+id/btn_refresh"
+                android:layout_width="wrap_content"
+                android:layout_height="35dip"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/error_refresh_btn"
+                android:layout_marginTop="20dip"
+                android:text="立即刷新"/>
+
+
+        </LinearLayout>
+
+
+    </RelativeLayout>
+</LinearLayout>

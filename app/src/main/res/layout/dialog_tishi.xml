@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="260dip"
+        android:layout_height="100dip"
+        android:layout_marginLeft="25dip"
+        android:layout_marginRight="25dip"
+        android:background="@mipmap/dialog_background"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="提示"
+            android:textColor="@color/c070707"
+            android:textSize="@dimen/px28" />
+
+        <TextView
+            android:id="@+id/tv_tishi_message"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="@dimen/dp750_10"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text=""
+            android:textColor="@color/c070707"
+            android:textSize="@dimen/px24" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp750_1"
+            android:background="@color/cadadad"></View>
+
+        <TextView
+            android:id="@+id/sure"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="确定"
+            android:textColor="@color/c1755cc"
+            android:textSize="@dimen/px28" />
+
+    </LinearLayout>
+</LinearLayout>

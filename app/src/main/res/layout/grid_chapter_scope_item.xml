@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp750_50"
+        android:background="@color/white">
+
+        <TextView
+            android:id="@+id/tv_scope"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:textColor="#565656"
+            android:textSize="12sp"/>
+
+        <View
+            android:id="@+id/view_bottom"
+            android:layout_width="match_parent"
+            android:layout_height="0.1dip"
+            android:layout_alignParentBottom="true"
+            android:background="#dcdcdc"></View>
+
+
+        <View
+            android:id="@+id/view_right"
+            android:layout_width="0.1dip"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:background="#dcdcdc"></View>
+
+
+    </RelativeLayout>
+
+
+
+
+
+</LinearLayout>

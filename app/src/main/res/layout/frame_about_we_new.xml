@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/actionbarColor"
+    android:orientation="vertical">
+
+
+    <LinearLayout
+        android:id="@+id/ll_about_top"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp750_440"
+        android:layout_below="@id/title"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/login_top_image"
+            android:layout_width="@dimen/dp750_150"
+            android:layout_height="@dimen/dp750_150"
+            android:layout_below="@id/title"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/login_top_image" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp750_30"
+            android:text="听世界听书"
+            android:textColor="@color/c666666"
+            android:textSize="@dimen/px32"
+
+            />
+
+        <TextView
+            android:id="@+id/app_version_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp750_16"
+            android:text="V2.0.1"
+            android:textColor="@color/black"
+            android:textSize="@dimen/px32"
+
+            />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/ll_web_one"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp750_62"
+        android:layout_below="@id/ll_about_top"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/dp750_38"
+            android:text="官方网址"
+            android:textColor="@color/c666666"
+            android:textSize="@dimen/px28" />
+
+        <View
+            android:layout_width="@dimen/dp750_1"
+            android:layout_height="@dimen/dp750_30"
+            android:layout_marginLeft="@dimen/dp750_20"
+            android:background="@color/cb6b6b6"></View>
+
+        <TextView
+            android:id="@+id/listener_web"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/dp750_20"
+            android:text="www.tingshijie.com"
+            android:textColor="#47b4ff"
+            android:textSize="@dimen/px28" />
+
+
+    </LinearLayout>
+
+
+    <View
+        android:id="@+id/about_view_one"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp750_1"
+        android:layout_below="@id/ll_web_one"
+        android:layout_marginLeft="@dimen/dp750_30"
+        android:layout_marginRight="@dimen/dp750_30"
+        android:layout_marginTop="@dimen/dp750_6"
+        android:background="@color/cdcdcdc"></View>
+
+    <LinearLayout
+        android:id="@+id/ll_web_two"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp750_62"
+        android:layout_below="@id/about_view_one"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/dp750_38"
+            android:text="新浪微博"
+            android:textColor="@color/c666666"
+            android:textSize="@dimen/px28" />
+
+        <View
+            android:layout_width="@dimen/dp750_1"
+            android:layout_height="@dimen/dp750_30"
+            android:layout_marginLeft="@dimen/dp750_20"
+            android:background="@color/cb6b6b6"></View>
+
+        <TextView
+            android:id="@+id/sina_web"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/dp750_20"
+            android:text="http://weibo.com/365ting"
+            android:textColor="#47b4ff"
+            android:textSize="@dimen/px28" />
+
+
+    </LinearLayout>
+
+
+    <View
+        android:id="@+id/line"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp750_1"
+        android:layout_below="@id/ll_web_two"
+        android:layout_marginLeft="@dimen/dp750_30"
+        android:layout_marginRight="@dimen/dp750_30"
+        android:layout_marginTop="@dimen/dp750_6"
+        android:background="@color/cdcdcdc"></View>
+
+
+    <LinearLayout
+        android:id="@+id/ll_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:paddingRight="18dip"
+        android:paddingLeft="18dip"
+        android:layout_marginBottom="30dip"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tv_a1"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="@color/black"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:text="服务使用协议"/>
+
+
+        <TextView
+            android:id="@+id/tv_a2"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="@color/black"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:text="版权声明"/>
+    </LinearLayout>
+
+
+
+
+
+    <RelativeLayout
+        android:id="@+id/rl_company_name"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp750_50"
+        android:layout_above="@+id/ll_bottom"
+        android:layout_marginBottom="20dip">
+
+        <TextView
+            android:id="@+id/tv_company_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="乐清主播网络科技有限公司"
+            android:textColor="@color/cfdaa3b"
+            android:textSize="@dimen/px28" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp750_1"
+            android:layout_centerInParent="true"
+            android:layout_marginLeft="@dimen/dp750_30"
+            android:layout_marginRight="@dimen/dp750_14"
+            android:layout_toLeftOf="@id/tv_company_name"
+            android:background="@color/cdcdcdc"></View>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp750_1"
+            android:layout_centerInParent="true"
+            android:layout_marginLeft="@dimen/dp750_14"
+            android:layout_marginRight="@dimen/dp750_30"
+            android:layout_toRightOf="@id/tv_company_name"
+            android:background="@color/cdcdcdc"></View>
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/rl_company_name"
+        android:layout_marginBottom="@dimen/dp750_80"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="商务合作:51493492"
+            android:textColor="@color/c666666"
+            android:textSize="@dimen/px24" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp750_20"
+            android:text="版权合作:51493492"
+            android:textColor="@color/c666666"
+            android:textSize="@dimen/px24" />
+
+        <TextView
+            android:id="@+id/tv_kefu_qq"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp750_20"
+            android:text="客服QQ:769991514"
+            android:textColor="@color/c666666"
+            android:textSize="@dimen/px24" />
+
+    </LinearLayout>
+
+
+</RelativeLayout>

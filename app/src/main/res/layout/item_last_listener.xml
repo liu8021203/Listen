@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:orientation="horizontal">
+
+    <RelativeLayout
+        android:id="@+id/classifi_book_item"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dpx188">
+
+        <ImageView
+            android:id="@+id/last_listene_image"
+            android:layout_width="@dimen/dpx150"
+            android:layout_height="@dimen/dpx150"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/dpx50"
+            android:scaleType="fitXY"
+            android:src="@color/c577895" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/dpx40"
+            android:layout_toRightOf="@id/last_listene_image"
+            android:gravity="center_vertical"
+            android:orientation="vertical">
+
+
+            <TextView
+                android:id="@+id/class_introduce_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:text="3333"
+                android:textColor="@color/c656565"
+                android:textSize="@dimen/px30"></TextView>
+
+
+            <TextView
+
+
+                android:id="@+id/class_introduce_anchor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dpx16"
+                android:singleLine="true"
+                android:text="333"
+                android:textColor="@color/c656565"
+                android:textSize="@dimen/px24"></TextView>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dpx16"
+                android:orientation="horizontal">
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="@dimen/dp750_30"
+                        android:layout_height="@dimen/dp750_30"
+                        android:src="@drawable/svg_blue_book" />
+
+                    <TextView
+                        android:id="@+id/class_introduce_zang_number"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/dp750_8"
+                        android:singleLine="true"
+                        android:text="222"
+                        android:textColor="@color/c656565"
+                        android:textSize="@dimen/px24"></TextView>
+                </LinearLayout>
+
+
+
+
+
+            </LinearLayout>
+        </LinearLayout>
+    </RelativeLayout>
+
+</LinearLayout>

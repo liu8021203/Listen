@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+    android:background="@color/white">
+
+    <ImageView
+        android:id="@+id/play_notification_cover_image"
+        android:layout_width="80dip"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_vertical"
+        android:scaleType="fitXY"/>
+
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="10dip"
+        android:layout_marginRight="10dip"
+        android:layout_toLeftOf="@+id/play_notification_play"
+        android:layout_toRightOf="@+id/play_notification_cover_image">
+
+
+        <TextView
+            android:id="@+id/play_notification_album_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:lines="1"
+            android:text=""
+            android:textColor="@color/black"
+            android:textSize="18sp"/>
+
+        <TextView
+            android:id="@+id/tv_cate_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/play_notification_album_name"
+            android:layout_below="@+id/play_notification_album_name"
+            android:layout_marginTop="8dip"
+            android:ellipsize="end"
+            android:lines="1"
+            android:textColor="@color/black"
+            />
+
+
+    </RelativeLayout>
+
+
+    <ImageView
+        android:id="@+id/play_notification_play"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@+id/play_notification_close"
+        android:paddingLeft="10dip"
+        android:paddingRight="10dip"
+        android:src="@mipmap/notice_play"/>
+
+    <ImageView
+        android:id="@+id/play_notification_pause"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@+id/play_notification_close"
+        android:paddingLeft="10dip"
+        android:paddingRight="10dip"
+        android:src="@mipmap/notice_pause"/>
+
+
+    <ImageView
+        android:id="@+id/play_notification_close"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="10dip"
+        android:paddingLeft="10dip"
+        android:src="@mipmap/notice_close"/>
+
+</RelativeLayout>

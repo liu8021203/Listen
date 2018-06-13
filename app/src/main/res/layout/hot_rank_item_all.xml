@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="40dp"
+    android:background="@color/white">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp">
+
+        <View
+            android:id="@+id/v_findnewsort_sticky_ver_line_1"
+            android:layout_width="@dimen/dpx6"
+            android:layout_height="@dimen/dpx30"
+            android:layout_alignParentLeft="true"
+            android:layout_centerInParent="true"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="@dimen/dpx16"
+            android:layout_marginTop="5dp"
+            android:background="@mipmap/blue_vertical_line" />
+
+
+        <ImageView
+            android:id="@+id/iv_findnewsort_sticky_group_icon"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="15dp"
+            android:contentDescription="@string/contentDescription"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/tv_findnewsort_sticky_group_title"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/dpx40"
+            android:layout_toRightOf="@id/iv_findnewsort_sticky_group_icon"
+            android:gravity="center_vertical"
+            android:text="作品打赏榜"
+            android:textColor="@color/c4d4c49"
+            android:textSize="@dimen/px30" />
+
+        <LinearLayout
+            android:id="@+id/home_more_book"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="@dimen/dpx16"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/hot_rank_more"
+                android:textColor="@color/c14acf0"
+                android:textSize="@dimen/px24" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/px14"
+                android:background="@mipmap/blue_right_arrow" />
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</RelativeLayout>

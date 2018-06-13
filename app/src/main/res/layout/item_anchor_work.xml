@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:id="@+id/anchor_work_item"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dpx190">
+
+
+        <ImageView
+            android:id="@+id/anchor_work_image"
+            android:layout_width="60dip"
+            android:layout_height="60dip"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="20dip"
+            android:scaleType="fitXY"
+            />
+
+
+        <TextView
+            android:id="@+id/anchor_work_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/anchor_work_image"
+            android:layout_marginLeft="17dip"
+            android:layout_toRightOf="@+id/anchor_work_image"
+            android:text="我当道士的那些年"
+            android:textColor="@color/c555555"
+            android:textSize="@dimen/px32"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/anchor_work_image"
+            android:layout_marginLeft="17dip"
+            android:layout_toRightOf="@+id/anchor_work_image"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/anchor_work_listener_number"
+                android:layout_width="0dip"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="收听：1003"
+                android:textColor="@color/c676767"
+                android:lines="1"
+                android:ellipsize="end"
+                android:textSize="@dimen/px26"/>
+
+            <TextView
+                android:id="@+id/anchor_work_update"
+                android:layout_width="0dip"
+                android:layout_weight="2"
+                android:layout_height="wrap_content"
+                android:text="更新：08-29 21:45"
+                android:textColor="@color/c676767"
+                android:lines="1"
+                android:ellipsize="end"
+                android:textSize="@dimen/px26"/>
+        </LinearLayout>
+    </RelativeLayout>
+</RelativeLayout>

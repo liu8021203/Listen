@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="70dip"
+        android:paddingLeft="10dip"
+        android:paddingRight="25dip">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/iv_img"
+            android:layout_width="@dimen/dpx100"
+            android:layout_height="@dimen/dpx100"
+            android:layout_centerVertical="true"
+            android:src="@drawable/default_tou_image"/>
+
+
+        <TextView
+            android:id="@+id/tv_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="15dip"
+            android:layout_marginRight="8dip"
+            android:layout_toLeftOf="@+id/rl_focus"
+            android:layout_toRightOf="@+id/iv_img"
+            android:ellipsize="end"
+            android:lines="1"
+            android:text="刺儿"
+            android:textColor="@color/black"
+            android:textSize="16sp"/>
+
+
+        <RelativeLayout
+            android:id="@+id/rl_focus"
+            android:layout_width="55dip"
+            android:layout_height="20dip"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/anchor_unfocus_btn">
+
+            <TextView
+                android:id="@+id/tv_focus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:drawableLeft="@mipmap/anchor_unfocus"
+                android:drawablePadding="2dip"
+                android:gravity="center"
+                android:text="关注"
+                android:textColor="#46bafc"
+                android:textSize="9sp"/>
+
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+</LinearLayout>

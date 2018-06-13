@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="@dimen/dpx600"
+        android:layout_height="@dimen/dpx328"
+        android:layout_centerInParent="true"
+        android:layout_marginLeft="@dimen/dpx30"
+        android:layout_marginRight="@dimen/dpx30"
+        android:background="@color/white"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/pay_stytle_text"
+                android:textColor="@color/c14acf0"
+                android:textSize="@dimen/dpx30" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dpx4"
+            android:background="@color/c14acf0"></View>
+
+        <RelativeLayout
+            android:id="@+id/wx_pay_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/mine_item_background"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/wx_pay_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="@dimen/dpx180"
+                android:layout_centerVertical="true"
+                android:background="@mipmap/weixin_pay_image" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/wx_pay_image"
+                android:layout_marginLeft="@dimen/dpx60"
+                android:text="@string/weixn_pay"
+                android:layout_centerVertical="true"
+                android:textColor="@color/c464646"
+                android:textSize="@dimen/px26" />
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dpx2"
+            android:background="@color/cdcdcdd"></View>
+
+        <RelativeLayout
+            android:id="@+id/ali_pay_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/mine_item_background"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/ali_pay_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="@dimen/dpx180"
+                android:layout_centerVertical="true"
+                android:background="@mipmap/bao_pay_image" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/dpx60"
+                android:layout_toRightOf="@id/ali_pay_image"
+                android:text="@string/ali_pay"
+                android:layout_centerVertical="true"
+                android:textColor="@color/c464646"
+                android:textSize="@dimen/px26" />
+        </RelativeLayout>
+    </LinearLayout>
+</RelativeLayout>

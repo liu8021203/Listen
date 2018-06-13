@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:background="@color/white"
+              android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/rl_layout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dpx190">
+
+        <ImageView
+            android:id="@+id/iv_book_url"
+            android:layout_width="@dimen/dpx124"
+            android:layout_height="@dimen/dpx124"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/dpx50"
+            android:scaleType="fitXY"/>
+
+
+        <TextView
+            android:id="@+id/tv_book_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dip"
+            android:layout_toRightOf="@id/iv_book_url"
+            android:layout_toLeftOf="@+id/iv_book_delete"
+            android:layout_alignTop="@+id/iv_book_url"
+            android:layout_marginRight="10dip"
+            android:text=""
+            android:textColor="#757474"
+            android:textSize="@dimen/px33"/>
+
+        <TextView
+            android:id="@+id/tv_host_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dpx28"
+            android:text=""
+            android:layout_marginLeft="15dip"
+            android:layout_toRightOf="@id/iv_book_url"
+            android:layout_toLeftOf="@+id/iv_book_delete"
+            android:layout_alignBottom="@+id/iv_book_url"
+            android:layout_marginRight="10dip"
+            android:textColor="#757474"
+            android:textSize="@dimen/px26"
+            />
+
+    </RelativeLayout>
+</LinearLayout>

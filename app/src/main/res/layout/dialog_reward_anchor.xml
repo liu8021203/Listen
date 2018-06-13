@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/dp750_72"
+        android:layout_marginRight="@dimen/dp750_72"
+        android:background="@drawable/dialog_layout_bg"
+        android:padding="1dip"
+        android:orientation="vertical">
+        
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp750_90">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="打赏"
+                android:textColor="#565656"
+                android:textSize="12sp"
+                android:layout_centerInParent="true"/>
+
+            <ImageView
+                android:id="@+id/iv_close"
+                android:layout_width="20dip"
+                android:layout_height="20dip"
+                android:src="@drawable/colose_dialog"
+                android:layout_marginRight="5dip"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"/>
+
+        </RelativeLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.1dip"
+            android:background="#dcdcdc"></View>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycle_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"></android.support.v7.widget.RecyclerView>
+        
+        
+    </LinearLayout>
+
+</RelativeLayout>

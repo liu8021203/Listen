@@ -1,0 +1,19 @@
+<animation-list
+    android:oneshot="false"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:drawable="@mipmap/chapter_play_mark"
+        android:duration="320"></item>
+
+    <item android:drawable="@mipmap/chapter_play_mark2"
+          android:duration="320"></item>
+
+    <item android:drawable="@mipmap/chapter_play_mark3"
+          android:duration="320"></item>
+
+    <item android:drawable="@mipmap/chapter_play_mark4"
+          android:duration="320"></item>
+
+    <item android:drawable="@mipmap/chapter_play_mark5"
+          android:duration="320"></item>
+</animation-list>

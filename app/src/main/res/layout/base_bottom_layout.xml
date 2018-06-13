@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="bottom"
+    android:orientation="vertical" >
+
+    <FrameLayout
+        android:id="@+id/fl_bottom_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="100dip"
+        android:layout_gravity="bottom"
+        android:background="@mipmap/miniplay_bg" >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="50dip"
+            android:layout_gravity="bottom"
+            android:orientation="horizontal" >
+
+            <LinearLayout
+                android:layout_width="0dip"
+                android:layout_height="fill_parent"
+                android:layout_weight="1" >
+
+                <ImageView
+                    android:id="@+id/iv_bottom_detail"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_marginRight="20dip"
+                    android:paddingBottom="15dip"
+                    android:paddingRight="20dip"
+                    android:paddingTop="0dip"
+                    android:src="@drawable/sel_nav_footer_detail_bg" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dip"
+                android:layout_height="fill_parent"
+                android:layout_weight="1" >
+
+                <ImageView
+                    android:id="@+id/iv_bottom_out"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_marginLeft="20dip"
+                    android:paddingBottom="15dip"
+                    android:paddingLeft="20dip"
+                    android:paddingTop="0dip"
+                    android:src="@drawable/sel_nav_footer_out_bg" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/fl_bottom_play_layout"
+            android:layout_width="100dip"
+            android:layout_height="100dip"
+            android:layout_gravity="center" >
+
+            <ImageView
+                android:id="@+id/iv_bottom_book_default"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_margin="6dip"
+                android:src="@mipmap/miniplay_pic_bg" />
+
+            <com.ting.view.RoundView
+                android:id="@+id/iv_bottom_book"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_margin="6dip" />
+
+            <ImageView
+                android:id="@+id/bt_bottom_play"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_margin="7dip"
+                android:src="@drawable/sel_nav_footer_play_bg" />
+
+            <com.ting.view.LoadProgressbar
+                android:id="@+id/bt_bottom_loading"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:background="@mipmap/miniplay_pic_loading"
+                android:visibility="gone" />
+        </FrameLayout>
+    </FrameLayout>
+
+    <!-- <SlidingDrawer -->
+    <!-- android:id="@+id/bottom_slidingdrawer" -->
+    <!-- android:layout_width="fill_parent" -->
+    <!-- android:layout_height="fill_parent" -->
+    <!-- android:content="@+id/bottom_content_view" -->
+    <!-- android:handle="@+id/bottom_handle_view" -->
+    <!-- android:orientation="vertical" > -->
+
+
+    <!-- <RelativeLayout -->
+    <!-- android:id="@+id/rl_content_view_sliding" -->
+    <!-- android:layout_width="fill_parent" -->
+    <!-- android:layout_height="fill_parent" > -->
+
+
+    <!-- <ImageView -->
+    <!-- android:id="@+id/bottom_handle_view" -->
+    <!-- android:layout_width="100dip" -->
+    <!-- android:layout_height="100dip" -->
+    <!-- android:src="@drawable/ic_launcher" /> -->
+
+
+    <!-- <LinearLayout -->
+    <!-- android:id="@+id/bottom_content_view" -->
+    <!-- android:layout_width="fill_parent" -->
+    <!-- android:layout_height="fill_parent" -->
+    <!-- android:layout_marginTop="-100dip" -->
+    <!-- android:orientation="vertical" -->
+    <!-- android:paddingTop="-100dip" /> -->
+    <!-- </RelativeLayout> -->
+    <!-- </SlidingDrawer> -->
+
+</FrameLayout>

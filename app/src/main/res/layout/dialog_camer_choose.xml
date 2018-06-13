@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="@dimen/dpx600"
+        android:layout_height="@dimen/dp750_280"
+        android:layout_centerInParent="true"
+        android:layout_marginLeft="@dimen/dpx30"
+        android:layout_marginRight="@dimen/dpx30"
+        android:background="@drawable/setting_photo_dialog_background"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="@string/choose_need_moves"
+                android:textColor="@color/black"
+                android:textSize="@dimen/px28" />
+
+            <ImageView
+                android:id="@+id/colse_dialog"
+                android:layout_width="@dimen/dp750_40"
+                android:layout_height="@dimen/dp750_40"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginLeft="@dimen/dp750_8"
+                android:layout_marginTop="@dimen/dp750_8"
+                android:src="@drawable/colose_dialog" />
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dpx2"
+            android:background="@color/cf1f1f1"></View>
+
+        <RelativeLayout
+            android:id="@+id/photo_choose_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/mine_item_background">
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="相册"
+                android:textColor="@color/c0173eb"
+                android:textSize="@dimen/px28" />
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dpx2"
+            android:background="@color/cf1f1f1"></View>
+
+        <RelativeLayout
+            android:id="@+id/camer_pai_se_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/dialog_click_background">
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="相机"
+                android:textColor="@color/c0173eb"
+                android:textSize="@dimen/px28" />
+        </RelativeLayout>
+    </LinearLayout>
+
+
+</RelativeLayout>

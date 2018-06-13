@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+
+    <RelativeLayout
+        android:id="@+id/fine_recommend_item"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dpx190"
+        android:background="@color/white">
+
+        <ImageView
+            android:id="@+id/fin_reconmmend_book_image"
+            android:layout_width="@dimen/dpx150"
+            android:layout_height="@dimen/dpx150"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/dpx20"
+            android:scaleType="fitXY" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_toRightOf="@id/fin_reconmmend_book_image"
+            android:gravity="center_vertical"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/fin_reconmmend_book_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:layout_marginLeft="@dimen/dpx34"
+                android:lines="1"
+                android:ellipsize="end"
+                android:text="111"
+                android:textColor="@color/black"
+                android:textSize="@dimen/px28" />
+
+            <LinearLayout
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/dpx34"
+                android:layout_marginTop="@dimen/dp750_10"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/fin_reconmmend_book_worker"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="left"
+                    android:maxEms="7"
+                    android:text="家家爱"
+                    android:textColor="@color/c656565"
+                    android:textSize="@dimen/px24" />
+
+                <TextView
+                    android:id="@+id/fin_reconmmend_book_state"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="left"
+                    android:text=""
+                    android:textColor="@color/c656565"
+                    android:textSize="@dimen/px24"
+
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/dpx34"
+                android:layout_marginTop="@dimen/dp750_8"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/fin_reconmmend_book_lei"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="left"
+                    android:maxEms="7"
+                    android:text="家家爱"
+                    android:textColor="@color/c656565"
+                    android:textSize="@dimen/px24" />
+
+                <TextView
+                    android:id="@+id/fin_reconmmend_book_zhang"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="left"
+                    android:lines="1"
+                    android:ellipsize="end"
+                    android:text=""
+                    android:textColor="@color/c656565"
+                    android:textSize="@dimen/px24"
+
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/dpx34"
+                android:layout_marginTop="@dimen/dp750_8"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="@dimen/dp750_60"
+                    android:layout_height="@dimen/dp750_30"
+                    android:background="@drawable/hot_background"
+                    android:gravity="center"
+                    android:text="HOT"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/px20" />
+
+                <RatingBar
+                    android:id="@+id/ratingbar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dip"
+                    android:layout_gravity="center_vertical"
+                    style="@style/RadingStyle"
+                    android:numStars="5"
+                    android:isIndicator="true"
+                    />
+            </LinearLayout>
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</LinearLayout>

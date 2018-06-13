@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipToPadding="false"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
+
+    <include
+        android:id="@+id/title"
+        layout="@layout/base_title_layout" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/dpx140"
+                android:src="@mipmap/welcome_image" />
+
+            <EditText
+                android:id="@+id/phone_number_editext"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dpx86"
+                android:layout_marginLeft="@dimen/dpx100"
+                android:layout_marginRight="@dimen/dpx100"
+                android:layout_marginTop="@dimen/dpx100"
+                android:background="@mipmap/username_passwprd_background"
+                android:hint="@string/phone_number_text"
+                android:inputType="number"
+                android:paddingLeft="10dp"
+                android:textColorHint="@color/white"
+                android:textSize="@dimen/px30" />
+
+            <EditText
+                android:id="@+id/identifying_code_editext"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dpx86"
+                android:layout_marginLeft="@dimen/dpx100"
+                android:layout_marginRight="@dimen/dpx100"
+                android:layout_marginTop="@dimen/dpx30"
+                android:background="@mipmap/username_passwprd_background"
+                android:hint="@string/identifying_code_text"
+                android:paddingLeft="10dp"
+                android:textColorHint="@color/white"
+                android:textSize="@dimen/px30" />
+
+            <TextView
+                android:id="@+id/get_identifying_code"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dpx86"
+                android:layout_marginLeft="@dimen/dpx100"
+                android:layout_marginRight="@dimen/dpx100"
+                android:layout_marginTop="@dimen/dpx34"
+                android:background="@mipmap/login_immediately_image"
+                android:gravity="center"
+                android:text="@string/get_identifying_code_text"
+                android:textColor="@color/white"
+                android:textSize="@dimen/px34"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/regist_passowrd_editext"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dpx86"
+                android:layout_marginLeft="@dimen/dpx100"
+                android:layout_marginRight="@dimen/dpx100"
+                android:layout_marginTop="@dimen/dpx30"
+                android:background="@mipmap/username_passwprd_background"
+                android:hint="@string/password_text"
+                android:paddingLeft="10dp"
+                android:password="true"
+                android:textColorHint="@color/white"
+                android:textSize="@dimen/px30" />
+
+            <EditText
+                android:id="@+id/regist_passowrd_too_editext"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dpx86"
+                android:layout_marginLeft="@dimen/dpx100"
+                android:layout_marginRight="@dimen/dpx100"
+                android:layout_marginTop="@dimen/dpx30"
+                android:background="@mipmap/username_passwprd_background"
+                android:hint="@string/input_password_too"
+                android:paddingLeft="10dp"
+                android:password="true"
+                android:textColorHint="@color/white"
+                android:textSize="@dimen/px30" />
+
+            <TextView
+                android:id="@+id/regist_immediately"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dpx86"
+                android:layout_marginLeft="@dimen/dpx100"
+                android:layout_marginRight="@dimen/dpx100"
+                android:layout_marginTop="@dimen/dpx34"
+                android:background="@mipmap/login_immediately_image"
+                android:gravity="center"
+                android:text="@string/regist_immediately_text"
+                android:textColor="@color/white"
+                android:textSize="@dimen/px34"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/load_more_add_text"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp750_80"
+        android:background="@color/white"
+        android:gravity="center"
+        android:text="上滑加载更多"
+        android:textColor="@color/black" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp750_1"
+        android:background="@color/cdcdcdc"></View>
+</LinearLayout>

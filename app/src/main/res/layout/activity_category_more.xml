@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.ting.view.RootLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include
+        android:id="@+id/title"
+        layout="@layout/base_title_layout" />
+    
+    <com.ting.view.loadmore.LoadMoreListViewContainer
+        android:id="@+id/loadMore"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ListView
+            android:id="@+id/listview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@null"
+            android:dividerHeight="0dip"
+            android:listSelector="@android:color/transparent">
+        </ListView>
+
+    </com.ting.view.loadmore.LoadMoreListViewContainer>
+
+</com.ting.view.RootLayout>

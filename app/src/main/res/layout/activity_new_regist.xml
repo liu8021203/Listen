@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/transparent"
+    android:orientation="vertical">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp750_90"
+        android:layout_marginLeft="@dimen/dp750_30"
+        android:layout_marginRight="@dimen/dp750_30"
+        android:layout_marginTop="@dimen/dp750_90"
+        android:background="@drawable/regist_kuang"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="@dimen/dp750_20"
+            android:text="+86"
+            android:textColor="@color/c666666"
+            android:textSize="@dimen/px26"
+
+            />
+
+        <View
+            android:layout_width="@dimen/dp750_1"
+            android:layout_height="@dimen/dp750_60"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="@dimen/dp750_20"
+            android:background="@color/cdcdcdc"></View>
+
+        <EditText
+            android:id="@+id/phone_number_editext"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/dp750_20"
+            android:background="@null"
+            android:hint="请输入手机号"
+            android:singleLine="true"
+            android:inputType="number"
+            android:textColor="@color/c666666"
+            android:textColorHint="@color/cdbdbdb"
+            android:textSize="@dimen/px26" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp750_90"
+        android:layout_marginLeft="@dimen/dp750_30"
+        android:layout_marginRight="@dimen/dp750_30"
+        android:layout_marginTop="@dimen/dp750_30"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/identifying_code_editext"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:background="@drawable/regist_kuang"
+            android:hint="请输入验证码"
+            android:paddingLeft="@dimen/dp750_32"
+            android:singleLine="true"
+            android:textColor="@color/c666666"
+            android:textColorHint="@color/cdbdbdb"
+            android:inputType="number"
+            android:textSize="@dimen/px26" />
+
+        <TextView
+            android:id="@+id/get_identifying_code"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/dp750_20"
+            android:layout_weight="3"
+            android:background="@drawable/get_code_kuang"
+            android:gravity="center"
+            android:text="获取验证码"
+            android:textColor="@color/white"
+            android:textSize="@dimen/px26"
+
+            />
+
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/regist_passowrd_editext"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp750_90"
+        android:layout_marginLeft="@dimen/dp750_30"
+        android:layout_marginRight="@dimen/dp750_30"
+        android:layout_marginTop="@dimen/dp750_30"
+        android:background="@drawable/regist_kuang"
+        android:hint="请输入密码"
+        android:paddingLeft="@dimen/dp750_32"
+        android:singleLine="true"
+        android:textColor="@color/c666666"
+        android:textColorHint="@color/cdbdbdb"
+        android:inputType="textPassword"
+        android:textSize="@dimen/px26" />
+
+    <EditText
+        android:id="@+id/regist_passowrd_too_editext"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp750_90"
+        android:layout_marginLeft="@dimen/dp750_30"
+        android:layout_marginRight="@dimen/dp750_30"
+        android:layout_marginTop="@dimen/dp750_30"
+        android:background="@drawable/regist_kuang"
+        android:hint="请再次输入密码"
+        android:paddingLeft="@dimen/dp750_32"
+        android:singleLine="true"
+        android:textColor="@color/c666666"
+        android:textColorHint="@color/cdbdbdb"
+        android:inputType="textPassword"
+        android:textSize="@dimen/px26" />
+
+
+    <TextView
+        android:id="@+id/regist_immediately"
+        android:layout_width="@dimen/dp750_276"
+        android:layout_height="@dimen/dp750_82"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/dp750_82"
+        android:background="@drawable/regist_sure_kuang"
+        android:gravity="center"
+        android:text="完成注册"
+        android:textColor="@color/white"
+        android:textSize="@dimen/px28"
+
+        />
+
+
+</LinearLayout>

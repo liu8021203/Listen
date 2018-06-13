@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+    <ViewStub
+        android:id="@+id/view_stub_actionbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout="@layout/base_error_fl_layout"/>
+    
+    <ViewStub
+        android:id="@+id/view_stub_error"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/view_stub_actionbar"
+        android:layout="@layout/base_error_fl_layout"/>
+    <FrameLayout
+        android:id="@+id/fl_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/view_stub_actionbar">
+    </FrameLayout>
+
+</RelativeLayout>

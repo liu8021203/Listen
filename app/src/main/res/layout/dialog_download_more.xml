@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="@dimen/dpx80"
+        android:layout_marginRight="@dimen/dpx80"
+        android:background="@drawable/sort_bg"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_total_chapter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/dpx36"
+            android:text="请输入要下载的章节"
+            android:textColor="@color/white"
+            android:textSize="@dimen/px28"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/dpx40"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/et_start_chapter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/download_more_text_bd"
+                android:gravity="center"
+                android:hint="0"
+                android:inputType="number"
+                android:padding="8dip"
+                android:textColorHint="@color/white"
+                android:textColor="@color/white"
+                android:textSize="11sp"/>
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="@dimen/dpx18"
+                android:text="至"
+                android:textColor="@color/white"/>
+
+            <EditText
+                android:id="@+id/et_end_chapter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/dpx18"
+                android:background="@drawable/download_more_text_bd"
+                android:gravity="center"
+                android:hint="0"
+                android:inputType="number"
+                android:textColorHint="@color/white"
+                android:padding="8dip"
+                android:textColor="@color/white"
+                android:textSize="11sp"/>
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.1dip"
+            android:layout_marginTop="20dip"
+            android:background="@color/white"></View>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dip"
+            android:orientation="horizontal">
+
+
+            <Button
+                android:id="@+id/btn_cancle"
+                android:layout_width="0dip"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:background="@drawable/sort_left_btn"
+                android:gravity="center"
+                android:text="取消"
+                android:textColor="@color/white"/>
+
+            <View
+                android:layout_width="0.1dip"
+                android:layout_height="match_parent"
+                android:background="@color/white"></View>
+
+            <Button
+                android:id="@+id/btn_ok"
+                android:layout_width="0dip"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:background="@drawable/sort_right_btn"
+                android:gravity="center"
+                android:text="确定"
+                android:textColor="@color/white"/>
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+</LinearLayout>

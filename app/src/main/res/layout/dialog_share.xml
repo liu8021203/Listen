@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp750_385"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/dp750_30"
+            android:layout_marginTop="@dimen/dp750_30"
+            android:text="分享到"
+            android:textColor="@color/black"
+            android:textSize="@dimen/px30" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp750_200"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/share_qq"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center">
+
+                <ImageView
+                    android:id="@+id/qq_login"
+                    android:layout_width="@dimen/dp750_115"
+                    android:layout_height="@dimen/dp750_115"
+                    android:layout_gravity="center"
+                    android:src="@drawable/new_qq_image" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/share_weibo"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="@dimen/dp750_115"
+                    android:layout_height="@dimen/dp750_115"
+                    android:layout_gravity="center"
+                    android:src="@drawable/new_sina_image" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/share_weixin"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="@dimen/dp750_115"
+                    android:layout_height="@dimen/dp750_115"
+                    android:layout_gravity="center"
+                    android:src="@drawable/new_weixin_image"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/share_circle"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center">
+
+                <ImageView
+                    android:id="@+id/circle_image"
+                    android:layout_width="@dimen/dp750_115"
+                    android:layout_height="@dimen/dp750_115"
+                    android:layout_gravity="center"
+                    android:src="@mipmap/share_friends_circle"/>
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.1dip"
+            android:background="@color/ce9e9e9"></View>
+
+        <TextView
+            android:id="@+id/tv_cancle"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/white"
+            android:gravity="center"
+            android:text="取消"
+            android:textColor="@color/black"
+            android:textSize="@dimen/px30" />
+
+    </LinearLayout>
+
+
+</LinearLayout>

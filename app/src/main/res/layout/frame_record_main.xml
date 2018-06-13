@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <include
+        android:id="@+id/title"
+        layout="@layout/base_title_layout" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dpx82"
+        android:orientation="horizontal">
+
+        <RelativeLayout
+            android:id="@+id/last_listen_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/last_listen_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="@string/last_listener"
+
+                android:textColor="@color/c14acf0"
+                android:textSize="@dimen/px26" />
+            <View
+                android:id="@+id/rec_one_line"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dpx4"
+                android:background="@color/c14acf0"
+                android:layout_alignParentBottom="true"></View>
+
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="@dimen/dpx4"
+            android:layout_height="@dimen/dpx56"
+            android:layout_gravity="center_vertical"
+            android:background="@color/cd5d5d5"></View>
+
+
+        <RelativeLayout
+            android:id="@+id/have_down_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/have_down_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="@string/have_dow"
+                android:textColor="@color/cbbbbbb"
+                android:textSize="@dimen/px26" />
+            <View
+                android:id="@+id/rec_three_line"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dpx4"
+                android:background="@color/c14acf0"
+                android:layout_alignParentBottom="true"
+                android:visibility="gone"></View>
+
+        </RelativeLayout>
+    </LinearLayout>
+
+
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/record_main_viewpager"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"></android.support.v4.view.ViewPager>
+
+</LinearLayout>

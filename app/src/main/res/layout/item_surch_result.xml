@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/search_result_item"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dpx188">
+
+        <ImageView
+            android:id="@+id/search_result_image"
+            android:layout_width="@dimen/dpx118"
+            android:layout_height="@dimen/dpx118"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/dpx50"
+            android:scaleType="fitXY" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/dpx40"
+            android:layout_toRightOf="@id/search_result_image"
+            android:gravity="center_vertical"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/search_result_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textColor="@color/c666666"
+                android:textSize="@dimen/px30"></TextView>
+
+            <TextView
+                android:id="@+id/search_result_anchor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textColor="@color/c666666"
+                android:textSize="@dimen/px24"></TextView>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dpx16"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/search_result_zang_number"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textColor="@color/c666666"
+                    android:textSize="@dimen/px24"></TextView>
+
+            </RelativeLayout>
+        </LinearLayout>
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.1dip"
+        android:background="@color/ce9e9e9"></View>
+</LinearLayout>

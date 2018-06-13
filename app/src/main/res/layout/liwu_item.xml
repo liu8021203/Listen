@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/liwu_check_layout"
+        android:layout_width="match_parent"
+        android:layout_height="70dip"
+
+        android:background="@color/white">
+
+        <ImageView
+            android:id="@+id/liwu_image"
+            android:layout_width="@dimen/dpx58"
+            android:layout_height="@dimen/dpx58"
+            android:layout_marginTop="3dip"
+            android:layout_centerHorizontal="true"
+
+            />
+        <TextView
+            android:id="@+id/liwu_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="#565656"
+            android:layout_below="@+id/liwu_image"
+            android:textSize="@dimen/px24"
+            android:layout_marginTop="2dip"
+            android:layout_centerHorizontal="true"
+            />
+        <TextView
+            android:id="@+id/liwu_price_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="#565656"
+            android:layout_below="@+id/liwu_text"
+            android:textSize="@dimen/px24"
+            android:layout_marginTop="2dip"
+            android:layout_centerHorizontal="true"
+            />
+
+        <View
+            android:id="@+id/v_line_bottom"
+            android:layout_width="match_parent"
+            android:layout_height="0.1dip"
+            android:background="#dcdcdc"
+            android:layout_alignParentBottom="true"></View>
+
+        <View
+            android:id="@+id/v_line_right"
+            android:layout_width="0.1dip"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:background="#dcdcdc"></View>
+    </RelativeLayout>
+</LinearLayout>

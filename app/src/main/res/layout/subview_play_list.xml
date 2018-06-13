@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+
+    <RelativeLayout
+        android:id="@+id/play_setting"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dpx70"
+        android:background="@color/white">
+
+        <TextView
+            android:id="@+id/all_list_play"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/dpx36"
+            android:text="共集"
+            android:textColor="#5e5e5e"
+            android:textSize="@dimen/px26"/>
+
+        <TextView
+            android:id="@+id/paixun"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:layout_marginLeft="@dimen/dpx36"
+            android:gravity="center_vertical"
+            android:text="@string/paixu"
+            android:textColor="#5e5e5e"
+            android:textSize="@dimen/px30"
+            android:visibility="visible"/>
+
+        <TextView
+            android:id="@+id/tiaozhuan"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="@dimen/dpx36"
+            android:gravity="center_vertical"
+            android:text="@string/tiaozhuan"
+            android:textColor="#5e5e5e"
+            android:textSize="@dimen/px30"/>
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.1dip"
+            android:layout_alignParentBottom="true"
+            android:background="@color/line_grey"></View>
+
+    </RelativeLayout>
+
+    <com.scwang.smartrefresh.layout.SmartRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                                       android:id="@+id/refreshLayout"
+                                                       android:layout_width="match_parent"
+                                                       android:layout_height="match_parent"
+                                                       android:layout_below="@+id/play_setting"
+                                                       android:background="@color/white">
+
+        <com.scwang.smartrefresh.layout.header.ClassicsHeader
+            android:id="@+id/header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@id/swipe_target"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"/>
+
+        <com.scwang.smartrefresh.layout.footer.ClassicsFooter
+            android:id="@+id/footer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    </com.scwang.smartrefresh.layout.SmartRefreshLayout>
+
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/offline_recycle_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/play_setting"
+        android:background="@color/white"
+        android:visibility="gone"></android.support.v7.widget.RecyclerView>
+
+
+    <GridView
+        android:id="@+id/gridview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/play_setting"
+        android:background="@color/white"
+        android:listSelector="@null"
+        android:numColumns="3"
+        android:scrollbars="none"
+        android:visibility="gone"></GridView>
+
+    <View
+        android:id="@+id/view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/gridview"
+        android:visibility="gone"></View>
+
+
+</RelativeLayout>

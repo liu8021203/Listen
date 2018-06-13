@@ -1,0 +1,622 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#eaeaea"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dpx84"
+        android:background="#48b4ff">
+
+
+        <ImageView
+            android:id="@+id/iv_search"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:paddingLeft="@dimen/dp750_30"
+            android:paddingRight="@dimen/dp750_30"
+            android:src="@mipmap/home_search" />
+
+        <TextView
+            android:id="@+id/tv_activity_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/listen_world"
+            android:textColor="@color/white"
+            android:textSize="@dimen/px36" />
+    </RelativeLayout>
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="none">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+
+            <com.liu.learning.library.LoopViewPager
+                android:id="@+id/viewPager"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp750_350"
+                android:background="@color/white"
+                app:gravity="center"></com.liu.learning.library.LoopViewPager>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp750_118"
+                android:layout_marginLeft="@dimen/dp750_20"
+                android:layout_marginRight="@dimen/dp750_20"
+                android:layout_marginTop="@dimen/dp750_20"
+                android:orientation="horizontal">
+
+                <RelativeLayout
+                    android:id="@+id/rl_hot_host"
+                    android:layout_width="0dip"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@color/white">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:drawableLeft="@drawable/hot_host"
+                        android:drawablePadding="@dimen/px30"
+                        android:gravity="center"
+                        android:text="热门主播"
+                        android:textColor="#565656"
+                        android:textSize="17sp" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/rl_hot_recommend"
+                    android:layout_width="0dip"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="@dimen/dp750_24"
+                    android:layout_weight="1"
+                    android:background="@color/white">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:drawableLeft="@drawable/home_recommend"
+                        android:drawablePadding="@dimen/px30"
+                        android:gravity="center"
+                        android:text="精品推荐"
+                        android:textColor="#565656"
+                        android:textSize="17sp" />
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/ll_hot"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingBottom="@dimen/dp750_10">
+
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp750_20"
+                    android:background="@color/white"
+                    android:paddingBottom="@dimen/dp750_30"
+                    android:paddingTop="@dimen/dp750_30">
+
+                    <TextView
+                        android:id="@+id/tv_hot_status"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/dp750_20"
+                        android:drawableLeft="@drawable/home_hot_ranking"
+                        android:drawablePadding="@dimen/dp750_10"
+                        android:gravity="center_vertical"
+                        android:text="热门排行"
+                        android:textColor="#565656"
+                        android:textSize="16sp" />
+
+
+                    <TextView
+                        android:id="@+id/tv_hot_more"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBaseline="@+id/tv_hot_status"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginRight="@dimen/dp750_20"
+                        android:drawablePadding="@dimen/dp750_15"
+                        android:drawableRight="@drawable/vector_right"
+                        android:gravity="center_vertical"
+                        android:text="更多"
+                        android:visibility="gone"
+                        android:textColor="#8a8a8a"
+                        android:textSize="11sp" />
+                </RelativeLayout>
+
+
+                <com.ting.view.LeftGridView
+                    android:id="@+id/hot_gridview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:horizontalSpacing="@dimen/dp750_40"
+                    android:listSelector="@null"
+                    android:numColumns="4"
+                    android:paddingLeft="@dimen/dp750_26"
+                    android:paddingRight="@dimen/dp750_26"
+                    android:scrollbars="none"
+                    android:verticalSpacing="@dimen/dp750_14"></com.ting.view.LeftGridView>
+
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/ll_new"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingBottom="@dimen/dp750_10">
+
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp750_20"
+                    android:background="@color/white"
+                    android:paddingBottom="@dimen/dp750_30"
+                    android:paddingTop="@dimen/dp750_30">
+
+                    <TextView
+                        android:id="@+id/tv_new_status"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/dp750_20"
+                        android:drawableLeft="@drawable/vector_new"
+                        android:drawablePadding="@dimen/dp750_10"
+                        android:gravity="center_vertical"
+                        android:text="最近更新"
+                        android:textColor="#565656"
+                        android:textSize="16sp" />
+
+
+                    <TextView
+                        android:id="@+id/tv_more_new"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBaseline="@+id/tv_new_status"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginRight="@dimen/dp750_20"
+                        android:drawablePadding="@dimen/dp750_15"
+                        android:drawableRight="@drawable/vector_right"
+                        android:gravity="center_vertical"
+                        android:text="更多"
+                        android:visibility="gone"
+                        android:textColor="#8a8a8a"
+                        android:textSize="11sp" />
+                </RelativeLayout>
+
+
+                <com.ting.view.LeftGridView
+                    android:id="@+id/new_gridview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:horizontalSpacing="@dimen/dp750_40"
+                    android:listSelector="@null"
+                    android:numColumns="4"
+                    android:paddingLeft="@dimen/dp750_26"
+                    android:paddingRight="@dimen/dp750_26"
+                    android:scrollbars="none"
+                    android:verticalSpacing="@dimen/dp750_14"></com.ting.view.LeftGridView>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp750_20"
+                android:background="@color/white"
+                android:orientation="horizontal"
+                android:paddingBottom="@dimen/dp750_32"
+                android:paddingTop="@dimen/dp750_46">
+
+
+                <TextView
+                    android:id="@+id/tv_xiaoshuo"
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:drawablePadding="@dimen/dp750_30"
+                    android:drawableTop="@drawable/svg_class_one"
+                    android:gravity="center_horizontal"
+                    android:text="小说"
+                    android:textColor="#565656"
+                    android:textSize="12sp" />
+
+
+                <TextView
+                    android:id="@+id/tv_diantai"
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:drawablePadding="@dimen/dp750_30"
+                    android:drawableTop="@drawable/svg_class_two"
+                    android:gravity="center_horizontal"
+                    android:text="广播剧电台"
+                    android:textColor="#565656"
+                    android:textSize="12sp" />
+
+
+                <TextView
+                    android:id="@+id/tv_hudong"
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:drawablePadding="@dimen/dp750_30"
+                    android:drawableTop="@drawable/svg_class_three"
+                    android:gravity="center_horizontal"
+                    android:text="互动"
+                    android:textColor="#565656"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/tv_zongyi"
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:drawablePadding="@dimen/dp750_30"
+                    android:drawableTop="@drawable/svg_class_four"
+                    android:gravity="center_horizontal"
+                    android:text="综艺"
+                    android:textColor="#565656"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/tv_shengyi"
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:drawablePadding="@dimen/dp750_30"
+                    android:drawableTop="@drawable/svg_class_five"
+                    android:gravity="center_horizontal"
+                    android:text="声音供求"
+                    android:textColor="#565656"
+                    android:textSize="12sp" />
+
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/ll_xiaoshuo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp750_20"
+                android:background="@color/white"
+                android:orientation="vertical"
+                android:paddingBottom="@dimen/dp750_10">
+
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp750_20"
+                    android:background="@color/white"
+                    android:paddingBottom="@dimen/dp750_30">
+
+                    <TextView
+                        android:id="@+id/tv_xiaoshuo_status"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/dp750_20"
+                        android:drawableLeft="@drawable/vector_home_xiaoshuo"
+                        android:drawablePadding="@dimen/dp750_10"
+                        android:gravity="center_vertical"
+                        android:text="有声小说"
+                        android:textColor="#565656"
+                        android:textSize="16sp" />
+
+
+                    <TextView
+                        android:id="@+id/tv_more_xiaoshuo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBaseline="@+id/tv_xiaoshuo_status"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginRight="@dimen/dp750_20"
+                        android:drawablePadding="@dimen/dp750_15"
+                        android:drawableRight="@drawable/vector_right"
+                        android:gravity="center_vertical"
+                        android:text="更多"
+                        android:textColor="#8a8a8a"
+                        android:textSize="11sp" />
+                </RelativeLayout>
+
+
+                <com.ting.view.LeftGridView
+                    android:id="@+id/xiaoshuo_gridview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:horizontalSpacing="@dimen/dp750_40"
+                    android:listSelector="@null"
+                    android:numColumns="4"
+                    android:paddingLeft="@dimen/dp750_26"
+                    android:paddingRight="@dimen/dp750_26"
+                    android:scrollbars="none"
+                    android:verticalSpacing="@dimen/dp750_34"></com.ting.view.LeftGridView>
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/ll_diantai"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp750_20"
+                android:background="@color/white"
+                android:orientation="vertical"
+                android:paddingBottom="@dimen/dp750_10">
+
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp750_20"
+                    android:background="@color/white"
+                    android:paddingBottom="@dimen/dp750_30">
+
+                    <TextView
+                        android:id="@+id/tv_diantai_status"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/dp750_20"
+                        android:drawableLeft="@drawable/vector_home_diantai"
+                        android:drawablePadding="@dimen/dp750_10"
+                        android:gravity="center_vertical"
+                        android:text="广播剧电台"
+                        android:textColor="#565656"
+                        android:textSize="16sp" />
+
+
+                    <TextView
+                        android:id="@+id/tv_more_diantai"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBaseline="@+id/tv_diantai_status"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginRight="@dimen/dp750_20"
+                        android:drawablePadding="@dimen/dp750_15"
+                        android:drawableRight="@drawable/vector_right"
+                        android:gravity="center_vertical"
+                        android:text="更多"
+                        android:textColor="#8a8a8a"
+                        android:textSize="11sp" />
+                </RelativeLayout>
+
+
+                <com.ting.view.LeftGridView
+                    android:id="@+id/diantai_gridview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:horizontalSpacing="@dimen/dp750_40"
+                    android:listSelector="@null"
+                    android:numColumns="4"
+                    android:paddingLeft="@dimen/dp750_26"
+                    android:paddingRight="@dimen/dp750_26"
+                    android:scrollbars="none"
+                    android:verticalSpacing="@dimen/dp750_34"></com.ting.view.LeftGridView>
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/ll_hudong"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp750_20"
+                android:background="@color/white"
+                android:orientation="vertical"
+                android:paddingBottom="@dimen/dp750_10">
+
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp750_20"
+                    android:background="@color/white"
+                    android:paddingBottom="@dimen/dp750_30">
+
+                    <TextView
+                        android:id="@+id/tv_hudong_status"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/dp750_20"
+                        android:drawableLeft="@drawable/vector_home_hudong"
+                        android:drawablePadding="@dimen/dp750_10"
+                        android:gravity="center_vertical"
+                        android:text="声音互动"
+                        android:textColor="#565656"
+                        android:textSize="16sp" />
+
+
+                    <TextView
+                        android:id="@+id/tv_more_hudong"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBaseline="@+id/tv_hudong_status"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginRight="@dimen/dp750_20"
+                        android:drawablePadding="@dimen/dp750_15"
+                        android:drawableRight="@drawable/vector_right"
+                        android:gravity="center_vertical"
+                        android:text="更多"
+                        android:textColor="#8a8a8a"
+                        android:textSize="11sp" />
+                </RelativeLayout>
+
+
+                <com.ting.view.LeftGridView
+                    android:id="@+id/hudong_gridview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:horizontalSpacing="@dimen/dp750_40"
+                    android:listSelector="@null"
+                    android:numColumns="4"
+                    android:paddingLeft="@dimen/dp750_26"
+                    android:paddingRight="@dimen/dp750_26"
+                    android:scrollbars="none"
+                    android:verticalSpacing="@dimen/dp750_34"></com.ting.view.LeftGridView>
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/ll_zongyi"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp750_20"
+                android:background="@color/white"
+                android:orientation="vertical"
+                android:paddingBottom="@dimen/dp750_10">
+
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp750_20"
+                    android:background="@color/white"
+                    android:paddingBottom="@dimen/dp750_30">
+
+                    <TextView
+                        android:id="@+id/tv_zongyi_status"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/dp750_20"
+                        android:drawableLeft="@drawable/vector_zongyi"
+                        android:drawablePadding="@dimen/dp750_10"
+                        android:gravity="center_vertical"
+                        android:text="有声综艺"
+                        android:textColor="#565656"
+                        android:textSize="16sp" />
+
+
+                    <TextView
+                        android:id="@+id/tv_more_zongyi"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBaseline="@+id/tv_zongyi_status"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginRight="@dimen/dp750_20"
+                        android:drawablePadding="@dimen/dp750_15"
+                        android:drawableRight="@drawable/vector_right"
+                        android:gravity="center_vertical"
+                        android:text="更多"
+                        android:textColor="#8a8a8a"
+                        android:textSize="11sp" />
+                </RelativeLayout>
+
+
+                <com.ting.view.LeftGridView
+                    android:id="@+id/zongyi_gridview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:horizontalSpacing="@dimen/dp750_40"
+                    android:listSelector="@null"
+                    android:numColumns="4"
+                    android:paddingLeft="@dimen/dp750_26"
+                    android:paddingRight="@dimen/dp750_26"
+                    android:scrollbars="none"
+                    android:verticalSpacing="@dimen/dp750_34"></com.ting.view.LeftGridView>
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/ll_shengyi"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp750_20"
+                android:background="@color/white"
+                android:orientation="vertical"
+                android:paddingBottom="@dimen/dp750_10">
+
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp750_20"
+                    android:background="@color/white"
+                    android:paddingBottom="@dimen/dp750_30">
+
+                    <TextView
+                        android:id="@+id/tv_shengyin_status"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/dp750_20"
+                        android:drawableLeft="@drawable/vector_shengyi"
+                        android:drawablePadding="@dimen/dp750_10"
+                        android:gravity="center_vertical"
+                        android:text="有声供求"
+                        android:textColor="#565656"
+                        android:textSize="16sp" />
+
+
+                    <TextView
+                        android:id="@+id/tv_more_shengyi"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBaseline="@+id/tv_shengyin_status"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginRight="@dimen/dp750_20"
+                        android:drawablePadding="@dimen/dp750_15"
+                        android:drawableRight="@drawable/vector_right"
+                        android:gravity="center_vertical"
+                        android:text="更多"
+                        android:textColor="#8a8a8a"
+                        android:textSize="11sp" />
+                </RelativeLayout>
+
+                <com.ting.view.LeftGridView
+                    android:id="@+id/shengyi_gridview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:horizontalSpacing="@dimen/dp750_40"
+                    android:listSelector="@null"
+                    android:numColumns="4"
+                    android:paddingLeft="@dimen/dp750_26"
+                    android:paddingRight="@dimen/dp750_26"
+                    android:scrollbars="none"
+                    android:verticalSpacing="@dimen/dp750_34"></com.ting.view.LeftGridView>
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+
+    </ScrollView>
+
+</LinearLayout>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/liwu_mess_relayout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dpx350"
+        android:layout_marginLeft="@dimen/dpx80"
+        android:layout_marginRight="@dimen/dpx80"
+        android:layout_centerInParent="true"
+       >
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dpx330"
+            android:background="@mipmap/reward_anchor_dialog_background"
+            android:layout_centerVertical="true"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="请输入要跳转到章节"
+                android:textSize="@dimen/dpx30"
+                android:layout_marginTop="@dimen/dpx30"
+                android:layout_gravity="center_horizontal"
+                android:textColor="@color/white"/>
+
+            
+            <EditText
+                android:id="@+id/ship_zhang_edit"
+                android:layout_width="@dimen/dpx66"
+                android:layout_height="@dimen/dpx46"
+                android:background="@mipmap/edit_white_kuang"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/dpx50"
+                android:textColor="@color/white"
+                android:textSize="@dimen/px30"
+                android:gravity="center"
+                android:text="20"
+                />
+
+             
+             <TextView
+                 android:id="@+id/ship_zhang_sure"
+                 android:layout_width="match_parent"
+                 android:layout_height="@dimen/dpx80"
+                 android:layout_marginLeft="@dimen/dpx50"
+                 android:layout_marginRight="@dimen/dpx50"
+                 android:layout_marginTop="@dimen/dpx50"
+                 android:background="@mipmap/sure_reward_white_kuang"
+                 android:gravity="center"
+                 android:text="@string/sure_text"
+                 android:textSize="@dimen/dpx30"
+                 android:textColor="@color/white"/>
+        </LinearLayout>
+        <ImageView
+            android:id="@+id/ship_zhang_dismiss"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/white_cha_image"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"/>
+    </RelativeLayout>
+</LinearLayout>

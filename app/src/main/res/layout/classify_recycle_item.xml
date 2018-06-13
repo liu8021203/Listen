@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:background="@color/white"
+              android:orientation="horizontal">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <RelativeLayout
+            android:id="@+id/aaa"
+            android:layout_width="100dip"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/tv_classify_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:drawablePadding="4dip"
+                android:gravity="center_horizontal"
+                android:textColor="@color/c565656"/>
+
+        </RelativeLayout>
+
+
+        <View
+            android:id="@+id/class_view"
+            android:layout_width="0.1dip"
+            android:layout_height="match_parent"
+            android:layout_toRightOf="@+id/aaa"
+            android:layout_marginTop="10dip"
+            android:layout_marginBottom="10dip"
+            android:background="#dcdcdc"></View>
+
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycle_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dip"
+            android:layout_toRightOf="@+id/class_view"></android.support.v7.widget.RecyclerView>
+
+    </RelativeLayout>
+</LinearLayout>

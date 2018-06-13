@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="10dp">
+
+
+    <TextView
+        android:id="@+id/listen_dou_price"
+        android:layout_width="match_parent"
+        android:layout_height="35dip"
+        android:background="@drawable/tingdou_text_bg"
+        android:gravity="center"
+        android:text=""
+        android:textColor="@color/c808080"
+        android:textSize="@dimen/dpx26"/>
+</LinearLayout>

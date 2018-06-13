@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/dp750_72"
+        android:layout_marginRight="@dimen/dp750_72"
+        android:background="@drawable/dialog_layout_bg"
+        android:orientation="vertical">
+
+
+        <RadioGroup
+            android:id="@+id/rg_play_dialog_shut_down_radio_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/dp750_160">
+
+
+            <RadioButton
+                android:id="@+id/rb_play_dialog_shut_down_radio_button"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginLeft="28dp"
+                android:layout_marginRight="68dp"
+                android:button="@null"
+                android:drawableLeft="@drawable/radio_button"
+                android:drawablePadding="5dip"
+                android:text="取消定时"
+                android:textColor="@color/black"
+                android:textSize="@dimen/dpx24" />
+
+            <RadioButton
+                android:id="@+id/rb_play_dialog_shut_down_radio_button0"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginLeft="28dp"
+                android:layout_marginRight="68dp"
+                android:button="@null"
+                android:drawableLeft="@drawable/radio_button"
+                android:drawablePadding="5dip"
+                android:text="@string/fiveSeconde"
+                android:textColor="@color/black"
+                android:textSize="@dimen/dpx24" />
+
+
+            <RadioButton
+                android:id="@+id/rb_play_dialog_shut_down_radio_button1"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginLeft="28dp"
+                android:layout_marginRight="68dp"
+                android:button="@null"
+                android:drawableLeft="@drawable/radio_button"
+                android:drawablePadding="5dip"
+                android:text="@string/tenMinutes"
+                android:textColor="@color/black"
+                android:textSize="@dimen/dpx24" />
+
+
+            <RadioButton
+                android:id="@+id/rb_play_dialog_shut_down_radio_button2"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginLeft="28dp"
+                android:layout_marginRight="68dp"
+                android:button="@null"
+                android:drawableLeft="@drawable/radio_button"
+                android:drawablePadding="5dip"
+                android:text="@string/twentyMinutes"
+                android:textColor="@color/black"
+                android:textSize="@dimen/dpx24" />
+
+
+            <RadioButton
+                android:id="@+id/rb_play_dialog_shut_down_radio_button3"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginLeft="28dp"
+                android:layout_marginRight="68dp"
+                android:button="@null"
+                android:drawableLeft="@drawable/radio_button"
+                android:drawablePadding="5dip"
+                android:text="@string/thirtyMinutes"
+                android:textColor="@color/black"
+                android:textSize="@dimen/dpx24" />
+
+
+            <RadioButton
+                android:id="@+id/rb_play_dialog_shut_down_radio_button4"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginLeft="28dp"
+                android:layout_marginRight="68dp"
+                android:button="@null"
+                android:drawableLeft="@drawable/radio_button"
+                android:drawablePadding="5dip"
+                android:text="@string/sixtyMinutes"
+                android:textColor="@color/black"
+                android:textSize="@dimen/dpx24" />
+            
+
+
+        </RadioGroup>
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.1dip"
+            android:background="#dcdcdc"></View>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp750_90"
+            android:padding="1dip"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btn_cancle"
+                android:layout_width="0dip"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@color/white"
+                android:gravity="center"
+                android:text="取消"
+                android:textColor="@color/black" />
+
+            <View
+                android:layout_width="0.1dip"
+                android:layout_height="match_parent"
+                android:background="#dcdcdc"></View>
+
+            <Button
+                android:id="@+id/btn_ok"
+                android:layout_width="0dip"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@color/white"
+                android:gravity="center"
+                android:text="确定"
+                android:textColor="@color/black" />
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dpx160"
+        android:background="@color/cf4f4f4">
+
+        <RelativeLayout
+
+            android:id="@+id/send_layout"
+            android:layout_width="@dimen/dpx130"
+            android:layout_height="@dimen/dpx130"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/dpx20"
+            android:background="@color/white">
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerInParent="true"
+                android:background="@drawable/grey_kuang"
+                android:gravity="center"
+                android:text="@string/send_text"
+                android:textColor="@color/c565656"
+                android:textSize="@dimen/px30" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dpx130"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/dpx20"
+            android:layout_marginRight="@dimen/dpx20"
+            android:layout_toLeftOf="@id/send_layout"
+            android:background="@color/white">
+
+
+            <EditText
+                android:id="@+id/pinglun_comment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/grey_kuang"
+                android:gravity="top|left"
+                android:hint="@string/edit_you_comment"
+                android:padding="@dimen/dpx10"
+                android:textColorHint="@color/cb3b3b3"
+                android:textSize="@dimen/px30" />
+        </RelativeLayout>
+
+
+    </RelativeLayout>
+
+</LinearLayout>

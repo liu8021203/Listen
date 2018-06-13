@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:clipToPadding="false"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical"
+
+    >
+
+    <RelativeLayout
+        android:id="@+id/touxiang_setting"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp750_200"
+        android:background="@drawable/mine_item_background">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/dp750_56"
+            android:text="修改头像"
+            android:textColor="@color/c666666"
+            android:textSize="@dimen/px30" />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/touxiang_image"
+            android:layout_width="@dimen/dp750_146"
+            android:layout_height="@dimen/dp750_146"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/dp750_54"
+            android:src="@drawable/default_tou_image" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp750_20"
+        android:background="@color/cebebeb"></View>
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp750_66"
+        android:gravity="center_vertical"
+        android:paddingLeft="@dimen/dp750_56"
+        android:text="基本资料"
+        android:textColor="@color/c666666"
+        android:textSize="@dimen/px30" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp750_2"
+        android:background="@color/cebebeb"></View>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp750_90"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="@dimen/dp750_146"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="@dimen/dp750_56"
+            android:text="昵    称"
+            android:textColor="@color/c666666"
+            android:textSize="@dimen/px26" />
+
+        <View
+            android:layout_width="@dimen/dp750_1"
+            android:layout_height="@dimen/dp750_30"
+            android:layout_gravity="center_vertical"
+            android:background="@color/cebebeb"></View>
+
+
+        <EditText
+            android:id="@+id/nick_name_text"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="@dimen/dp750_26"
+            android:background="@null"
+            android:gravity="center_vertical|left"
+            android:hint="请填写昵称"
+            android:singleLine="true"
+            android:text="奔放的小强"
+            android:textColor="@color/c666666"
+            android:textSize="@dimen/px26" />
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp750_1"
+        android:layout_marginLeft="@dimen/dp750_26"
+        android:layout_marginRight="@dimen/dp750_26"
+        android:background="@color/cebebeb"></View>
+
+    <LinearLayout
+        android:id="@+id/sex_layout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp750_90"
+        android:background="@drawable/mine_item_background"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="@dimen/dp750_146"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="@dimen/dp750_56"
+            android:text="性   别"
+            android:textColor="@color/c666666"
+            android:textSize="@dimen/px26" />
+
+        <View
+            android:layout_width="@dimen/dp750_1"
+            android:layout_height="@dimen/dp750_30"
+            android:layout_gravity="center_vertical"
+            android:background="@color/cebebeb"></View>
+
+
+        <TextView
+            android:id="@+id/sex_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="@dimen/dp750_26"
+            android:text="男听迷"
+            android:textColor="@color/c666666"
+            android:textSize="@dimen/px26" />
+
+    </LinearLayout>
+
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp750_1"
+        android:layout_marginLeft="@dimen/dp750_26"
+        android:layout_marginRight="@dimen/dp750_26"
+        android:background="@color/cebebeb"></View>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="43dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="@dimen/dp750_146"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="@dimen/dp750_56"
+            android:text="个性签名"
+            android:textColor="@color/c666666"
+            android:textSize="@dimen/px26" />
+
+        <View
+            android:layout_width="@dimen/dp750_1"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_marginTop="14dip"
+            android:layout_marginBottom="14dip"
+            android:background="@color/cebebeb"></View>
+
+
+        <EditText
+            android:id="@+id/person_sign_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:paddingTop="5dip"
+            android:paddingBottom="5dip"
+            android:layout_marginLeft="@dimen/dp750_26"
+            android:paddingRight="30dip"
+            android:background="@null"
+            android:hint="请填写个性签名"
+            android:textColor="@color/c666666"
+            android:textSize="@dimen/px26" />
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp750_1"
+        android:layout_marginLeft="@dimen/dp750_26"
+        android:layout_marginRight="@dimen/dp750_26"
+        android:background="@color/cebebeb"></View>
+
+    <TextView
+        android:id="@+id/clear_user_message"
+        android:layout_width="@dimen/dp750_330"
+        android:layout_height="@dimen/dp750_82"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/dp750_92"
+        android:background="@drawable/change_account_background"
+        android:gravity="center"
+        android:text="退出登录"
+        android:textColor="@color/white"
+        android:textSize="@dimen/px30" />
+
+
+</LinearLayout>

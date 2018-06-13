@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+
+    <RelativeLayout
+        android:id="@+id/my_see_item"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp750_150"
+        android:background="@color/white">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/my_see_image"
+            android:layout_width="@dimen/dp750_105"
+            android:layout_height="@dimen/dp750_105"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/dp750_60"
+            android:src="@drawable/default_tou_image" />
+
+
+        <TextView
+            android:id="@+id/iv_cancle_fouce"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/dp750_52"
+            android:drawablePadding="-10dp"
+            android:drawableTop="@drawable/svg_cancle_focuse"
+            android:gravity="center"
+            android:text="取消关注"
+            android:textColor="@color/ca7b9b6"
+            android:textSize="@dimen/px14" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_toLeftOf="@id/iv_cancle_fouce"
+            android:layout_toRightOf="@id/my_see_image"
+            android:layout_marginRight="10dip"
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+
+            >
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/my_see_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/dp750_20"
+                    android:maxEms="5"
+                    android:singleLine="true"
+                    android:text="我是读书的"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/px28" />
+
+                <LinearLayout
+                    android:id="@+id/ll_anchor_rank"
+                    android:layout_width="@dimen/dp750_120"
+                    android:layout_height="@dimen/dp750_40"
+                    android:layout_marginLeft="@dimen/dp750_10"
+                    android:background="@drawable/blue_kuang"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+
+                    >
+
+                    <ImageView
+                        android:layout_width="@dimen/dp750_20"
+                        android:layout_height="@dimen/dp750_20"
+                        android:src="@drawable/hot_host" />
+
+                    <TextView
+                        android:id="@+id/tv_anchor_rank"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="三星主播"
+                        android:textColor="@color/c28abff"
+                        android:textSize="@dimen/px18" />
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp750_24"
+                android:orientation="horizontal">
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/dp750_34"
+                    android:background="@color/c11ce6b"
+                    android:layout_gravity="center_vertical"
+                    android:gravity="center"
+                    android:padding="1dip"
+                    android:text="新"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/px18" />
+
+                <TextView
+                    android:id="@+id/anchor_last_update"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/dp750_10"
+                    android:lines="1"
+                    android:ellipsize="end"
+                    android:text=""
+                    android:textColor="@color/c9f9f9f"
+                    android:textSize="@dimen/px24"></TextView>
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+
+    </RelativeLayout>
+
+</LinearLayout>

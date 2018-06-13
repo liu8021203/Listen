@@ -1,0 +1,15 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@color/cf99143"></solid>
+    <stroke
+        android:width="1dip"
+        android:color="@color/c28abff" />
+    <!-- 圆角 -->
+    <corners
+        android:bottomLeftRadius="6dp"
+        android:bottomRightRadius="6dp"
+        android:radius="20dp"
+        android:topLeftRadius="6dp"
+        android:topRightRadius="6dp" />
+    <!-- 设置圆角半径 -->
+    <!-- 设置圆角半径 -->
+</shape>

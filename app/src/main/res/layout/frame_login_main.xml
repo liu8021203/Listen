@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.ting.view.RootLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include
+        android:id="@+id/title"
+        layout="@layout/base_title_layout" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/dpx140"
+                android:clickable="true"
+                android:src="@mipmap/welcome_image" />
+
+
+            <EditText
+                android:id="@+id/user_name_editext"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dpx86"
+                android:layout_marginLeft="@dimen/dpx100"
+                android:layout_marginRight="@dimen/dpx100"
+                android:layout_marginTop="@dimen/dpx100"
+                android:background="@mipmap/username_passwprd_background"
+                android:hint="@string/username_text"
+                android:paddingLeft="10dp"
+                android:singleLine="true"
+                android:textColorHint="@color/white"
+                android:textSize="@dimen/px30" />
+
+            <EditText
+                android:id="@+id/password_editext"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dpx86"
+                android:layout_marginLeft="@dimen/dpx100"
+                android:layout_marginRight="@dimen/dpx100"
+                android:layout_marginTop="@dimen/dpx30"
+                android:background="@mipmap/username_passwprd_background"
+                android:hint="@string/password_text"
+                android:paddingLeft="10dp"
+                android:password="true"
+                android:singleLine="true"
+                android:textColorHint="@color/white"
+                android:textSize="@dimen/px30" />
+
+            <TextView
+                android:id="@+id/login_immediately"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dpx86"
+                android:layout_marginLeft="@dimen/dpx100"
+                android:layout_marginRight="@dimen/dpx100"
+                android:layout_marginTop="@dimen/dpx34"
+                android:background="@mipmap/login_immediately_image"
+                android:gravity="center"
+                android:text="@string/login_immediately_text"
+                android:textColor="@color/white"
+                android:textSize="@dimen/px34" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dpx30"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/forget_password_textview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/forgect_password_text"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/dpx28" />
+
+                <View
+                    android:layout_width="@dimen/dpx4"
+                    android:layout_height="@dimen/dpx24"
+                    android:layout_marginLeft="@dimen/dpx18"
+                    android:background="@color/white"></View>
+
+                <TextView
+                    android:id="@+id/to_regist_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/dpx18"
+                    android:text="@string/regist_immediately_text"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/dpx28" />
+
+            </LinearLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dpx30"
+                android:layout_marginTop="@dimen/dpx100">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:src="@mipmap/duan_line" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:text="@string/other_three_login"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/px24" />
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dpx40"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/singn_login"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@mipmap/sina_login" />
+
+                <ImageView
+                    android:id="@+id/qq_login"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/dpx100"
+                    android:src="@mipmap/qq_login" />
+
+                <ImageView
+                    android:id="@+id/weixin_login"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/dpx100"
+                    android:src="@mipmap/weixin_login" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+</com.ting.view.RootLayout>

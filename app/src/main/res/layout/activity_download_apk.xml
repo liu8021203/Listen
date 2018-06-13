@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#bb000000">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="30dip"
+        android:layout_marginRight="30dip"
+        android:layout_gravity="center_vertical">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/dialog_layout_bg"
+            android:layout_marginTop="24dip"
+            android:padding="1dip">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/dp750_90"
+                android:text="发现新版本"
+                android:gravity="center"
+                android:layout_gravity="center_horizontal"
+                android:textColor="#ffac4e"
+                />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dip"
+                android:background="#ffac4e"></View>
+
+            <TextView
+                android:id="@+id/tv_desc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:paddingTop="@dimen/dp750_30"
+                android:paddingBottom="@dimen/dp750_30"
+                android:layout_marginLeft="@dimen/dp750_80"
+                android:layout_marginRight="@dimen/dp750_80"/>
+
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.1dip"
+                android:background="#dcdcdc"></View>
+
+            <LinearLayout
+                android:id="@+id/ll_not_must_download"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp750_90"
+                android:visibility="gone"
+                android:orientation="horizontal">
+                
+                <Button
+                    android:id="@+id/btn_cancle"
+                    android:layout_width="0dip"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:textColor="#ffac4e"
+                    android:background="@color/white"
+                    android:text="稍后更新"/>
+                
+                <View
+                    android:layout_width="0.1dip"
+                    android:layout_height="match_parent"
+                    android:background="#dcdcdc"></View>
+
+                <Button
+                    android:id="@+id/btn_not_must_download"
+                    android:layout_width="0dip"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:textColor="#ffac4e"
+                    android:background="@color/white"
+                    android:text="立即更新"/>
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/ll_must_download"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp750_90"
+                android:orientation="horizontal">
+
+
+                <Button
+                    android:id="@+id/btn_must_donwload"
+                    android:layout_width="0dip"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:textColor="#ffac4e"
+                    android:background="@color/white"
+                    android:text="立即更新"/>
+            </LinearLayout>
+
+
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/iv_apk"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/apk_donwload"/>
+
+    </RelativeLayout>
+
+</LinearLayout>

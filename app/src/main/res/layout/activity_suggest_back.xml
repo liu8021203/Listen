@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/actionbarColor"
+              android:orientation="vertical">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp750_226"
+        android:background="@color/white"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="@dimen/dp750_30"
+            android:layout_height="@dimen/dp750_30"
+            android:layout_marginLeft="@dimen/dp750_44"
+            android:layout_marginTop="@dimen/dp750_28"
+            android:src="@drawable/suggest_bi"
+
+            />
+
+        <EditText
+            android:id="@+id/et_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@null"
+            android:gravity="top"
+            android:hint="您的建议是我们不断努力的动力..."
+            android:maxLength="100"
+            android:paddingLeft="@dimen/dp750_16"
+            android:paddingTop="@dimen/dp750_26"
+            android:textColor="@color/c666666"
+            android:textColorHint="@color/c9f9f9f"
+            android:textSize="@dimen/px26"/>
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp750_90"
+        android:layout_marginTop="@dimen/dp750_28"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="@dimen/dp750_230"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/dp750_40"
+            android:gravity="center"
+            android:orientation="horizontal"
+            >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="QQ"
+                android:textColor="@color/c666666"
+                android:textSize="@dimen/px26"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="(选填)"
+                android:textColor="@color/c9f9f9f"
+                android:textSize="@dimen/px26"/>
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="@dimen/dp750_1"
+            android:layout_height="@dimen/dp750_30"
+            android:layout_marginLeft="@dimen/dp750_20"
+            android:background="@color/cdcdcdc"></View>
+
+        <EditText
+            android:id="@+id/et_qq"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/dp750_20"
+            android:background="@null"
+            android:hint="请输入您的QQ"
+            android:inputType="number"
+            android:singleLine="true"
+            android:textColor="@color/c666666"
+            android:textColorHint="@color/c9f9f9f"
+            android:textSize="@dimen/px26"/>
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp750_1"
+        android:layout_marginLeft="@dimen/dp750_26"
+        android:layout_marginRight="@dimen/dp750_26"
+        android:background="@color/cdcdcdc"></View>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp750_90"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="@dimen/dp750_230"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/dp750_40"
+            android:gravity="center"
+            android:orientation="horizontal"
+            >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:text="邮箱"
+                android:textColor="@color/c666666"
+                android:textSize="@dimen/px26"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="(选填)"
+                android:textColor="@color/c9f9f9f"
+                android:textSize="@dimen/px26"/>
+
+        </LinearLayout>
+
+
+        <View
+            android:layout_width="@dimen/dp750_1"
+            android:layout_height="@dimen/dp750_30"
+            android:layout_marginLeft="@dimen/dp750_20"
+            android:background="@color/cdcdcdc"></View>
+
+        <EditText
+            android:id="@+id/et_email"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/dp750_20"
+            android:background="@null"
+            android:hint="请输入您的邮箱"
+            android:singleLine="true"
+            android:textColor="@color/c666666"
+            android:textColorHint="@color/c9f9f9f"
+            android:textSize="@dimen/px26"/>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_sumbit"
+        android:layout_width="@dimen/dp750_334"
+        android:layout_height="@dimen/dp750_84"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/dp750_120"
+        android:background="@drawable/login_background"
+        android:gravity="center"
+        android:text="提交反馈"
+        android:textColor="@color/white"
+        android:textSize="@dimen/px30"/>
+
+
+</LinearLayout>

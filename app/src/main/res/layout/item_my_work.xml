@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/my_work_book_item"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dpx190">
+
+        <RelativeLayout
+            android:id="@+id/my_work_image_layout"
+            android:layout_width="@dimen/dpx132"
+            android:layout_height="@dimen/dpx132"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/dpx42"
+            android:background="@mipmap/blue_my_work_image">
+
+            <ImageView
+                android:id="@+id/my_work_image"
+                android:layout_width="@dimen/dpx118"
+                android:layout_height="@dimen/dpx118"
+                android:layout_centerInParent="true"
+                android:scaleType="fitXY" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/dpx34"
+            android:layout_toRightOf="@id/my_work_image_layout"
+            android:gravity="center_vertical"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/my_work_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/c7f7f7f"
+                android:textSize="@dimen/px30"></TextView>
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dpx40">
+
+                <TextView
+                    android:id="@+id/my_work_listen_numbe"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/c7e7e7e"
+                    android:textSize="@dimen/px24" />
+
+                <TextView
+                    android:id="@+id/my_work_listen_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="@dimen/dpx66"
+                    android:textColor="@color/c7e7e7e"
+                    android:textSize="@dimen/px24" />
+            </RelativeLayout>
+        </LinearLayout>
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dpx4"
+        android:background="@color/ce9e9e9"></View>
+</LinearLayout>

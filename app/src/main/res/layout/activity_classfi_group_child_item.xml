@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:minHeight="@dimen/dp750_220"
+        android:orientation="horizontal">
+
+
+        <LinearLayout
+            android:id="@+id/ll_left"
+            android:layout_width="@dimen/dp750_190"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/class_item_image"
+                android:layout_width="@dimen/dp750_80"
+                android:layout_height="@dimen/dp750_80"
+                android:layout_alignParentLeft="true"
+                android:scaleType="fitXY"
+                android:src="@drawable/svg_class_five" />
+
+
+            <TextView
+                android:id="@+id/class_data_item"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp750_20"
+                android:text="有声小说"
+                android:textColor="@color/c565656"
+                android:textSize="@dimen/px24"
+
+                />
+
+
+        </LinearLayout>
+
+        <View
+            android:id="@+id/class_view"
+            android:layout_width="@dimen/dp750_1"
+            android:layout_height="@dimen/dp750_154"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/ll_left"
+            android:background="#dcdcdc"></View>
+
+
+        <com.ting.view.LeftGridView
+            android:id="@+id/class_leftgridview_sort"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/dpx16"
+            android:layout_toRightOf="@id/class_view"
+            android:cacheColorHint="#00000000"
+            android:listSelector="@drawable/select_btn_sort_bg_1"
+            android:numColumns="3"
+            android:orientation="vertical"
+            android:scrollbars="none"></com.ting.view.LeftGridView>
+
+
+    </RelativeLayout>
+
+</LinearLayout>

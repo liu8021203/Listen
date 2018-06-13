@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:clipToPadding="false"
+    android:fitsSystemWindows="true"
+    android:background="@color/white"
+    >
+
+    <include
+        android:id="@+id/title"
+        layout="@layout/base_title_layout" />
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+
+        <com.ting.view.LeftGridView
+            android:id="@+id/home_more_gried"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_centerInParent="true"
+            android:background="@color/c000"
+            android:cacheColorHint="#00000000"
+            android:listSelector="@drawable/select_btn_sort_bg_1"
+            android:numColumns="3"
+            android:orientation="vertical"></com.ting.view.LeftGridView>
+    </ScrollView>
+</LinearLayout>

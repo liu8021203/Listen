@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/dpx30"
+        android:layout_marginRight="@dimen/dpx30"
+        android:background="@drawable/setting_photo_dialog_background"
+        android:orientation="vertical">
+
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/dpx36"
+            android:layout_marginRight="@dimen/dpx36"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dip"
+            android:text="温馨提示"
+            android:textSize="16sp"
+            android:textColor="@color/c000000"/>
+
+
+        <TextView
+            android:id="@+id/tv_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:layout_marginTop="15dip"
+            android:layout_marginLeft="@dimen/dpx36"
+            android:layout_marginRight="@dimen/dpx36"
+            android:layout_gravity="center_horizontal"
+            android:textSize="14sp"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.1dip"
+            android:background="@color/line_grey"
+            android:layout_marginTop="20dip"></View>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dip"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tv_left"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/no_text"
+                android:textColor="@color/c007eff"
+                android:textSize="@dimen/px30"/>
+
+            <View
+                android:id="@+id/line"
+                android:layout_width="0.1dip"
+                android:layout_height="match_parent"
+                android:background="@color/line_grey"></View>
+
+            <TextView
+                android:id="@+id/tv_right"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/yes_text"
+                android:textColor="@color/c007eff"
+                android:textSize="@dimen/px30"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</RelativeLayout>

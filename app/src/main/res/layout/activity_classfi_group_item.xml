@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dpx70">
+
+        <ImageView
+            android:id="@+id/blue_shu_line"
+            android:layout_width="@dimen/dpx6"
+            android:layout_height="@dimen/dpx24"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/dpx24"
+            android:src="@mipmap/blue_shu_line" />
+
+        <TextView
+            android:id="@+id/class_data_item"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/dpx34"
+            android:layout_toRightOf="@id/blue_shu_line"
+            android:text=""
+            android:textColor="@color/c4d4d4d"
+            android:textSize="@dimen/px30"
+
+            >
+
+        </TextView>
+
+        <LinearLayout
+            android:id="@+id/class_more_click_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/dpx26"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/more_text"
+                android:textColor="@color/c14acf0"
+                android:textSize="@dimen/px24" />
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/dpx14"
+                android:src="@mipmap/blue_right_arrow"/>
+        </LinearLayout>
+    </RelativeLayout>
+</LinearLayout>

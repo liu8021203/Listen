@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:clipToPadding="false"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
+
+    <include
+        android:id="@+id/title"
+        layout="@layout/base_title_layout" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp750_90"
+        android:layout_marginTop="@dimen/dp750_30"
+        android:orientation="horizontal"
+
+        >
+
+        <TextView
+            android:layout_width="@dimen/dp750_248"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical|right"
+            android:text="个人代表作品:"
+            android:textColor="@color/black"
+            android:textSize="@dimen/px28" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/dp750_18"
+            android:layout_marginRight="@dimen/dp750_38"
+            android:background="@drawable/to_anchor_background"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="@dimen/dp750_60"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="@dimen/dp750_8"
+                android:gravity="center"
+                android:text="*"
+                android:textColor="@color/cdadada"
+                android:textSize="@dimen/px30" />
+
+            <EditText
+                android:id="@+id/ed_anchor_work"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@null"
+                android:hint="(必填)"
+                android:singleLine="true"
+                android:textColor="@color/black"
+                android:textColorHint="@color/cdadada"
+                android:textSize="@dimen/px30" />
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp750_90"
+        android:layout_marginTop="@dimen/dp750_20"
+        android:orientation="horizontal"
+
+        >
+
+        <TextView
+            android:layout_width="@dimen/dp750_248"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical|right"
+            android:text="所属职业:"
+            android:textColor="@color/black"
+            android:textSize="@dimen/px28" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/dp750_18"
+            android:layout_marginRight="@dimen/dp750_38"
+            android:background="@drawable/to_anchor_background"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="@dimen/dp750_60"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="@dimen/dp750_8"
+                android:gravity="center"
+                android:textColor="@color/cdadada"
+                android:textSize="@dimen/px30" />
+
+            <EditText
+                android:id="@+id/ed_anchor_job"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@null"
+                android:hint="(选填)"
+                android:singleLine="true"
+                android:textColor="@color/black"
+                android:textColorHint="@color/cdadada"
+                android:textSize="@dimen/px30" />
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp750_90"
+        android:layout_marginTop="@dimen/dp750_20"
+        android:orientation="horizontal"
+
+        >
+
+        <TextView
+            android:layout_width="@dimen/dp750_248"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical|right"
+            android:text="参与的节目录制:"
+            android:textColor="@color/black"
+            android:textSize="@dimen/px28" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/dp750_18"
+            android:layout_marginRight="@dimen/dp750_38"
+            android:background="@drawable/to_anchor_background"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="@dimen/dp750_60"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="@dimen/dp750_8"
+                android:gravity="center"
+                android:textColor="@color/cdadada"
+                android:textSize="@dimen/px30" />
+
+            <EditText
+                android:id="@+id/ed_toanchor_jonIn"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@null"
+                android:hint="(选填)"
+                android:singleLine="true"
+                android:textColor="@color/black"
+                android:textColorHint="@color/cdadada"
+                android:textSize="@dimen/px30" />
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp750_90"
+        android:layout_marginTop="@dimen/dp750_20"
+        android:orientation="horizontal"
+
+        >
+
+        <TextView
+            android:layout_width="@dimen/dp750_248"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical|right"
+            android:text="联系方式:"
+            android:textColor="@color/black"
+            android:textSize="@dimen/px28" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/dp750_18"
+            android:layout_marginRight="@dimen/dp750_38"
+            android:background="@drawable/to_anchor_background"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="@dimen/dp750_60"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="@dimen/dp750_8"
+                android:gravity="center"
+                android:text="*"
+                android:textColor="@color/cdadada"
+                android:textSize="@dimen/px30" />
+
+            <EditText
+                android:id="@+id/ed_toanchor_phone"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@null"
+                android:hint="(必填)"
+                android:singleLine="true"
+                android:textColor="@color/black"
+                android:textColorHint="@color/cdadada"
+                android:textSize="@dimen/px30"
+                android:inputType="phone"
+                />
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp750_90"
+        android:layout_marginTop="@dimen/dp750_20"
+        android:orientation="horizontal"
+
+        >
+
+        <TextView
+            android:layout_width="@dimen/dp750_248"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical|right"
+            android:text="推荐人:"
+            android:textColor="@color/black"
+            android:textSize="@dimen/px28" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/dp750_18"
+            android:layout_marginRight="@dimen/dp750_38"
+            android:background="@drawable/to_anchor_background"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="@dimen/dp750_60"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="@dimen/dp750_8"
+                android:gravity="center"
+                android:textColor="@color/cdadada"
+                android:textSize="@dimen/px30" />
+
+            <EditText
+                android:id="@+id/ed_toanchor_recommend"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@null"
+                android:hint="(选填)"
+                android:singleLine="true"
+                android:textColor="@color/black"
+                android:textColorHint="@color/cdadada"
+                android:textSize="@dimen/px30" />
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_toanchor_submit"
+        android:layout_width="@dimen/dp750_300"
+        android:layout_height="@dimen/dp750_80"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/dp750_50"
+        android:background="@drawable/login_background"
+        android:gravity="center"
+        android:text="提交"
+        android:textColor="@color/white"
+        android:textSize="@dimen/px30" />
+
+
+</LinearLayout>

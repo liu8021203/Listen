@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:clipToPadding="false"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/actionbarHeight"
+        android:background="@color/actionbarColor">
+
+
+        <ImageView
+            android:id="@+id/search_left_image"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="@dimen/dp750_30"
+            android:src="@mipmap/back" />
+
+
+        <EditText
+            android:id="@+id/search_editext"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp750_60"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/dp750_30"
+            android:layout_marginRight="@dimen/dp750_100"
+            android:layout_toRightOf="@id/search_left_image"
+            android:background="@drawable/search_edit_bg"
+            android:drawableLeft="@drawable/vector_search_edit"
+            android:drawablePadding="@dimen/dp750_10"
+            android:hint="@string/search_edit_hit_text"
+            android:imeOptions="actionSearch"
+            android:paddingLeft="@dimen/dp750_30"
+            android:singleLine="true"
+            android:textColorHint="#b9b9b9"
+            android:textSize="12sp" />
+
+
+        <TextView
+            android:id="@+id/tv_search"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="搜索"
+            android:textColor="#666666"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:paddingRight="10dip"
+            android:paddingLeft="10dip"/>
+
+
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/rl_layout_hot"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tv_hot_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/dp750_36"
+            android:layout_marginTop="@dimen/dp750_26"
+            android:text="热门搜索"
+            android:textColor="#565656"
+            android:textSize="14sp" />
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/dp750_12"
+            android:layout_marginTop="@dimen/dp750_14"
+            android:layout_toRightOf="@+id/tv_hot_status"
+            android:background="@drawable/search_hot_text"
+            android:padding="@dimen/dp750_5"
+            android:text="热"
+            android:textColor="@color/white"
+            android:textSize="9sp" />
+
+    </RelativeLayout>
+
+    <GridView
+        android:id="@+id/gridview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="none"
+        android:layout_marginLeft="@dimen/dp750_46"
+        android:layout_marginRight="@dimen/dp750_46"
+        android:layout_marginTop="@dimen/dp750_26"
+        android:background="@drawable/search_gridview_bg"
+        android:listSelector="@android:color/transparent"
+        android:numColumns="3"></GridView>
+
+    <ListView
+        android:id="@+id/search_lsitView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:divider="@null"
+        android:listSelector="@android:color/transparent"
+        android:visibility="gone"
+        android:scrollbars="none">
+
+    </ListView>
+
+</LinearLayout>

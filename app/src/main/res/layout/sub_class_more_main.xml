@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dpx82"
+        android:orientation="horizontal">
+
+        <RelativeLayout
+            android:id="@+id/class_new_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/class_new_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="@string/new_text"
+                android:textColor="@color/c14acf0"
+                android:textSize="@dimen/px26" />
+
+            <View
+                android:id="@+id/class_new_line"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp750_4"
+                android:layout_alignParentBottom="true"
+                android:background="@color/c14acf0">
+
+            </View>
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:id="@+id/class_hot_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/class_hot_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="@string/hot_text"
+                android:textColor="@color/caaaaaa"
+                android:textSize="@dimen/px26" />
+
+            <View
+                android:id="@+id/class_hot_line"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp750_4"
+                android:layout_alignParentBottom="true"
+                android:background="@color/c14acf0"
+                android:visibility="gone">
+
+            </View>
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:id="@+id/class_recommend_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/class_recommend_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="@string/recommend_text"
+                android:textColor="@color/caaaaaa"
+                android:textSize="@dimen/px26" />
+
+            <View
+                android:id="@+id/class_recommend_line"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp750_4"
+                android:layout_alignParentBottom="true"
+                android:background="@color/c14acf0"
+                android:visibility="gone">
+
+            </View>
+        </RelativeLayout>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp750_1"
+        android:background="@color/cdcdcdc"></View>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/class_more_main_viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"></android.support.v4.view.ViewPager>
+
+
+</LinearLayout>

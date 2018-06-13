@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/actionbarColor"
+    android:orientation="vertical">
+
+
+
+
+
+    <LinearLayout
+        android:layout_below="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <RelativeLayout
+
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp750_200"
+            android:background="@color/white">
+
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/person_touxiang"
+                android:layout_width="@dimen/dp750_134"
+                android:layout_height="@dimen/dp750_134"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/dp750_42"
+                android:layout_marginTop="@dimen/dp750_40"
+                android:scaleType="centerCrop"
+                android:src="@drawable/default_tou_image"></de.hdodenhof.circleimageview.CircleImageView>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="@dimen/dp750_30"
+                android:layout_toRightOf="@id/person_touxiang"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+
+                <TextView
+                    android:id="@+id/tv_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:lines="1"
+                    android:drawablePadding="5dp"
+                    android:drawableRight="@mipmap/vip"
+                    android:gravity="center_vertical"
+                    android:text="@string/zhanghao"
+                    android:textColor="@color/c656565"
+                    android:textSize="@dimen/px26" />
+
+
+                <TextView
+                    android:id="@+id/tv_money"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="30dp"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:text=""
+                    android:textColor="@color/c656565"
+                    android:textSize="@dimen/px26" />
+
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+
+        <LinearLayout
+            android:id="@+id/to_pay_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp750_20"
+            android:paddingBottom="10dip"
+            android:paddingTop="10dip"
+            android:background="@color/white"
+            android:orientation="vertical">
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="听豆充值"
+                android:textColor="@color/c656565" />
+
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recycle_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dip"
+                android:layout_marginRight="10dip"
+                android:layout_marginTop="10dip"></android.support.v7.widget.RecyclerView>
+
+
+        </LinearLayout>
+
+
+        <Button
+            android:id="@+id/btn_vip"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/button_corners8_ff3000"
+            android:layout_margin="20dp"
+            android:textColor="@color/white"
+            style="?android:attr/borderlessButtonStyle"
+            android:text="成为VIP"/>
+
+    </LinearLayout>
+
+</RelativeLayout>

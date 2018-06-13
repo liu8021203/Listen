@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:orientation="vertical">
+
+
+    <RelativeLayout
+        android:id="@+id/rl_layout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp750_100"
+        android:layout_marginLeft="@dimen/dp750_26"
+        android:layout_marginRight="@dimen/dp750_26">
+
+
+        <ImageView
+            android:id="@+id/iv_mark"
+            android:layout_width="40dip"
+            android:layout_height="40dip"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"/>
+
+        <com.ting.view.ColorfulRingProgressView
+            android:id="@+id/progress"
+            android:layout_width="40dip"
+            android:layout_height="40dip"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:visibility="gone"
+            />
+
+
+
+        <com.ting.view.AnimView
+            android:id="@+id/anim_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="6dip"
+            android:visibility="gone"/>
+
+
+
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#333333"
+            android:textSize="14sp"
+            android:layout_marginRight="10dip"
+            android:layout_marginLeft="6dip"
+            android:lines="1"
+            android:ellipsize="end"
+            android:layout_toRightOf="@+id/anim_view"
+            android:layout_centerVertical="true"/>
+
+
+
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.1dip"
+        android:background="#dcdcdc"
+        android:layout_marginLeft="@dimen/dp750_26"
+        android:layout_marginRight="@dimen/dp750_26"></View>
+
+
+</LinearLayout>
