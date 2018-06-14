@@ -1,5 +1,6 @@
 package com.ting.base;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
@@ -10,12 +11,14 @@ import android.view.View;
 import android.view.ViewStub;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ting.R;
 import com.ting.play.BookDetailsActivity;
 import com.ting.util.UtilIntent;
+import com.ting.util.UtilPixelTransfrom;
 import com.ting.view.LoadingDialog;
 import com.ting.view.MyToast;
 import com.umeng.analytics.MobclickAgent;
@@ -66,12 +69,15 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
      * @param layoutResID
      */
     protected void setCustomActionBar(@LayoutRes int layoutResID){
-        flActionbar.removeAllViews();
-        LayoutInflater.from(this).inflate(layoutResID, flActionbar);
+        if(flActionbar != null) {
+            flActionbar.removeAllViews();
+            LayoutInflater.from(this).inflate(layoutResID, flActionbar);
+        }
     }
 
 
 
+    @SuppressLint("ResourceType")
     @Override
     public void setContentView(@LayoutRes int layoutResID) {
         super.setContentView(R.layout.activity_base);
@@ -81,7 +87,10 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
             if(stubActionBar == null){
                 stubActionBar =findViewById(R.id.view_stub_actionbar);
                 flActionbar = (FrameLayout) stubActionBar.inflate();
+                flActionbar.setId(999);
             }
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) flContent.getLayoutParams();
+            params.addRule(RelativeLayout.BELOW, flActionbar.getId());
             LayoutInflater.from(this).inflate(R.layout.actionbar_layout, flActionbar);
             mTvTitle = flActionbar.findViewById(R.id.tv_actionbar_title);
             mIvLeft = flActionbar.findViewById(R.id.iv_left);
@@ -180,6 +189,12 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
         if(stubError == null){
             stubError = findViewById(R.id.view_stub_error);
             flError = (FrameLayout) stubError.inflate();
+        }else{
+            flError.setVisibility(View.VISIBLE);
+        }
+        if(flActionbar != null){
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) flError.getLayoutParams();
+            params.addRule(RelativeLayout.BELOW, flActionbar.getId());
         }
         LayoutInflater.from(this).inflate(R.layout.base_empty_layout, flError);
     }
@@ -190,6 +205,12 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
         if(stubError == null){
             stubError = findViewById(R.id.view_stub_error);
             flError = (FrameLayout) stubError.inflate();
+        }else{
+            flError.setVisibility(View.VISIBLE);
+        }
+        if(flActionbar != null){
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) flError.getLayoutParams();
+            params.addRule(RelativeLayout.BELOW, flActionbar.getId());
         }
         LayoutInflater.from(this).inflate(R.layout.base_empty_layout, flError);
         TextView textView = flError.findViewById(R.id.tv_desc);

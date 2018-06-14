@@ -27,6 +27,7 @@ import com.ting.util.UtilRetrofit;
 import com.ting.util.UtilSPutil;
 import com.umeng.socialize.UMAuthListener;
 import com.umeng.socialize.UMShareAPI;
+import com.umeng.socialize.UMShareConfig;
 import com.umeng.socialize.bean.SHARE_MEDIA;
 
 import org.greenrobot.eventbus.EventBus;
@@ -61,6 +62,9 @@ public class LoginMainActivity extends BaseActivity implements UtilPermission.Pe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.new_login);
         mShareAPI = UMShareAPI.get(this);
+        UMShareConfig config = new UMShareConfig();
+        config.isNeedAuthOnGetUserInfo(true);
+        UMShareAPI.get(mActivity).setShareConfig(config);
     }
 
     @Override

@@ -404,8 +404,15 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.ItemVi
                         return;
                     }
                     if (TokenManager.getInfo(activity).getIsvip() == 0) {
-                        activity.showToast("亲，批量下载属于会员功能");
-                        UtilIntent.intentDIY(activity, MyDouActivity.class);
+                        ListenDialog.makeListenDialog(activity, "提示", "亲，章节下载属于会员功能", true, "取消", true, "成为VIP", new ListenDialog.CallBackListener() {
+                            @Override
+                            public void callback(ListenDialog dialog, int mark) {
+                                dialog.dismiss();
+                                if(mark == ListenDialog.RIGHT){
+                                    UtilIntent.intentDIY(activity, MyDouActivity.class);
+                                }
+                            }
+                        }).show();
                         return;
                     }
                     Intent intent = new Intent(activity, DownLoadService.class);

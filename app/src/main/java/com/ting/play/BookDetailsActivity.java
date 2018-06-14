@@ -1,5 +1,6 @@
 package com.ting.play;
 
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -299,8 +300,15 @@ public class BookDetailsActivity extends BaseActivity implements View.OnClickLis
                         return;
                     }
                     if (TokenManager.getInfo(mActivity).getIsvip() == 0) {
-                        showToast("亲，批量下载属于会员功能");
-                        UtilIntent.intentDIY(mActivity, MyDouActivity.class);
+                        ListenDialog.makeListenDialog(mActivity, "提示", "亲，批量下载属于会员功能", true, "取消", true, "成为VIP", new ListenDialog.CallBackListener() {
+                            @Override
+                            public void callback(ListenDialog dialog, int mark) {
+                                dialog.dismiss();
+                                if(mark == ListenDialog.RIGHT){
+                                    UtilIntent.intentDIY(mActivity, MyDouActivity.class);
+                                }
+                            }
+                        }).show();
                         return;
                     }
                     DownloadMoreDialog dialog = new DownloadMoreDialog(this);

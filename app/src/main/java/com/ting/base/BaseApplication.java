@@ -79,6 +79,7 @@ public class BaseApplication extends Application {
 
         UMConfigure.setLogEnabled(true);
         UMConfigure.init(this, "5165707656240b56d6011d7f", "listen", UMConfigure.DEVICE_TYPE_PHONE, "");
+
         //微信 appid appsecret
         PlatformConfig.setWeixin("wx65ef305f9d0ebdec", "b26f6c4da76885d534673cbc04a08a48");
         //新浪微博 appkey appsecret
