@@ -17,7 +17,12 @@ import com.ting.bean.BaseResult;
 import com.ting.bean.anchor.LiWuResult;
 import com.ting.base.BaseObserver;
 import com.ting.bean.play.CommentDate;
+import com.ting.bean.vo.BookDataVO;
+import com.ting.bean.vo.CommentListVO;
+import com.ting.bean.vo.GiftVO;
+import com.ting.bean.vo.HostInfoVO;
 import com.ting.common.AppData;
+import com.ting.common.GiftManager;
 import com.ting.common.TokenManager;
 import com.ting.common.http.HttpService;
 import com.ting.login.LoginMainActivity;
@@ -34,7 +39,9 @@ import com.ting.util.UtilIntent;
 import com.ting.util.UtilListener;
 import com.ting.util.UtilRetrofit;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -49,52 +56,45 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private static final int SECOND = 2;
     private BookDetailsActivity activity;
     private LayoutInflater inflater;
-    private PlayIntroduceSubView subview;
-    private List<CommentDate> result;
-    private CommentResult mResult;
+    private List<CommentListVO> data;
+    private BookDataVO mBookDataVO;
+    private HostInfoVO mHostInfoVO;
     private ItemOnClickListener mListener;
-    private int bookId;
     private int commentoff = 1;
     private boolean isOpen = false;
+    private String bookId = null;
 
-    public CommentAdapter(BookDetailsActivity activity, PlayIntroduceSubView playIntroduceSubView) {
+    public CommentAdapter(BookDetailsActivity activity) {
         this.activity = activity;
-        this.subview = playIntroduceSubView;
         inflater = inflater.from(activity);
         mListener = new ItemOnClickListener();
     }
 
-    public void setResult(CommentResult result) {
-        mResult = result;
+    public void setBookDataVO(BookDataVO bookDataVO) {
+        mBookDataVO = bookDataVO;
     }
 
-    public void addData(List<CommentDate> result) {
-        if (this.result != null) {
-            this.result.addAll(result);
-        }
-    }
-
-    public void addVO(CommentDate vo) {
-        if (this.result != null) {
-            this.result.add(0, vo);
-        }
-    }
-
-    public void setBookId(int bookId) {
+    public void setBookId(String bookId) {
         this.bookId = bookId;
     }
 
-    public void setResult(List<CommentDate> result) {
-        this.result = result;
+    public void addData(List<CommentListVO> data) {
+        if (this.data != null) {
+            this.data.addAll(data);
+        }
     }
 
-    public List<CommentDate> getResult() {
-        return result;
+    public void addVO(CommentListVO vo) {
+        if (this.data != null) {
+            this.data.add(0, vo);
+        }
     }
 
-    public void setCommentoff(int commentoff) {
-        this.commentoff = commentoff;
+    public void setData(List<CommentListVO> data) {
+        this.data = data;
     }
+
+
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -114,32 +114,18 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         int type = getItemViewType(position);
         if (type == SECOND) {
             ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
-            CommentDate vo = result.get(position - 1);
-            UtilGlide.loadHeadImg(activity, vo.getThumb(), itemViewHolder.comment_touxiang);
-            itemViewHolder.comment_user_name.setText(vo.getName());
-            itemViewHolder.comment_context.setText(vo.getString());
-            itemViewHolder.mTvRankName.setText(vo.getRankname());
-            itemViewHolder.mTvTime.setText(UtilDate.getDifferNowTime(vo.getTime(), System.currentTimeMillis() / 1000));
-            if (commentoff == 0) {
-                itemViewHolder.mTvReply.setVisibility(View.VISIBLE);
-                if (!TextUtils.isEmpty(vo.getReply_num())) {
-                    int num = Integer.valueOf(vo.getReply_num());
-                    if (num == 0) {
-                        itemViewHolder.mTvReply.setText("回复");
-                    } else {
-                        itemViewHolder.mTvReply.setText(num + "条回复");
-                    }
-                } else {
-                    itemViewHolder.mTvReply.setText("回复");
-                }
-                itemViewHolder.mTvReply.setTag(vo);
-                itemViewHolder.mTvReply.setOnClickListener(mListener);
-            } else {
-                itemViewHolder.mTvReply.setVisibility(View.GONE);
+            CommentListVO vo = data.get(position - 1);
+            UtilGlide.loadHeadImg(activity, vo.getUserImage(), itemViewHolder.comment_touxiang);
+            if(!TextUtils.isEmpty(vo.getCommentsName())) {
+                itemViewHolder.comment_user_name.setText(vo.getCommentsName());
+            }else{
+                itemViewHolder.comment_user_name.setText("佚名");
             }
+            itemViewHolder.comment_context.setText(vo.getCommentsContent());
+            itemViewHolder.mTvTime.setText(vo.getTime());
         } else {
             HeaderViewHolder headerViewHolder = (HeaderViewHolder) holder;
-            if (mResult.isFavorite()) {
+            if (mBookDataVO.isCollect()) {
                 headerViewHolder.tvCollect.setCompoundDrawablesWithIntrinsicBounds(R.mipmap.bookdetails_collect, 0, 0, 0);
             } else {
                 headerViewHolder.tvCollect.setCompoundDrawablesWithIntrinsicBounds(R.mipmap.bookdetails_uncollect, 0, 0, 0);
@@ -154,7 +140,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public int getItemCount() {
-        return 1 + (result == null ? 0 : result.size());
+        return 1 + (data == null ? 0 : data.size());
     }
 
 
@@ -171,18 +157,14 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         private CircleImageView comment_touxiang;//头像
         private TextView comment_user_name;//评论名
         private TextView comment_context;//评论内容
-        private TextView mTvRankName;
         private TextView mTvTime;
-        private TextView mTvReply;
 
         public ItemViewHolder(View itemView) {
             super(itemView);
-            comment_touxiang = (CircleImageView) itemView.findViewById(R.id.comment_touxiang);
-            comment_user_name = (TextView) itemView.findViewById(R.id.comment_user_name);
-            comment_context = (TextView) itemView.findViewById(R.id.comment_context);
-            mTvTime = (TextView) itemView.findViewById(R.id.tv_time);
-            mTvReply = (TextView) itemView.findViewById(R.id.tv_reply);
-            mTvRankName = (TextView) itemView.findViewById(R.id.tv_rank_name);
+            comment_touxiang = itemView.findViewById(R.id.comment_touxiang);
+            comment_user_name = itemView.findViewById(R.id.comment_user_name);
+            comment_context = itemView.findViewById(R.id.comment_context);
+            mTvTime = itemView.findViewById(R.id.tv_time);
         }
     }
 
@@ -207,7 +189,6 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         //打赏
         private RelativeLayout rlReward;
 
-        private TextView tvShare;
         private TextView tvCollect;
 
         public HeaderViewHolder(View itemView) {
@@ -215,16 +196,16 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             ivCover = itemView.findViewById(R.id.iv_cover);
             tvTitle = itemView.findViewById(R.id.tv_title);
             tvAnchor = itemView.findViewById(R.id.tv_anchor);
-            tvIntroduce = (TextView) itemView.findViewById(R.id.tv_introduce);
-            ivOpenClose = (ImageView) itemView.findViewById(R.id.iv_open_close);
+            tvIntroduce =  itemView.findViewById(R.id.tv_introduce);
+            ivOpenClose =  itemView.findViewById(R.id.iv_open_close);
             vLine = itemView.findViewById(R.id.v_line);
-            llRewardCollect = (LinearLayout) itemView.findViewById(R.id.ll_reward_collect);
-            rlCollect = (RelativeLayout) itemView.findViewById(R.id.rl_collect);
+            llRewardCollect =  itemView.findViewById(R.id.ll_reward_collect);
+            rlCollect =  itemView.findViewById(R.id.rl_collect);
             rlCollect.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     ListenBookDialog dialog = new ListenBookDialog(activity);
-                    dialog.setData(mResult.getTingshuka());
+                    dialog.setData(activity.getCardData());
                     dialog.show();
                 }
             });
@@ -236,27 +217,24 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     if (!TokenManager.isLogin(activity)) {
                         activity.intent(LoginMainActivity.class);
                     } else {
-                        if (AppData.liWuResult != null) {
+                        if (GiftManager.getGifts() != null) {
                             GiftDialog dialog = new GiftDialog(activity);
-                            dialog.setBookId(activity.getBookId());
+                            dialog.setHostId(mBookDataVO.getHostId());
                             dialog.show();
                         } else {
-                            BaseObserver baseObserver = new BaseObserver<LiWuResult>(activity) {
+                            BaseObserver baseObserver = new BaseObserver<BaseResult<List<GiftVO>>>(activity, BaseObserver.MODEL_SHOW_DIALOG_TOAST) {
                                 @Override
-                                public void success(LiWuResult data) {
+                                public void success(BaseResult<List<GiftVO>> data) {
                                     super.success(data);
-                                    AppData.liWuResult = data;
+                                    GiftManager.setGifts(data.getData());
                                     GiftDialog dialog = new GiftDialog(activity);
-                                    dialog.setBookId(activity.getBookId());
+                                    dialog.setHostId(mBookDataVO.getHostId());
                                     dialog.show();
                                 }
 
-                                @Override
-                                public void error() {
-                                }
                             };
                             activity.mDisposable.add(baseObserver);
-                            UtilRetrofit.getInstance().create(HttpService.class).getRewardSymbol().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
+                            UtilRetrofit.getInstance().create(HttpService.class).gift().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
                         }
                     }
                 }
@@ -276,10 +254,10 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     }
                 }
             });
-            UtilGlide.loadImg(activity, mResult.getThumb(), ivCover);
-            tvTitle.setText(mResult.getTitle());
-            tvAnchor.setText("主播：" + mResult.getBroadercaster());
-            tvIntroduce.setText("\t" + mResult.getTips());
+            UtilGlide.loadImg(activity, mBookDataVO.getBookImage(), ivCover);
+            tvTitle.setText(mBookDataVO.getBookTitle());
+            tvAnchor.setText("主播：" + mBookDataVO.getBookAnchor());
+            tvIntroduce.setText("\t" + mBookDataVO.getBookDesc());
 
             int line = tvIntroduce.getMaxLines();
             if (line <= 3) {
@@ -287,89 +265,57 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             } else {
                 tvIntroduce.setMaxLines(3);
             }
-            if (mResult.getTingshuka() != null && mResult.getTingshuka().size() > 0) {
+            if (activity.getCardData() != null && !activity.getCardData().isEmpty()) {
                 rlCollect.setVisibility(View.VISIBLE);
             } else {
                 rlCollect.setVisibility(View.GONE);
                 hView.setVisibility(View.GONE);
             }
-            if (mResult.isReward()) {
-                rlReward.setVisibility(View.VISIBLE);
-                hView.setVisibility(View.VISIBLE);
-            } else {
-                rlReward.setVisibility(View.GONE);
-                hView.setVisibility(View.GONE);
-            }
-            if (rlReward.getVisibility() == View.GONE && hView.getVisibility() == View.GONE && rlCollect.getVisibility() == View.GONE) {
-                llRewardCollect.setVisibility(View.GONE);
-                vLine.setVisibility(View.GONE);
-            }
             tvComment = itemView.findViewById(R.id.tv_comment);
-            if (mResult.getCommentoff() == 1) {
-                tvComment.setVisibility(View.GONE);
-            } else {
-                tvComment.setVisibility(View.VISIBLE);
-                tvComment.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (!TokenManager.isLogin(activity)) {
-                            activity.intent(LoginMainActivity.class);
-                        } else {
-                            SendMessDialog dialog = new SendMessDialog(activity, subview);
-                            dialog.setBookId(String.valueOf(activity.getBookId()));
-                            dialog.show();
-                        }
-                    }
-                });
-            }
-//            Glide.with(activity).asBitmap().load(mResult.getThumb()).into(new SimpleTarget<Bitmap>() {
-//                @Override
-//                public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
-//                    if(resource != null) {
-//                        Blurry.with(activity).radius(30).sampling(8).from(resource).into(activity.getIvBlurry());
-//                    }
-//                }
-//            });
-            tvShare = itemView.findViewById(R.id.tv_share);
-            tvShare.setOnClickListener(new View.OnClickListener() {
+            tvComment.setVisibility(View.VISIBLE);
+            tvComment.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    if (!TokenManager.isLogin(activity)) {
+                        activity.intent(LoginMainActivity.class);
+                    } else {
+                        SendMessDialog dialog = new SendMessDialog(activity);
+                        dialog.setListener(new SendMessDialog.SendMessageCallBackListener() {
+                            @Override
+                            public void callback(CommentListVO vo) {
+                                addVO(vo);
+                                notifyDataSetChanged();
+                            }
+                        });
+                        dialog.setBookId(bookId);
+                        dialog.show();
+                    }
                 }
             });
 
             tvCollect = itemView.findViewById(R.id.tv_collect);
-            if (mResult.isFavorite()) {
+            if (mBookDataVO.isCollect())
+            {
                 tvCollect.setCompoundDrawablesWithIntrinsicBounds(R.mipmap.bookdetails_collect, 0, 0, 0);
-            } else {
+            } else
+
+            {
                 tvCollect.setCompoundDrawablesWithIntrinsicBounds(R.mipmap.bookdetails_uncollect, 0, 0, 0);
             }
-            tvCollect.setOnClickListener(new View.OnClickListener() {
+            tvCollect.setOnClickListener(new View.OnClickListener()
+
+            {
                 @Override
                 public void onClick(View v) {
                     if (!TokenManager.isLogin(activity)) {
                         activity.intent(LoginMainActivity.class);
                         return;
                     }
-                    if (mResult.isFavorite()) {
-                        uncollectBook();
+                    if (mBookDataVO.isCollect()) {
+                        unCollectBook((TextView) v);
                     } else {
-                        collectBook();
+                        collectBook((TextView) v);
                     }
-                }
-            });
-            tvShare.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (activity.getChapterList() == null) {
-                        activity.showToast("数据加载中，请稍后分享");
-                        return;
-                    }
-                    ShareDialog shareDialog = new ShareDialog(activity);
-                    shareDialog.setImageUrl(mResult.getThumb());
-                    shareDialog.setBookname(mResult.getTitle());
-                    shareDialog.setId(activity.getChapterList().get(0).getId() + "");
-                    shareDialog.show();
                 }
             });
         }
@@ -380,55 +326,55 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         @Override
         public void onClick(View v) {
-            CommentDate date = (CommentDate) v.getTag();
-            Bundle bundle = new Bundle();
-            bundle.putSerializable("vo", date);
-            bundle.putInt("bookId", bookId);
-            UtilIntent.intentDIY(activity, ReplyMessageActivity.class, bundle);
+//            CommentDate date = (CommentDate) v.getTag();
+//            Bundle bundle = new Bundle();
+//            bundle.putSerializable("vo", date);
+//            bundle.putInt("bookId", bookId);
+//            UtilIntent.intentDIY(activity, ReplyMessageActivity.class, bundle);
         }
+
     }
 
 
     /**
      * 收藏
      */
-    private void collectBook() {
-        BaseObserver baseObserver = new BaseObserver<BaseResult>(activity) {
+    private void collectBook(final TextView textView) {
+        Map<String, String> map = new HashMap<>();
+        map.put("uid", TokenManager.getUid(activity));
+        map.put("bookId", bookId);
+        BaseObserver baseObserver = new BaseObserver<BaseResult>(activity, BaseObserver.MODEL_SHOW_TOAST) {
             @Override
             public void success(BaseResult data) {
                 super.success(data);
+                mBookDataVO.setCollect(true);
                 activity.showToast("收藏成功");
-                mResult.setIsFavorite(true);
-                notifyDataSetChanged();
+                textView.setCompoundDrawablesWithIntrinsicBounds(R.mipmap.bookdetails_collect, 0, 0, 0);
             }
 
-            @Override
-            public void error() {
-            }
         };
         activity.mDisposable.add(baseObserver);
-        UtilRetrofit.getInstance().create(HttpService.class).setFavorite(TokenManager.getUid(activity), String.valueOf(bookId)).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
+        UtilRetrofit.getInstance().create(HttpService.class).collect(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
     }
 
 
     /**
      * 取消收藏
      */
-    private void uncollectBook() {
-        BaseObserver baseObserver = new BaseObserver<BaseResult>(activity) {
+    private void unCollectBook(final TextView textView) {
+        Map<String, String> map = new HashMap<>();
+        map.put("uid", TokenManager.getUid(activity));
+        map.put("bookId", bookId);
+        BaseObserver baseObserver = new BaseObserver<BaseResult>(activity, BaseObserver.MODEL_SHOW_TOAST) {
             @Override
             public void success(BaseResult data) {
                 super.success(data);
+                mBookDataVO.setCollect(false);
                 activity.showToast("取消收藏");
-                mResult.setIsFavorite(false);
-                notifyDataSetChanged();
-            }
-
-            @Override
-            public void error() {
+                textView.setCompoundDrawablesWithIntrinsicBounds(R.mipmap.bookdetails_uncollect, 0, 0, 0);
             }
         };
         activity.mDisposable.add(baseObserver);
-        UtilRetrofit.getInstance().create(HttpService.class).deleteFavorite(TokenManager.getUid(activity), String.valueOf(bookId)).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
+        UtilRetrofit.getInstance().create(HttpService.class).unCollect(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
     }
 }

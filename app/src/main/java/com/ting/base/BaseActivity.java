@@ -39,7 +39,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
     public boolean isWelcome = false;
     private TextView mTvTitle;
     private ImageView mIvLeft;
-    private TextView mTvRight;
+    protected TextView mTvRight;
     private ImageView mIvRight;
     protected FrameLayout flContent;
     protected FrameLayout flError;
@@ -170,17 +170,24 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
             case R.id.iv_left:
                 onBackPressed();
                 break;
-            case R.id.btn_refresh:
-//                initData();
+            case R.id.btn_reload:
+                reload();
                 break;
         }
+    }
+
+    protected void reload() {
+        initData();
     }
 
     /**
      * 显示有数据界面
      */
     protected void showDataLayout(){
-
+        flContent.setVisibility(View.VISIBLE);
+        if(flError != null) {
+            flError.setVisibility(View.GONE);
+        }
     }
 
 
@@ -196,6 +203,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
             RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) flError.getLayoutParams();
             params.addRule(RelativeLayout.BELOW, flActionbar.getId());
         }
+        flError.removeAllViews();
         LayoutInflater.from(this).inflate(R.layout.base_empty_layout, flError);
     }
 
@@ -212,12 +220,42 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
             RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) flError.getLayoutParams();
             params.addRule(RelativeLayout.BELOW, flActionbar.getId());
         }
+        flError.removeAllViews();
         LayoutInflater.from(this).inflate(R.layout.base_empty_layout, flError);
         TextView textView = flError.findViewById(R.id.tv_desc);
         textView.setText(str);
     }
 
-    protected void errorService(){
+    protected void showErrorService(@LayoutRes int layout){
+        flContent.setVisibility(View.GONE);
+        if(stubError == null){
+            stubError = findViewById(R.id.view_stub_error);
+            flError = (FrameLayout) stubError.inflate();
+        }else{
+            flError.setVisibility(View.VISIBLE);
+        }
+        if(flActionbar != null){
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) flError.getLayoutParams();
+            params.addRule(RelativeLayout.BELOW, flActionbar.getId());
+        }
+        LayoutInflater.from(this).inflate(layout, flError);
+    }
+
+
+    protected void showErrorService(){
+        flContent.setVisibility(View.GONE);
+        if(stubError == null){
+            stubError = findViewById(R.id.view_stub_error);
+            flError = (FrameLayout) stubError.inflate();
+        }else{
+            flError.setVisibility(View.VISIBLE);
+        }
+        if(flActionbar != null){
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) flError.getLayoutParams();
+            params.addRule(RelativeLayout.BELOW, flActionbar.getId());
+        }
+        LayoutInflater.from(this).inflate(R.layout.base_network_error_layout, flError);
+        flError.findViewById(R.id.btn_reload).setOnClickListener(this);
     }
 
 

@@ -111,23 +111,23 @@ public class WelcomeActivity extends BaseActivity implements UtilPermission.Perm
     }
 
     private void getData() {
-        Map<String, String> map = new HashMap<>();
-        map.put("uid", TokenManager.getUid(this));
-        map.put("token", TokenManager.getToken(this));
-        BaseObserver baseObserver = new BaseObserver<UserInfoResult>() {
-            @Override
-            public void success(UserInfoResult data) {
-                super.success(data);
-                TokenManager.setInfo(WelcomeActivity.this, data);
-            }
-
-            @Override
-            public void error() {
-                super.error();
-                TokenManager.claerUid(WelcomeActivity.this);
-            }
-        };
-        UtilRetrofit.getInstance().create(HttpService.class).getMyInfo(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
+//        Map<String, String> map = new HashMap<>();
+//        map.put("uid", TokenManager.getUid(this));
+//        map.put("token", TokenManager.getToken(this));
+//        BaseObserver baseObserver = new BaseObserver<UserInfoResult>() {
+//            @Override
+//            public void success(UserInfoResult data) {
+//                super.success(data);
+//                TokenManager.setInfo(WelcomeActivity.this, data);
+//            }
+//
+//            @Override
+//            public void error() {
+//                super.error();
+//                TokenManager.claerUid(WelcomeActivity.this);
+//            }
+//        };
+//        UtilRetrofit.getInstance().create(HttpService.class).getMyInfo(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
     }
 
     @Override

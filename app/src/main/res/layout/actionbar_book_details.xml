@@ -18,6 +18,7 @@
         android:layout_width="200dip"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
+        android:gravity="center"
         android:ellipsize="end"
         android:lines="1"
         android:textColor="#333333"
@@ -25,15 +26,7 @@
         android:maxLength="10"/>
 
 
-    <ImageView
-        android:id="@+id/iv_download"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:src="@mipmap/book_download"
-        android:paddingLeft="10dip"
-        android:paddingRight="10dip"
-        android:layout_marginRight="10dip"
-        android:layout_toLeftOf="@+id/music_view"/>
+
 
 
     <com.ting.view.MusicAnimView

@@ -53,51 +53,17 @@
                         android:singleLine="true"
                         android:textColor="@color/white"
                         android:textSize="@dimen/px30"/>
-
-                    <LinearLayout
-                        android:id="@+id/ll_anchor_rank"
-                        android:layout_width="@dimen/dp750_120"
-                        android:layout_height="@dimen/dp750_40"
-                        android:layout_marginLeft="@dimen/dp750_10"
-                        android:layout_toRightOf="@id/anchor_introduce_name"
-                        android:background="@drawable/blue_anchor_kuang"
-                        android:gravity="center"
-                        android:orientation="horizontal"
-
-                        >
-
-                        <ImageView
-                            android:layout_width="@dimen/dp750_20"
-                            android:layout_height="@dimen/dp750_20"
-                            android:src="@drawable/hot_host"/>
-
-                        <TextView
-                            android:id="@+id/tv_anchor_rank"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text=""
-                            android:textColor="@color/c28abff"
-                            android:textSize="@dimen/px18"/>
-                    </LinearLayout>
                 </RelativeLayout>
 
 
-                <TextView
-                    android:id="@+id/anchor_introduce_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/ll_name_rank"
-                    android:layout_centerHorizontal="true"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="@dimen/dp750_20"
-                    android:textColor="@color/white"/>
+
 
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/anchor_introduce_text"
-                    android:layout_marginTop="@dimen/dp750_20"
+                    android:layout_below="@id/ll_name_rank"
+                    android:layout_marginTop="25dp"
                     android:gravity="center_horizontal"
                     android:orientation="horizontal">
 
@@ -109,19 +75,15 @@
                         android:gravity="center"
                         android:orientation="horizontal">
 
-                        <TextView
-                            android:id="@+id/text_jia"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="+"
-                            android:textColor="#69befc"
-                            android:textSize="@dimen/px28"/>
 
                         <TextView
                             android:id="@+id/anchor_fource_text"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="@dimen/dp750_8"
+                            android:drawableLeft="@mipmap/anchor_unfocus"
+                            android:drawablePadding="4dp"
+                            android:gravity="center_vertical"
                             android:text="关注"
                             android:textColor="@color/c69befc"
                             android:textSize="@dimen/px24"/>
@@ -200,7 +162,7 @@ w
             app:tabBackground="@color/white"
             app:tabIndicatorColor="@color/c15acf0"
             app:tabSelectedTextColor="@color/c15acf0"
-            app:tabTextColor="@color/cb7b7b7"></android.support.design.widget.TabLayout>
+            app:tabTextColor="@color/black"></android.support.design.widget.TabLayout>
 
     </android.support.design.widget.AppBarLayout>
 

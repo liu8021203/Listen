@@ -1,5 +1,7 @@
 package com.ting.bookrack;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.os.Build;
@@ -22,6 +24,7 @@ import com.ting.bean.UserInfoResult;
 import com.ting.bean.bookrack.RandomBookVO;
 import com.ting.bean.bookrack.RandomRackResult;
 import com.ting.bean.myself.CheckMessageResult;
+import com.ting.bean.vo.BookVO;
 import com.ting.bookrack.adapter.BookRackAdapter;
 import com.ting.common.AppData;
 import com.ting.common.TokenManager;
@@ -30,6 +33,7 @@ import com.ting.db.DBListenHistory;
 import com.ting.db.DBListenHistoryDao;
 import com.ting.login.LoginMainActivity;
 import com.ting.myself.MessageJavaActivity;
+import com.ting.play.BookDetailsActivity;
 import com.ting.play.PlayActivity;
 import com.ting.play.controller.MusicDBController;
 import com.ting.record.DownloadActivity;
@@ -55,7 +59,7 @@ public class BookRackFragment extends BaseFragment {
     private BookRackAdapter mAdapter;
     private ImageView ivHeadImg;
     private TextView tvHeadTitle;
-    private TextView tvHeadMark;
+    private TextView tvDesc;
     private TextView tvListen;
     private TextView tvAnchor;
     private RelativeLayout rlSign;
@@ -72,7 +76,7 @@ public class BookRackFragment extends BaseFragment {
     protected void initView() {
         ivHeadImg = flContent.findViewById(R.id.iv_img);
         tvHeadTitle = flContent.findViewById(R.id.tv_title);
-        tvHeadMark = flContent.findViewById(R.id.tv_mark);
+        tvDesc = flContent.findViewById(R.id.tv_desc);
         tvAnchor = flContent.findViewById(R.id.tv_anchor);
         tvListen = flContent.findViewById(R.id.tv_listen);
         mRecyclerView = flContent.findViewById(R.id.recycle_view);
@@ -81,14 +85,6 @@ public class BookRackFragment extends BaseFragment {
         rlSign = flContent.findViewById(R.id.rl_sign);
         tvSign = flContent.findViewById(R.id.tv_sign);
         tvSign.setOnClickListener(this);
-        if (TokenManager.isLogin(mActivity)) {
-            UserInfoResult result = TokenManager.getInfo(mActivity);
-            if (result.isSignIn()) {
-                rlSign.setVisibility(View.GONE);
-            } else {
-                rlSign.setVisibility(View.VISIBLE);
-            }
-        }
         mMusicAnimView = flContent.findViewById(R.id.music_view);
         mMusicAnimView.setOnClickListener(this);
         ivMenu = flContent.findViewById(R.id.iv_menu);
@@ -99,40 +95,21 @@ public class BookRackFragment extends BaseFragment {
         rlActionbar = flContent.findViewById(R.id.rl_actionbar);
         tvComplete = flContent.findViewById(R.id.tv_complete);
         tvComplete.setOnClickListener(this);
-        if(TokenManager.isLogin(mActivity)){
-            checkNewMessage();
+        if (TokenManager.isLogin(mActivity)) {
+            isSign();
         }
     }
 
-    private void checkNewMessage(){
-        Map<String, String> map = new HashMap<>();
-        map.put("uid", TokenManager.getUid(mActivity));
-        BaseObserver observer = new BaseObserver<CheckMessageResult>(){
-            @Override
-            public void success(CheckMessageResult data) {
-                super.success(data);
-                if(data.getNum() > 0){
-                    ivRed.setVisibility(View.VISIBLE);
-                }
-            }
-
-            @Override
-            public void error() {
-                super.error();
-            }
-        };
-        mDisposable.add(observer);
-        UtilRetrofit.getInstance().create(HttpService.class).check_new_systemmsg(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(observer);
-    }
 
     @Override
     protected void initData() {
         getListenData();
+        recommend();
     }
 
     private void getListenData() {
         DBListenHistoryDao dao = BaseApplication.getInstance().getDaoSession().getDBListenHistoryDao();
-        List<DBListenHistory> data = dao.queryBuilder().orderDesc(DBListenHistoryDao.Properties.Date).list();
+        List<DBListenHistory> data = dao.queryRaw("group by BOOK_ID");
         if (mAdapter == null) {
             mAdapter = new BookRackAdapter(mActivity);
             mAdapter.setData(data);
@@ -140,46 +117,6 @@ public class BookRackFragment extends BaseFragment {
         } else {
             mAdapter.setData(data);
             mAdapter.notifyDataSetChanged();
-        }
-        if (data != null && !data.isEmpty()) {
-            DBListenHistory history = data.get(0);
-            UtilGlide.loadImg(mActivity, history.getPic(), ivHeadImg);
-            tvHeadTitle.setText(history.getBookname());
-            tvHeadMark.setText("收听至" + history.getChapter_name());
-            tvAnchor.setText(history.getHost());
-            tvListen.setTag(history.getBookid());
-            if (AppData.currPlayBookId == history.getBookid()) {
-                tvListen.setText("正在收听");
-            } else {
-                tvListen.setText("继续收听");
-            }
-            tvListen.setOnClickListener(this);
-        } else {
-            Map<String, String> map = new HashMap<>();
-            map.put("num", "1");
-            BaseObserver observer = new BaseObserver<RandomRackResult>() {
-                @Override
-                public void success(RandomRackResult data) {
-                    super.success(data);
-                    if (data.getData() != null && !data.getData().isEmpty()) {
-                        RandomBookVO vo = data.getData().get(0);
-                        UtilGlide.loadImg(mActivity, vo.getThumb(), ivHeadImg);
-                        tvHeadTitle.setText(vo.getTitle());
-                        tvHeadMark.setText("人气：" + UtilListener.getHotScore(Integer.valueOf(vo.getHit())));
-                        tvAnchor.setText(vo.getAuthor());
-                        tvListen.setTag(vo.getBookid());
-                        tvListen.setText("点击收听");
-                        tvListen.setOnClickListener(BookRackFragment.this);
-                    }
-                }
-
-                @Override
-                public void error() {
-                    super.error();
-                }
-            };
-            mDisposable.add(observer);
-            UtilRetrofit.getInstance().create(HttpService.class).get_guess_like(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(observer);
         }
     }
 
@@ -211,20 +148,16 @@ public class BookRackFragment extends BaseFragment {
                 }
                 break;
             case R.id.music_view: {
-                int bookId = -1;
-                if (AppData.currPlayBookId != -1) {
-                    bookId = AppData.currPlayBookId;
-                } else {
-                    MusicDBController controller = new MusicDBController();
-                    List<DBListenHistory> historys = controller.getListenHistory();
-                    if (historys != null && !historys.isEmpty()) {
-                        DBListenHistory history = historys.get(0);
-                        bookId = history.getBookid();
-                    }
+                String bookId = null;
+                MusicDBController controller = new MusicDBController();
+                List<DBListenHistory> historys = controller.getListenHistory();
+                if (historys != null && !historys.isEmpty()) {
+                    DBListenHistory history = historys.get(0);
+                    bookId = history.getBookId();
                 }
-                if (bookId != -1) {
+                if (bookId != null) {
                     Bundle bundle = new Bundle();
-                    bundle.putInt("bookID", bookId);
+                    bundle.putString("bookId", bookId);
                     bundle.putBoolean("play", !AppData.isPlaying);
                     UtilIntent.intentDIYBottomToTop(mActivity, PlayActivity.class, bundle);
                 } else {
@@ -234,15 +167,10 @@ public class BookRackFragment extends BaseFragment {
             break;
 
             case R.id.tv_listen: {
-                int bookId = (int) v.getTag();
+                String bookId = (String) v.getTag();
                 Bundle bundle = new Bundle();
-                bundle.putInt("bookID", bookId);
-                if (AppData.isPlaying) {
-                    bundle.putBoolean("play", false);
-                } else {
-                    bundle.putBoolean("play", true);
-                }
-                UtilIntent.intentDIYBottomToTop(mActivity, PlayActivity.class, bundle);
+                bundle.putString("bookId", bookId);
+                mActivity.intent(BookDetailsActivity.class, bundle);
             }
             break;
 
@@ -250,7 +178,7 @@ public class BookRackFragment extends BaseFragment {
                 rlMenu.setVisibility(View.VISIBLE);
                 mMusicAnimView.setVisibility(View.VISIBLE);
                 tvComplete.setVisibility(View.GONE);
-                if(mAdapter != null){
+                if (mAdapter != null) {
                     mAdapter.setState(0);
                     mAdapter.notifyDataSetChanged();
                 }
@@ -266,7 +194,7 @@ public class BookRackFragment extends BaseFragment {
                             rlMenu.setVisibility(View.GONE);
                             mMusicAnimView.setVisibility(View.GONE);
                             tvComplete.setVisibility(View.VISIBLE);
-                            if(mAdapter != null){
+                            if (mAdapter != null) {
                                 mAdapter.setState(1);
                                 mAdapter.notifyDataSetChanged();
                             }
@@ -275,10 +203,10 @@ public class BookRackFragment extends BaseFragment {
                         @Override
                         public void message() {
                             window.dismiss();
-                            if(TokenManager.isLogin(mActivity)) {
+                            if (TokenManager.isLogin(mActivity)) {
                                 mActivity.intent(MessageJavaActivity.class);
                                 ivRed.setVisibility(View.GONE);
-                            }else{
+                            } else {
                                 mActivity.intent(LoginMainActivity.class);
                             }
                         }
@@ -290,7 +218,7 @@ public class BookRackFragment extends BaseFragment {
                         }
                     });
                 }
-                window.isShowRed(ivRed.getVisibility());
+                window.isShowRed(View.GONE);
                 window.show(rlActionbar);
                 break;
         }
@@ -298,11 +226,13 @@ public class BookRackFragment extends BaseFragment {
 
 
     private void sign() {
-        BaseObserver baseObserver = new BaseObserver<BaseResult>(mActivity) {
+        Map<String, String> map = new HashMap<>();
+        map.put("uid", TokenManager.getUid(mActivity));
+        BaseObserver baseObserver = new BaseObserver<BaseResult>(mActivity, BaseObserver.MODEL_SHOW_DIALOG_TOAST) {
             @Override
             public void success(BaseResult data) {
                 super.success(data);
-                showToast("今日签到成功，奖励1听豆");
+                showToast(data.getMessage());
                 ObjectAnimator animator = ObjectAnimator.ofFloat(rlSign, "translationY", 0, -rlSign.getHeight() * 1.5f);
                 ObjectAnimator alpha = ObjectAnimator.ofFloat(rlSign, "alpha", 1f, 0f);
                 AnimatorSet animSet = new AnimatorSet();
@@ -314,12 +244,9 @@ public class BookRackFragment extends BaseFragment {
                 animator1.start();
             }
 
-            @Override
-            public void error() {
-            }
         };
         mDisposable.add(baseObserver);
-        UtilRetrofit.getInstance().create(HttpService.class).setDot(TokenManager.getUid(mActivity)).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
+        UtilRetrofit.getInstance().create(HttpService.class).sign(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
     }
 
     @Override
@@ -368,29 +295,71 @@ public class BookRackFragment extends BaseFragment {
 
     public void startAnim() {
         DBListenHistoryDao dao = BaseApplication.getInstance().getDaoSession().getDBListenHistoryDao();
-        List<DBListenHistory> data = dao.queryBuilder().orderDesc(DBListenHistoryDao.Properties.Date).list();
+        List<DBListenHistory> data = dao.queryBuilder().orderDesc(DBListenHistoryDao.Properties.Id).list();
         if (data != null && !data.isEmpty()) {
             DBListenHistory history = data.get(0);
-            if (AppData.currPlayBookId == history.getBookid()) {
-                tvListen.setText("正在收听");
-            } else {
-                tvListen.setText("继续收听");
-            }
+//            if (AppData.currPlayBookId == history.getBookid()) {
+//                tvListen.setText("正在收听");
+//            } else {
+//                tvListen.setText("继续收听");
+//            }
         }
         mMusicAnimView.start();
     }
 
     public void stopAnim() {
         DBListenHistoryDao dao = BaseApplication.getInstance().getDaoSession().getDBListenHistoryDao();
-        List<DBListenHistory> data = dao.queryBuilder().orderDesc(DBListenHistoryDao.Properties.Date).list();
+        List<DBListenHistory> data = dao.queryBuilder().orderDesc(DBListenHistoryDao.Properties.Id).list();
         if (data != null && !data.isEmpty()) {
             DBListenHistory history = data.get(0);
-            if (AppData.currPlayBookId == history.getBookid()) {
-                tvListen.setText("正在收听");
-            } else {
-                tvListen.setText("继续收听");
-            }
+//            if (AppData.currPlayBookId == history.getBookid()) {
+//                tvListen.setText("正在收听");
+//            } else {
+//                tvListen.setText("继续收听");
+//            }
         }
         mMusicAnimView.stop();
+    }
+
+
+    private void isSign() {
+        Map<String, String> map = new HashMap<>();
+        map.put("uid", TokenManager.getUid(mActivity));
+        BaseObserver baseObserver = new BaseObserver<BaseResult<Integer>>(mActivity, BaseObserver.MODEL_NO) {
+            @Override
+            public void success(BaseResult<Integer> data) {
+                super.success(data);
+                Integer aBoolean = data.getData();
+                if (aBoolean == 1) {
+                    rlSign.setVisibility(View.GONE);
+                } else {
+                    rlSign.setVisibility(View.VISIBLE);
+                }
+            }
+        };
+        mDisposable.add(baseObserver);
+        UtilRetrofit.getInstance().create(HttpService.class).isSign(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
+    }
+
+
+    private void recommend() {
+        BaseObserver baseObserver = new BaseObserver<BaseResult<BookVO>>(mActivity, BaseObserver.MODEL_NO) {
+            @Override
+            public void success(BaseResult<BookVO> data) {
+                super.success(data);
+                BookVO vo = data.getData();
+                if (vo != null) {
+                    UtilGlide.loadImg(mActivity, vo.getBookImage(), ivHeadImg);
+                    tvHeadTitle.setText(vo.getBookTitle());
+                    tvDesc.setText(vo.getBookDesc());
+                    tvAnchor.setText(vo.getBookAnchor());
+                    tvListen.setTag(vo.getId());
+                    tvListen.setText("推荐收听");
+                    tvListen.setOnClickListener(BookRackFragment.this);
+                }
+            }
+        };
+        mDisposable.add(baseObserver);
+        UtilRetrofit.getInstance().create(HttpService.class).bookrackRecommend().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
     }
 }

@@ -33,7 +33,7 @@
         android:gravity="center"
         android:paddingLeft="15dip"
         android:paddingRight="15dip"
-        android:textColor="#999999"
+        android:textColor="#333333"
         android:textSize="14sp"
         android:visibility="gone"/>
 

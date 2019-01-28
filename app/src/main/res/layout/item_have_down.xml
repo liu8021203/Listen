@@ -4,7 +4,7 @@
                 android:layout_height="70dip">
 
 
-    <ImageView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/iv_img"
         android:layout_width="50dip"
         android:layout_height="50dip"
@@ -18,23 +18,41 @@
         android:layout_height="match_parent"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:paddingLeft="@dimen/dpx40"
-        android:paddingRight="@dimen/dpx58"
-        android:src="@mipmap/download_delete_gray"/>
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:src="@mipmap/download_chapter_delete"/>
+
+
+
+
 
 
     <TextView
         android:id="@+id/tv_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:singleLine="true"
-        android:text="鬼吹灯全集(丰帆版)第一集"
-        android:layout_toLeftOf="@+id/down_delete"
+        android:lines="1"
+        android:ellipsize="end"
+        android:layout_toLeftOf="@+id/tv_record"
+        android:layout_marginRight="10dp"
         android:layout_centerVertical="true"
         android:layout_toRightOf="@+id/iv_img"
         android:layout_marginLeft="20dp"
-        android:textColor="@color/caaaaaa"
+        android:textColor="#333333"
         android:textSize="17sp"/>
+
+
+
+    <TextView
+        android:id="@+id/tv_record"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:minWidth="60dp"
+        android:textSize="13sp"
+        android:layout_toLeftOf="@+id/down_delete"
+        android:layout_marginRight="10dp"
+        android:textColor="#333333"/>
 
 
 </RelativeLayout>

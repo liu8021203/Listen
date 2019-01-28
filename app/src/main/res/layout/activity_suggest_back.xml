@@ -13,10 +13,10 @@
         android:orientation="horizontal">
 
         <ImageView
-            android:layout_width="@dimen/dp750_30"
-            android:layout_height="@dimen/dp750_30"
-            android:layout_marginLeft="@dimen/dp750_44"
-            android:layout_marginTop="@dimen/dp750_28"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:layout_marginLeft="22dp"
+            android:layout_marginTop="14dp"
             android:src="@drawable/suggest_bi"
 
             />
@@ -29,8 +29,9 @@
             android:gravity="top"
             android:hint="您的建议是我们不断努力的动力..."
             android:maxLength="100"
-            android:paddingLeft="@dimen/dp750_16"
-            android:paddingTop="@dimen/dp750_26"
+            android:paddingLeft="5dp"
+            android:paddingRight="10dp"
+            android:paddingTop="10dp"
             android:textColor="@color/c666666"
             android:textColorHint="@color/c9f9f9f"
             android:textSize="@dimen/px26"/>
@@ -57,16 +58,10 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="QQ"
+                android:text="联系方式"
                 android:textColor="@color/c666666"
                 android:textSize="@dimen/px26"/>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="(选填)"
-                android:textColor="@color/c9f9f9f"
-                android:textSize="@dimen/px26"/>
 
         </LinearLayout>
 
@@ -77,12 +72,12 @@
             android:background="@color/cdcdcdc"></View>
 
         <EditText
-            android:id="@+id/et_qq"
+            android:id="@+id/et_contack"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginLeft="@dimen/dp750_20"
             android:background="@null"
-            android:hint="请输入您的QQ"
+            android:hint="请输入您的联系方式"
             android:inputType="number"
             android:singleLine="true"
             android:textColor="@color/c666666"
@@ -91,66 +86,7 @@
 
     </LinearLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/dp750_1"
-        android:layout_marginLeft="@dimen/dp750_26"
-        android:layout_marginRight="@dimen/dp750_26"
-        android:background="@color/cdcdcdc"></View>
 
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/dp750_90"
-        android:background="@color/white"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-
-        <LinearLayout
-            android:layout_width="@dimen/dp750_230"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/dp750_40"
-            android:gravity="center"
-            android:orientation="horizontal"
-            >
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-
-                android:text="邮箱"
-                android:textColor="@color/c666666"
-                android:textSize="@dimen/px26"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="(选填)"
-                android:textColor="@color/c9f9f9f"
-                android:textSize="@dimen/px26"/>
-
-        </LinearLayout>
-
-
-        <View
-            android:layout_width="@dimen/dp750_1"
-            android:layout_height="@dimen/dp750_30"
-            android:layout_marginLeft="@dimen/dp750_20"
-            android:background="@color/cdcdcdc"></View>
-
-        <EditText
-            android:id="@+id/et_email"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="@dimen/dp750_20"
-            android:background="@null"
-            android:hint="请输入您的邮箱"
-            android:singleLine="true"
-            android:textColor="@color/c666666"
-            android:textColorHint="@color/c9f9f9f"
-            android:textSize="@dimen/px26"/>
-
-    </LinearLayout>
 
     <TextView
         android:id="@+id/tv_sumbit"

@@ -241,19 +241,6 @@
                     android:src="@drawable/new_qq_image" />
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center">
-
-                <ImageView
-                    android:id="@+id/singn_login"
-                    android:layout_width="@dimen/dp750_100"
-                    android:layout_height="@dimen/dp750_100"
-                    android:layout_gravity="center"
-                    android:src="@drawable/new_sina_image" />
-            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"

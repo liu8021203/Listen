@@ -15,6 +15,7 @@ import com.ting.db.DBBook;
 import com.ting.db.DBListenHistory;
 import com.ting.db.DBListenHistoryDao;
 import com.ting.play.BookDetailsActivity;
+import com.ting.play.PlayActivity;
 import com.ting.play.controller.MusicDBController;
 import com.ting.util.UtilGlide;
 
@@ -59,8 +60,8 @@ public class BookRackAdapter extends RecyclerView.Adapter<BookRackAdapter.ItemVi
     @Override
     public void onBindViewHolder(ItemViewHolder holder, int position) {
         DBListenHistory vo = data.get(position);
-        holder.tvTitle.setText(vo.getBookname());
-        UtilGlide.loadImg(mActivity, vo.getPic(), holder.ivImg);
+        holder.tvTitle.setText(vo.getBookTitle());
+        UtilGlide.loadImg(mActivity, vo.getBookImage(), holder.ivImg);
         if(state == 0){
             holder.ivImg.setAlpha(1.0f);
             holder.ivDelete.setVisibility(View.GONE);
@@ -99,8 +100,9 @@ public class BookRackAdapter extends RecyclerView.Adapter<BookRackAdapter.ItemVi
         public void onClick(View v) {
             DBListenHistory vo = (DBListenHistory) v.getTag();
             Bundle bundle = new Bundle();
-            bundle.putInt("bookID", vo.getBookid());
-            mActivity.intent(BookDetailsActivity.class, bundle);
+            bundle.putString("bookId", vo.getBookId());
+            bundle.putBoolean("play", true);
+            mActivity.intent(PlayActivity.class, bundle);
         }
     }
 

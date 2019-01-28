@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.ting">
-
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <uses-permission android:name="android.permission.CAMERA"/>
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
@@ -22,6 +22,8 @@
     <uses-permission android:name="android.permission.GET_TASKS"/>
     <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+
+
 
     <!-- ###################声明SDK使用的相关权限###################### -->
     <!-- 获取用户手机的IMEI，用来唯一的标识用户 -->
@@ -149,8 +151,8 @@
 
         </activity>
         <activity
-            android:name="com.ting.bookcity.FineRecommenActivity"
-            android:label="热门主播"
+            android:name="com.ting.bookcity.HotRecommenActivity"
+            android:label="热门推荐"
             android:screenOrientation="portrait"
             android:theme="@style/BaseAppTheme">
 
@@ -175,7 +177,8 @@
 
         </activity>
 
-        <activity android:name=".play.PlayActivity"
+        <activity
+            android:name=".play.PlayActivity"
             android:screenOrientation="portrait"
             android:theme="@style/PlayActivityAnim"></activity>
 
@@ -233,7 +236,7 @@
         </activity>
 
         <activity
-            android:name="com.ting.bookcity.HomeSpecialActivity"
+            android:name="com.ting.bookcity.TeamBookListActivity"
             android:label="首页专辑"
             android:screenOrientation="portrait">
         </activity>
@@ -241,6 +244,20 @@
         <activity
             android:name=".welcome.AdActivity"
             android:label="广告"
+            android:screenOrientation="portrait">
+        </activity>
+
+
+        <activity
+            android:name=".anchor.HostListActivity"
+            android:label="主播列表"
+            android:screenOrientation="portrait">
+        </activity>
+
+
+        <activity
+            android:name=".play.ChapterBuyActivity"
+            android:label="章节批量购买"
             android:screenOrientation="portrait">
         </activity>
 
@@ -301,6 +318,7 @@
             android:name="com.ting.play.ReplyMessageActivity"
             android:screenOrientation="portrait"
             android:theme="@style/BaseAppTheme"></activity>
+
         <activity
             android:name=".wxapi.WXPayEntryActivity"
             android:exported="true"/>
@@ -309,9 +327,7 @@
             android:name="com.ting.wxapi.WXEntryActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="true"
-            android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
-
 
 
         <!-- alipay sdk begin -->
@@ -339,10 +355,12 @@
         <service
             android:name="com.ting.play.service.MusicService"
             android:exported="false"/>
+
         <service android:name=".download.DownLoadService"></service>
+
         <receiver android:name=".play.receiver.MyRemoteControlEventReceiver">
-            <intent-filter >
-                <action android:name="android.intent.action.MEDIA_BUTTON" />
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON"/>
             </intent-filter>
         </receiver>
         <!--下载广播 -->
@@ -407,22 +425,28 @@
         <activity
             android:name="com.tencent.tauth.AuthActivity"
             android:launchMode="singleTask"
-            android:noHistory="true" >
+            android:noHistory="true">
             <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="tencent1101054688" />
+                <action android:name="android.intent.action.VIEW"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+
+                <data android:scheme="tencent1101054688"/>
             </intent-filter>
         </activity>
         <activity
             android:name="com.tencent.connect.common.AssistActivity"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"
-            android:configChanges="orientation|keyboardHidden|screenSize"/>
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
 
         <!-- 腾讯广告 -->
-        <service android:name="com.qq.e.comm.DownloadService" android:exported="false" />
-        <activity android:name="com.qq.e.ads.ADActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenSize" />
+        <service
+            android:name="com.qq.e.comm.DownloadService"
+            android:exported="false"/>
+        <activity
+            android:name="com.qq.e.ads.ADActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"/>
     </application>
 
 </manifest>

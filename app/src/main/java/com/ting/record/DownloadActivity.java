@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import com.ting.R;
 import com.ting.base.BaseActivity;
 import com.ting.db.DBBook;
+import com.ting.db.DBChapter;
 import com.ting.download.DownloadController;
 import com.ting.record.adapter.DownBookAdapter;
 import com.ting.view.CustomItemDecoration;
@@ -45,13 +46,17 @@ public class DownloadActivity extends BaseActivity{
 
     @Override
     protected void initData() {
+
+    }
+
+    private void getData() {
         controller = new DownloadController();
         showProgressDialog();
-        List<DBBook> data = controller.queryBook();
+        List<DBChapter> data = controller.getDownloadBook();
         removeProgressDialog();
         if(data != null && data.size() > 0) {
             if (adapter == null) {
-                adapter = new DownBookAdapter(mActivity);
+                adapter = new DownBookAdapter(this);
                 adapter.setData(data);
                 mRecyclerView.setAdapter(adapter);
             } else {
@@ -59,7 +64,7 @@ public class DownloadActivity extends BaseActivity{
                 adapter.notifyDataSetChanged();
             }
         }else{
-            errorEmpty("还没有下载的书籍~");
+            showEmpty();
         }
     }
 
@@ -68,8 +73,20 @@ public class DownloadActivity extends BaseActivity{
 
     }
 
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getData();
+    }
+
     @Override
     protected boolean showActionBar() {
         return true;
+    }
+
+
+    public void showEmpty(){
+        errorEmpty("还没有下载的书籍~");
     }
 }

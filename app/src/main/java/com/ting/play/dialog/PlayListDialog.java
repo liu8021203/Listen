@@ -22,21 +22,22 @@ import com.scwang.smartrefresh.layout.listener.OnLoadmoreListener;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 import com.ting.R;
 import com.ting.base.BaseObserver;
+import com.ting.bean.BaseResult;
+import com.ting.bean.ChapterResult;
 import com.ting.bean.play.PlayResult;
 import com.ting.common.TokenManager;
 import com.ting.common.http.HttpService;
+import com.ting.db.DBChapter;
 import com.ting.db.DBListenHistory;
 import com.ting.play.PlayActivity;
-import com.ting.play.adapter.ChapterScopeAdapter;
 import com.ting.play.adapter.PlayListAdapter;
-import com.ting.play.adapter.PlayListDialogAdapter;
 import com.ting.play.controller.MusicDBController;
-import com.ting.play.service.MusicService;
-import com.ting.play.subview.PlayListSubView;
+import com.ting.util.UtilNetStatus;
 import com.ting.util.UtilPixelTransfrom;
 import com.ting.util.UtilRetrofit;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -53,13 +54,15 @@ public class PlayListDialog extends Dialog {
     private SmartRefreshLayout mSmartRefreshLayout;
     private PlayListAdapter mAdapter;
     private PlayActivity mActivity;
-    private int bookId;
+    private String bookId;
     private String bookName;
     private String bookHost;
     private String bookPic;
     private int price;
     private int nextPage;
     private int previousPage;
+    private int total;
+    private List<DBChapter> data;
 
     public PlayListDialog(@NonNull Context context) {
         super(context, R.style.PlayListDialog);
@@ -75,23 +78,16 @@ public class PlayListDialog extends Dialog {
         initView();
     }
 
-    public void setData(int bookId, String bookName, String bookHost, String bookPic, int price) {
-        this.bookId = bookId;
-        this.bookName = bookName;
-        this.bookHost = bookHost;
-        this.bookPic = bookPic;
-        this.price = price;
-    }
 
     private void initView() {
         Log.d("aaa", "PlayListDialog初始化");
         mSmartRefreshLayout = findViewById(R.id.refreshLayout);
         tvChapterNum = findViewById(R.id.tv_chapter_num);
+        tvChapterNum.setText("共" + total + "集");
         ivClose = findViewById(R.id.iv_close);
         ivClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 dismiss();
             }
         });
@@ -116,96 +112,84 @@ public class PlayListDialog extends Dialog {
         header.setDrawableMarginRight(20);//设置图片和箭头和文字的间距（dp单位）
         header.setProgressResource(R.mipmap.header_loadding);//设置图片资源
         header.setSpinnerStyle(SpinnerStyle.Translate);//设置状态（不支持：MatchLayout
-
-        mSmartRefreshLayout.setOnRefreshListener(new OnRefreshListener() {
-            @Override
-            public void onRefresh(RefreshLayout refreshlayout) {
-                previousPage--;
-                getData(1, previousPage);
-            }
-        });
-        mSmartRefreshLayout.setOnLoadmoreListener(new OnLoadmoreListener() {
-            @Override
-            public void onLoadmore(RefreshLayout refreshlayout) {
-                nextPage++;
-                getData(2, nextPage);
-            }
-        });
+        if(UtilNetStatus.isHasConnection(mActivity)) {
+            mSmartRefreshLayout.setOnRefreshListener(new OnRefreshListener() {
+                @Override
+                public void onRefresh(RefreshLayout refreshlayout) {
+                    previousPage--;
+                    getData(1, previousPage);
+                }
+            });
+            mSmartRefreshLayout.setOnLoadmoreListener(new OnLoadmoreListener() {
+                @Override
+                public void onLoadmore(RefreshLayout refreshlayout) {
+                    nextPage++;
+                    getData(2, nextPage);
+                }
+            });
+        }else{
+            mSmartRefreshLayout.setEnableRefresh(false);
+            mSmartRefreshLayout.setEnableLoadmore(false);
+        }
 
         mRecyclerView = findViewById(R.id.recycle_view);
         LinearLayoutManager manager = new LinearLayoutManager(mActivity);
         mRecyclerView.setLayoutManager(manager);
+        mAdapter = new PlayListAdapter(mActivity, data.get(0).getBookId(), null);
+        mAdapter.setData(data);
+        mRecyclerView.setAdapter(mAdapter);
+        nextPage = (data.get(data.size() - 1).getPosition() - 1) / 50 + 1;
+        previousPage = (data.get(0).getPosition() - 1) / 50 + 1;
+        isLoadHeader();
+        isLoadFooter(total, nextPage * 50);
     }
 
+    public void setData(int total, List<DBChapter> data) {
+        this.data = data;
+        this.total = total;
+        bookId = data.get(0).getBookId();
+    }
 
     public void getData(final int type, final int page) {
         Map<String, String> map = new HashMap<>();
-        map.put("page", page + "");
-        map.put("count", "50");
-        map.put("bookID", String.valueOf(bookId));
-        map.put("sort", "asc");
-        map.put("type", "works");
+        map.put("page", String.valueOf(page));
+        map.put("size", "50");
+        map.put("bookId", bookId);
         if (TokenManager.isLogin(mActivity)) {
             map.put("uid", TokenManager.getUid(mActivity));
         }
-        BaseObserver baseObserver = new BaseObserver<PlayResult>() {
+        BaseObserver baseObserver = new BaseObserver<BaseResult<ChapterResult>>() {
             @Override
-            public void success(PlayResult data) {
+            public void success(BaseResult<ChapterResult> data) {
                 super.success(data);
-                if (data != null && data.getData() != null && data.getData().getData() != null && data.getData().getData().size() > 0) {
-                    tvChapterNum.setText("共" + data.getData().getLenght() + "集");
-                    int page = data.getData().getPage();
-                    int count = data.getData().getCount();
+                ChapterResult result = data.getData();
+                if (result != null && result.getList() != null && !result.getList().isEmpty()) {
+                    tvChapterNum.setText("共" + result.getCount() + "集");
+                    int page = result.getPageNo();
+                    int count = result.getPageSize();
                     switch (type) {
-                        case 0:
-                            PlayListDialog.this.nextPage = data.getData().getPage();
-                            PlayListDialog.this.previousPage = data.getData().getPage();
-
-                            for (int i = 0; i < data.getData().getData().size(); i++) {
-                                int position = (page - 1) * count + i;
-                                data.getData().getData().get(i).setPosition(position);
-                            }
-                            if (mAdapter == null) {
-                                mAdapter = new PlayListAdapter(mActivity, PlayListDialog.this, bookId);
-                                mAdapter.setTingshuka(data.getTingshuka());
-                                mAdapter.setBookInfo(data.getTitle(), data.getBroadercaster(), data.getThumb(), data.getPrice());
-                                mAdapter.setData(data.getData().getData());
-                                mRecyclerView.setAdapter(mAdapter);
-                            } else {
-                                mAdapter.setData(data.getData().getData());
-                                mAdapter.notifyDataSetChanged();
-                            }
-                            isLoadHeader();
-                            isLoadFooter(data.getData().getLenght(), page * count);
-                            break;
                         case 1:
                             mSmartRefreshLayout.finishRefresh(0);
-                            for (int i = 0; i < data.getData().getData().size(); i++) {
-                                int position = (page - 1) * count + i;
-                                data.getData().getData().get(i).setPosition(position);
-                            }
-                            mAdapter.addHeaderData(data.getData().getData());
+                            mAdapter.addHeaderData(result.getList());
                             mAdapter.notifyDataSetChanged();
                             mRecyclerView.scrollBy(0, UtilPixelTransfrom.dip2px(mActivity, 48) * 49 + UtilPixelTransfrom.dip2px(mActivity, 48) / 2);
                             isLoadHeader();
                             break;
                         case 2:
                             mSmartRefreshLayout.finishLoadmore(0);
-                            for (int i = 0; i < data.getData().getData().size(); i++) {
-                                int position = (page - 1) * count + i;
-                                data.getData().getData().get(i).setPosition(position);
-                            }
-                            mAdapter.addFooterData(data.getData().getData());
+                            mAdapter.addFooterData(result.getList());
                             mAdapter.notifyDataSetChanged();
-                            isLoadFooter(data.getData().getLenght(), page * count);
+                            isLoadFooter(result.getCount(), page * count);
                             break;
                     }
                 }
             }
 
             @Override
-            public void error() {
-                super.error();
+            public void error(BaseResult<ChapterResult> value, Throwable e) {
+                super.error(value, e);
+                mSmartRefreshLayout.finishLoadmore(0);
+                mSmartRefreshLayout.finishRefresh(0);
                 if (type == 1) {
                     PlayListDialog.this.previousPage--;
                 }
@@ -215,26 +199,13 @@ public class PlayListDialog extends Dialog {
             }
         };
         mActivity.mDisposable.add(baseObserver);
-        UtilRetrofit.getInstance().create(HttpService.class).getPlayerList(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
+        UtilRetrofit.getInstance().create(HttpService.class).chapter(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
     }
 
 
     @Override
     public void show() {
         super.show();
-        MusicDBController musicDBController = new MusicDBController();
-        DBListenHistory mHistory = musicDBController.getBookIdData(String.valueOf(bookId));
-        int position = 0;
-        if (mHistory != null) {
-            position = mHistory.getPosition();
-        }
-        Log.d("aaa", "PlayListDialog-------" + position);
-        if (position == -1) {
-            getData(0, 1);
-        } else {
-            int page = position / 50 + 1;
-            getData(0, page);
-        }
     }
 
     private void isLoadFooter(int total, int currTotal) {

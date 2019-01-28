@@ -216,8 +216,8 @@ public class PlayListDialogAdapter extends RecyclerView.Adapter<PlayListDialogAd
                 break;
 
                 case 2: {
-                    if (tempVO.getSize() != null && tempVO.getCompletesize() != null && tempVO.getSize() != 0) {
-                        holder.progressBar.downloadResume(tempVO.getCompletesize() * 100 / tempVO.getSize());
+                    if (tempVO.getSize() != null && tempVO.getCompleteSize() != null && tempVO.getSize() != 0) {
+                        holder.progressBar.downloadResume(tempVO.getCompleteSize() * 100 / tempVO.getSize());
                     } else {
                         holder.progressBar.downloadResume(0f);
                     }
@@ -227,8 +227,8 @@ public class PlayListDialogAdapter extends RecyclerView.Adapter<PlayListDialogAd
 
                 break;
                 case 3: {
-                    if (tempVO.getSize() != null && tempVO.getCompletesize() != null && tempVO.getSize() != 0) {
-                        holder.progressBar.downloadPause(tempVO.getCompletesize() * 100 / tempVO.getSize());
+                    if (tempVO.getSize() != null && tempVO.getCompleteSize() != null && tempVO.getSize() != 0) {
+                        holder.progressBar.downloadPause(tempVO.getCompleteSize() * 100 / tempVO.getSize());
                     } else {
                         holder.progressBar.downloadPause(0f);
                     }
@@ -409,7 +409,7 @@ public class PlayListDialogAdapter extends RecyclerView.Adapter<PlayListDialogAd
         public void onClick(View v) {
 
             final DBChapter vo = (DBChapter) v.getTag();
-            ListenDialog.makeListenDialog(activity, "提示", "是否要删除" + vo.getChapterTitle(), true, "否", true, "是", new ListenDialog.CallBackListener() {
+            ListenDialog.makeListenDialog(activity, "提示", "是否要删除" + vo.getTitle(), true, "否", true, "是", new ListenDialog.CallBackListener() {
                 @Override
                 public void callback(ListenDialog dialog, int mark) {
                     dialog.dismiss();
@@ -474,11 +474,11 @@ public class PlayListDialogAdapter extends RecyclerView.Adapter<PlayListDialogAd
             } else {
                 PlayListVO listVO = new PlayListVO();
                 listVO.setData(data);
-                if (mHistory != null && mHistory.getCid() == vo.getId()) {
-                    mMusicController.play(mHistory.getDuration(), bookId, mHistory.getCid(), mHistory.getUrl(), mHistory.getChapter_name(), mHistory.getBookname(), mHistory.getHost(), mHistory.getPic(), listVO, "asc", 0, 0);
-                } else {
-                    mMusicController.play(bookId, vo.getId(), vo.getUrl(), vo.getTitle(), bookName, bookAnchor, bookPic, listVO, "asc", 0);
-                }
+//                if (mHistory != null && mHistory.getCid() == vo.getId()) {
+//                    mMusicController.play(mHistory.getDuration(), bookId, mHistory.getCid(), mHistory.getUrl(), mHistory.getChapter_name(), mHistory.getBookname(), mHistory.getHost(), mHistory.getPic(), listVO, "asc", 0, 0);
+//                } else {
+//                    mMusicController.play(bookId, vo.getId(), vo.getUrl(), vo.getTitle(), bookName, bookAnchor, bookPic, listVO, "asc", 0);
+//                }
             }
         }
     }

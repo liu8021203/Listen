@@ -35,8 +35,6 @@ public class FindPasswordActivity extends BaseActivity{
     private String phoneNumber;
     private EditText find_password_mobilephone;
     private EditText find_password_code;
-    private Map<String, String> map = new HashMap<String, String>();
-    private FindPasswordResult result;
     private EditText regist_passowrd_editext;
     @SuppressLint("HandlerLeak")
     private Handler mHandler = new Handler() {
@@ -129,19 +127,10 @@ public class FindPasswordActivity extends BaseActivity{
      * 获取验证码
      */
     private void getAuctoCode(String tel) {
+        Map<String, String> map = new HashMap<>();
+        map.put("phone", tel);
+        find_password_getcode.setEnabled(false);
         BaseObserver baseObserver = new BaseObserver<BaseResult>(this){
-            @Override
-            protected void onStart() {
-                super.onStart();
-                showProgressDialog();
-                find_password_getcode.setEnabled(false);
-            }
-
-            @Override
-            public void onComplete() {
-                super.onComplete();
-                removeProgressDialog();
-            }
 
             @Override
             public void success(BaseResult data) {
@@ -150,48 +139,39 @@ public class FindPasswordActivity extends BaseActivity{
             }
 
             @Override
-            public void error() {
-                removeProgressDialog();
+            public void error(BaseResult value, Throwable e) {
+                super.error(value, e);
                 find_password_getcode.setEnabled(true);
             }
+
         };
         mDisposable.add(baseObserver);
-        UtilRetrofit.getInstance().create(HttpService.class).getCellPhoneValidationForget(tel).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
+        UtilRetrofit.getInstance().create(HttpService.class).sendSms(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
     }
 
 
     private void modifyPassword(String phone, String code, String password){
-        BaseObserver baseObserver = new BaseObserver<BaseResult>(){
-            @Override
-            protected void onStart() {
-                super.onStart();
-                showProgressDialog();
-                find_password_reset.setEnabled(false);
-            }
-
-            @Override
-            public void onComplete() {
-                super.onComplete();
-                removeProgressDialog();
-                find_password_reset.setEnabled(true);
-            }
+        Map<String, String> map = new HashMap<>();
+        map.put("phone", phone);
+        map.put("password", password);
+        map.put("code", code);
+        find_password_reset.setEnabled(false);
+        BaseObserver baseObserver = new BaseObserver<BaseResult>(this, BaseObserver.MODEL_SHOW_DIALOG_TOAST){
 
             @Override
             public void success(BaseResult data) {
                 super.success(data);
-                find_password_reset.setEnabled(false);
-                FindPasswordActivity.this.finishAnim();
+                onBackPressed();
             }
 
             @Override
-            public void error() {
-                super.error();
-                removeProgressDialog();
-                find_password_getcode.setEnabled(true);
+            public void error(BaseResult value, Throwable e) {
+                super.error(value, e);
+                find_password_reset.setEnabled(true);
             }
         };
         mDisposable.add(baseObserver);
-        UtilRetrofit.getInstance().create(HttpService.class).setNewPasswrod(phone, code, password).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
+        UtilRetrofit.getInstance().create(HttpService.class).findPassword(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
     }
 
 

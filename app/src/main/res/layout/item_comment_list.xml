@@ -21,14 +21,7 @@
 
         </de.hdodenhof.circleimageview.CircleImageView>
 
-        <RelativeLayout
 
-            android:id="@+id/rl_head"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignTop="@+id/comment_touxiang"
-            android:layout_marginLeft="@dimen/dp750_20"
-            android:layout_toRightOf="@+id/comment_touxiang">
 
 
             <TextView
@@ -39,36 +32,22 @@
                 android:singleLine="true"
                 android:text="佚名"
                 android:maxLength="10"
+                android:layout_alignTop="@+id/comment_touxiang"
+                android:layout_toRightOf="@+id/comment_touxiang"
+                android:layout_marginLeft="@dimen/dp750_20"
                 android:textColor="#5e5e5e"
                 android:textSize="15sp"/>
 
 
 
-            <TextView
-                android:id="@+id/tv_rank_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/dp750_20"
-                android:layout_toRightOf="@+id/comment_user_name"
-                android:layout_alignBaseline="@+id/comment_user_name"
-                android:background="@drawable/comment_bg"
-                android:drawableLeft="@drawable/vector_huatong"
-                android:drawablePadding="3dip"
-                android:padding="2dip"
-                android:text="爱好者"
-                android:textColor="#5e5e5e"
-                android:textSize="9sp"/>
-
-
-        </RelativeLayout>
 
 
         <TextView
             android:id="@+id/comment_context"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/rl_head"
-            android:layout_below="@+id/rl_head"
+            android:layout_alignLeft="@+id/comment_user_name"
+            android:layout_below="@+id/comment_user_name"
             android:layout_marginRight="20dip"
             android:layout_marginTop="@dimen/dp750_21"
             android:text=""
@@ -88,20 +67,6 @@
             android:textSize="11sp"
             android:textColor="#bababa"/>
 
-        <TextView
-            android:id="@+id/tv_reply"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/tv_time"
-            android:layout_marginLeft="3dip"
-            android:layout_alignLeft="@+id/rl_head"
-            android:drawableLeft="@mipmap/book_details_reply"
-            android:drawablePadding="3dip"
-            android:gravity="center_vertical"
-            android:text="回复"
-            android:textColor="#bababa"
-            android:textSize="12sp"
-            />
 
 
     </RelativeLayout>

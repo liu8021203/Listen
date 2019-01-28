@@ -18,16 +18,20 @@ import com.ting.myself.SettingActivity;
  * 性别选择dialog
  */
 public class SexChooseDialog extends Dialog implements View.OnClickListener {
-    private SettingActivity activity;
     private RelativeLayout choose_man_sex_layout;
     private RelativeLayout choose_women_sex_layout;
     private TextView man_choose_text;
     private TextView women_choose_text;
     private ImageView colse_dialog;
+    private SexChooseCallBackListener mListener;
 
     public SexChooseDialog(BaseActivity baseActivity) {
         super(baseActivity, R.style.SettingDialog);
-        this.activity = (SettingActivity)baseActivity;
+    }
+
+
+    public void setListener(SexChooseCallBackListener listener) {
+        mListener = listener;
     }
 
     @Override
@@ -38,24 +42,13 @@ public class SexChooseDialog extends Dialog implements View.OnClickListener {
     }
 
     private void initView() {
-        choose_man_sex_layout = (RelativeLayout) findViewById(R.id.choose_man_sex_layout);//选择男听迷
-        choose_women_sex_layout = (RelativeLayout) findViewById(R.id.choose_women_sex_layout);//选择女听迷
-        man_choose_text = (TextView) findViewById(R.id.man_choose_text);
-        women_choose_text = (TextView) findViewById(R.id.women_choose_text);
-        colse_dialog=(ImageView)findViewById(R.id.colse_dialog);
+        choose_man_sex_layout =  findViewById(R.id.choose_man_sex_layout);//选择男听迷
+        choose_women_sex_layout =  findViewById(R.id.choose_women_sex_layout);//选择女听迷
+        man_choose_text =  findViewById(R.id.man_choose_text);
+        women_choose_text =  findViewById(R.id.women_choose_text);
+        colse_dialog=findViewById(R.id.colse_dialog);
         choose_man_sex_layout.setOnClickListener(this);
         choose_women_sex_layout.setOnClickListener(this);
-        if (TokenManager.getInfo(activity) != null) {
-            if (TokenManager.getInfo(activity).getType() == 0) {
-                man_choose_text.setText("男听迷");
-                women_choose_text.setText("女听迷");
-            } else if (TokenManager.getInfo(activity).getType() == 1) {
-                man_choose_text.setText("男主播");
-                women_choose_text.setText("女主播");
-            }
-
-        }
-
         colse_dialog.setOnClickListener(this);
     }
 
@@ -63,28 +56,18 @@ public class SexChooseDialog extends Dialog implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.choose_man_sex_layout:
-                if (TokenManager.getInfo(activity) != null) {
-                    if (TokenManager.getInfo(activity).getType() == 0) {
-                        activity.showSexSeeting("男听迷");
-                    } else if (StaticConstant.userInfoResult.getType() == 1) {
-                        activity.showSexSeeting("男主播");
-                    }
-
+                if(mListener != null){
+                    mListener.callback(1);
                 }
 
 
                 dismiss();
                 break;
             case R.id.choose_women_sex_layout:
-                if (TokenManager.getInfo(activity) != null) {
-                    if (TokenManager.getInfo(activity).getType() == 0) {
-                        activity.showSexSeeting("女听迷");
-                    } else if (TokenManager.getInfo(activity).getType() == 1) {
-                        activity.showSexSeeting("女主播");
-                    }
 
+                if(mListener != null){
+                    mListener.callback(2);
                 }
-
                 dismiss();
                 break;
             case R.id.colse_dialog:
@@ -92,7 +75,10 @@ public class SexChooseDialog extends Dialog implements View.OnClickListener {
                 dismiss();
                 break;
         }
+    }
 
 
+    public interface SexChooseCallBackListener{
+        void callback(int sex);
     }
 }

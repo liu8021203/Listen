@@ -4,11 +4,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ting.R;
-import com.ting.bean.anchor.ListenBookVO;
 import com.ting.base.BaseActivity;
+import com.ting.bean.vo.CardVO;
 
 import java.util.List;
 
@@ -16,7 +17,7 @@ import java.util.List;
  * Created by liu on 16/8/5.
  */
 public class ListenBookAdapter extends RecyclerView.Adapter<ListenBookAdapter.ItemViewHolder>{
-    private List<ListenBookVO> data;
+    private List<CardVO> data;
     private int defId = -1;
     private ItemOnClickListener listener;
     private LayoutInflater mInflater;
@@ -31,7 +32,7 @@ public class ListenBookAdapter extends RecyclerView.Adapter<ListenBookAdapter.It
         return defId;
     }
 
-    public void setData(List<ListenBookVO> data) {
+    public void setData(List<CardVO> data) {
         this.data = data;
     }
 
@@ -45,16 +46,16 @@ public class ListenBookAdapter extends RecyclerView.Adapter<ListenBookAdapter.It
 
     @Override
     public void onBindViewHolder(ItemViewHolder holder, int position) {
-        ListenBookVO vo = data.get(position);
-        holder.tvName.setText(vo.getType() + "（" + vo.getPrice() + "听豆）");
-        holder.tvName.setTag(vo);
-        holder.tvName.setOnClickListener(listener);
+        CardVO vo = data.get(position);
+        holder.tvDesc.setText(vo.getCardDesc());
+        holder.itemView.setTag(vo);
+        holder.itemView.setOnClickListener(listener);
         if(defId == Integer.parseInt(vo.getId()))
         {
-            holder.tvName.setCompoundDrawablesWithIntrinsicBounds(R.mipmap.dialog_time_select, 0,0,0);
+            holder.tvDesc.setTextColor(0xff1296db);
         }
         else {
-            holder.tvName.setCompoundDrawablesWithIntrinsicBounds(R.mipmap.dialog_time_unselect, 0,0,0);
+            holder.tvDesc.setTextColor(0xff000000);
         }
     }
 
@@ -71,11 +72,11 @@ public class ListenBookAdapter extends RecyclerView.Adapter<ListenBookAdapter.It
 
     protected class ItemViewHolder extends RecyclerView.ViewHolder
     {
-        TextView tvName;
+        TextView tvDesc;
 
         public ItemViewHolder(View itemView) {
             super(itemView);
-            tvName = (TextView) itemView.findViewById(R.id.tv_name);
+            tvDesc =  itemView.findViewById(R.id.tv_desc);
         }
     }
 
@@ -83,7 +84,7 @@ public class ListenBookAdapter extends RecyclerView.Adapter<ListenBookAdapter.It
     {
         @Override
         public void onClick(View v) {
-            ListenBookVO vo = (ListenBookVO) v.getTag();
+            CardVO vo = (CardVO) v.getTag();
             if(defId == -1)
             {
                 defId = Integer.parseInt(vo.getId());

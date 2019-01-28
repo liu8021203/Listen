@@ -11,10 +11,11 @@ import android.widget.TextView;
 import com.ting.R;
 import com.ting.base.BaseActivity;
 import com.ting.db.DBBook;
+import com.ting.db.DBChapter;
 import com.ting.download.DownloadController;
-import com.ting.play.BookDetailsActivity;
 import com.ting.base.ListenDialog;
 import com.ting.record.DownChapterActivity;
+import com.ting.record.DownloadActivity;
 import com.ting.util.UtilGlide;
 
 import java.util.List;
@@ -23,14 +24,14 @@ import java.util.List;
  * Created by liu on 15/11/11.
  */
 public class DownBookAdapter extends RecyclerView.Adapter<DownBookAdapter.ItemViewHolder>{
-    private List<DBBook> data;
+    private List<DBChapter> data;
     private DeleteListener listener;
     private ItemOnClickListener itemOnClickListener;
-    private BaseActivity mActivity;
+    private DownloadActivity mActivity;
     private LayoutInflater mInflater;
     private DownloadController mController;
 
-    public DownBookAdapter(BaseActivity activity)
+    public DownBookAdapter(DownloadActivity activity)
     {
         this.listener = new DeleteListener();
         this.itemOnClickListener = new ItemOnClickListener();
@@ -40,7 +41,7 @@ public class DownBookAdapter extends RecyclerView.Adapter<DownBookAdapter.ItemVi
 
 
 
-    public void setData(List<DBBook> data) {
+    public void setData(List<DBChapter> data) {
         this.data = data;
     }
 
@@ -54,9 +55,9 @@ public class DownBookAdapter extends RecyclerView.Adapter<DownBookAdapter.ItemVi
 
     @Override
     public void onBindViewHolder(ItemViewHolder holder, int position) {
-        DBBook vo = data.get(position);
-        UtilGlide.loadImg(mActivity,vo.getBookUrl(),holder.iv_book_url);
-        holder.tv_book_name.setText(vo.getBookName());
+        DBChapter vo = data.get(position);
+        UtilGlide.loadImg(mActivity,vo.getBookImage(),holder.ivImg);
+        holder.tv_book_name.setText(vo.getBookTitle());
         holder.tv_host_name.setText(vo.getBookHost());
         holder.iv_book_delete.setTag(vo);
         holder.iv_book_delete.setOnClickListener(listener);
@@ -76,14 +77,14 @@ public class DownBookAdapter extends RecyclerView.Adapter<DownBookAdapter.ItemVi
 
     protected class ItemViewHolder extends RecyclerView.ViewHolder
     {
-        ImageView iv_book_url;
+        ImageView ivImg;
         TextView tv_book_name;
         TextView tv_host_name;
         ImageView iv_book_delete;
 
         public ItemViewHolder(View itemView) {
             super(itemView);
-            iv_book_url =  itemView.findViewById(R.id.iv_book_url);
+            ivImg =  itemView.findViewById(R.id.iv_img);
             iv_book_delete =  itemView.findViewById(R.id.iv_book_delete);
             tv_book_name =  itemView.findViewById(R.id.tv_book_name);
             tv_host_name =  itemView.findViewById(R.id.tv_host_name);
@@ -94,8 +95,8 @@ public class DownBookAdapter extends RecyclerView.Adapter<DownBookAdapter.ItemVi
     {
         @Override
         public void onClick(View v) {
-            final DBBook vo = (DBBook) v.getTag();
-            ListenDialog.makeListenDialog(mActivity, "提示", "是否要删除" + vo.getBookName(), true, "否", true, "是", new ListenDialog.CallBackListener() {
+            final DBChapter vo = (DBChapter) v.getTag();
+            ListenDialog.makeListenDialog(mActivity, "提示", "是否要删除" + vo.getBookTitle(), true, "否", true, "是", new ListenDialog.CallBackListener() {
                 @Override
                 public void callback(ListenDialog dialog, int mark) {
                     dialog.dismiss();
@@ -103,9 +104,12 @@ public class DownBookAdapter extends RecyclerView.Adapter<DownBookAdapter.ItemVi
                         if(mController == null){
                             mController = new DownloadController();
                         }
-                        mController.deleteBook(vo);
+                        mController.deleteBook(vo.getBookId());
                         data.remove(vo);
                         notifyDataSetChanged();
+                        if(data.size() == 0){
+                            mActivity.showEmpty();
+                        }
                     }
                 }
             }).show();
@@ -117,9 +121,9 @@ public class DownBookAdapter extends RecyclerView.Adapter<DownBookAdapter.ItemVi
 
         @Override
         public void onClick(View v) {
-            DBBook vo = (DBBook) v.getTag();
+            DBChapter vo = (DBChapter) v.getTag();
             Bundle bundle = new Bundle();
-            bundle.putInt("bookID", Integer.valueOf(vo.getBookId()));
+            bundle.putString("bookId", vo.getBookId());
             mActivity.intent(DownChapterActivity.class, bundle);
         }
     }

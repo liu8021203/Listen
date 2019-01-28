@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/white"
-    android:clipToPadding="false"
-    android:fitsSystemWindows="true"
-    android:orientation="vertical">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
 
     <RelativeLayout
+        android:id="@+id/rl_actionbar"
         android:layout_width="match_parent"
         android:layout_height="@dimen/actionbarHeight"
         android:background="@color/actionbarColor">
@@ -19,7 +17,7 @@
             android:layout_height="match_parent"
             android:layout_alignParentLeft="true"
             android:layout_marginLeft="@dimen/dp750_30"
-            android:src="@mipmap/back" />
+            android:src="@mipmap/back"/>
 
 
         <EditText
@@ -38,76 +36,150 @@
             android:paddingLeft="@dimen/dp750_30"
             android:singleLine="true"
             android:textColorHint="#b9b9b9"
-            android:textSize="12sp" />
+            android:textSize="12sp"/>
 
 
         <TextView
             android:id="@+id/tv_search"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="搜索"
-            android:textColor="#666666"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
+            android:gravity="center"
+            android:paddingLeft="10dip"
             android:paddingRight="10dip"
-            android:paddingLeft="10dip"/>
+            android:text="搜索"
+            android:textColor="#666666"/>
 
 
     </RelativeLayout>
 
 
-    <RelativeLayout
-        android:id="@+id/rl_layout_hot"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <TextView
-            android:id="@+id/tv_hot_status"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/dp750_36"
-            android:layout_marginTop="@dimen/dp750_26"
-            android:text="热门搜索"
-            android:textColor="#565656"
-            android:textSize="14sp" />
-
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/dp750_12"
-            android:layout_marginTop="@dimen/dp750_14"
-            android:layout_toRightOf="@+id/tv_hot_status"
-            android:background="@drawable/search_hot_text"
-            android:padding="@dimen/dp750_5"
-            android:text="热"
-            android:textColor="@color/white"
-            android:textSize="9sp" />
-
-    </RelativeLayout>
-
-    <GridView
-        android:id="@+id/gridview"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:scrollbars="none"
-        android:layout_marginLeft="@dimen/dp750_46"
-        android:layout_marginRight="@dimen/dp750_46"
-        android:layout_marginTop="@dimen/dp750_26"
-        android:background="@drawable/search_gridview_bg"
-        android:listSelector="@android:color/transparent"
-        android:numColumns="3"></GridView>
-
-    <ListView
-        android:id="@+id/search_lsitView"
+    <include
+        android:id="@+id/empty_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:divider="@null"
-        android:listSelector="@android:color/transparent"
-        android:visibility="gone"
-        android:scrollbars="none">
+        layout="@layout/base_empty_layout"
+        android:layout_below="@+id/rl_actionbar"
+        android:visibility="gone"></include>
 
-    </ListView>
 
-</LinearLayout>
+    <LinearLayout
+        android:id="@+id/ll_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/rl_actionbar"
+        android:orientation="vertical">
+
+
+        <RelativeLayout
+            android:id="@+id/rl_layout_hot"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tv_hot_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/dp750_36"
+                android:layout_marginTop="@dimen/dp750_26"
+                android:text="热门搜索"
+                android:textColor="#565656"
+                android:textSize="14sp"/>
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/dp750_12"
+                android:layout_marginTop="@dimen/dp750_14"
+                android:layout_toRightOf="@+id/tv_hot_status"
+                android:background="@drawable/search_hot_text"
+                android:padding="@dimen/dp750_5"
+                android:text="热"
+                android:textColor="@color/white"
+                android:textSize="9sp"/>
+
+        </RelativeLayout>
+
+
+        <com.zhy.view.flowlayout.TagFlowLayout
+            android:id="@+id/flow_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/dp750_46"
+            android:layout_marginRight="@dimen/dp750_46"
+            android:layout_marginTop="@dimen/dp750_26"
+            app:max_select="1">
+        </com.zhy.view.flowlayout.TagFlowLayout>
+
+
+        <android.support.v4.widget.NestedScrollView
+            android:id="@+id/scrollView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+
+                <TextView
+                    android:id="@+id/tv_host_state"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="15dp"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:text="有声主播"/>
+
+                <View
+                    android:id="@+id/host_line"
+                    android:layout_width="match_parent"
+                    android:layout_height="0.1dp"
+                    android:background="@color/lineColor"></View>
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/recycler_view_host"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:scrollbars="none"/>
+
+
+
+
+                <TextView
+                    android:id="@+id/tv_book_state"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="15dp"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:text="有声作品"/>
+
+
+                <View
+                    android:id="@+id/book_line"
+                    android:layout_width="match_parent"
+                    android:layout_height="0.1dp"
+                    android:background="@color/lineColor"></View>
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/recycler_view_book"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+
+                    android:scrollbars="none">
+                </android.support.v7.widget.RecyclerView>
+
+
+            </LinearLayout>
+
+
+        </android.support.v4.widget.NestedScrollView>
+    </LinearLayout>
+
+</RelativeLayout>

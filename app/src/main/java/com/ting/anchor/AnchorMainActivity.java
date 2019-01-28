@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.ting.R;
 import com.ting.anchor.dialog.GiftDialog;
+import com.ting.bean.HostDetailResult;
 import com.ting.bean.anchor.AnchorMessResult;
 import com.ting.bean.anchor.LiWuResult;
 import com.ting.anchor.adapter.AnchorMainadapter;
@@ -24,7 +25,9 @@ import com.ting.anchor.subview.RewardRankSubView;
 import com.ting.base.BaseActivity;
 import com.ting.base.BaseObserver;
 import com.ting.bean.BaseResult;
+import com.ting.bean.vo.GiftVO;
 import com.ting.common.AppData;
+import com.ting.common.GiftManager;
 import com.ting.common.TokenManager;
 import com.ting.common.http.HttpService;
 import com.ting.login.LoginMainActivity;
@@ -34,6 +37,7 @@ import com.ting.util.UtilRetrofit;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -48,7 +52,6 @@ import io.reactivex.schedulers.Schedulers;
 public class AnchorMainActivity extends BaseActivity implements View.OnClickListener {
     private CircleImageView anchor_face_image;
     private TextView anchor_introduce_name;
-    private TextView anchor_introduce_text;
     private ImageView ivBack;
     private LinearLayout dashang_layout1;
     private LinearLayout follow_anchor_layout1;
@@ -58,7 +61,6 @@ public class AnchorMainActivity extends BaseActivity implements View.OnClickList
     private ArrayList<View> anchorSubViews = new ArrayList<>();
     private ViewPager anchor_main_viewpager;
     private AnchorWorkSubView anchorWorkSubView;
-    private FollowAnchorSubView followAnchorSubView;
     private RewardRankSubView rewardRankSubView;
     private String anchorID;
     private TextView tv_anchor_rank;
@@ -71,13 +73,6 @@ public class AnchorMainActivity extends BaseActivity implements View.OnClickList
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Bundle bundle = getIntent().getExtras();
-        if (bundle != null) {
-            this.anchorID = bundle.getString("anchorId");
-        } else {
-            showToast("数据加载失败");
-            return;
-        }
         setContentView(R.layout.activity_anchor_main2);
     }
 
@@ -93,57 +88,62 @@ public class AnchorMainActivity extends BaseActivity implements View.OnClickList
 
 
     public void getDate() {
-        BaseObserver baseObserver = new BaseObserver<AnchorMessResult>(mActivity) {
+        Map<String, String> map = new HashMap<>();
+        map.put("hostId", anchorID);
+        if(TokenManager.isLogin(this)){
+            map.put("uid", TokenManager.getUid(this));
+        }
+        BaseObserver baseObserver = new BaseObserver<BaseResult<HostDetailResult>>(mActivity) {
             @Override
-            public void success(AnchorMessResult data) {
+            public void success(BaseResult<HostDetailResult> data) {
                 super.success(data);
-                tv_anchor_rank.setText(data.getRankname());
-                if (data.isFollowed()) {
+                HostDetailResult result = data.getData();
+                if (result.getHostData().getFocus() == 0) {
                     anchor_fource_text.setText("已关注");
+                    anchor_fource_text.setTextColor(0xff666666);
+                    anchor_fource_text.setCompoundDrawablesWithIntrinsicBounds(R.mipmap.anchor_focus, 0,0,0);
                 } else {
                     anchor_fource_text.setText("关注");
+                    anchor_fource_text.setTextColor(0xff46bafc);
+                    anchor_fource_text.setCompoundDrawablesWithIntrinsicBounds(R.mipmap.anchor_unfocus, 0,0,0);
                 }
-                UtilGlide.loadAnchorImg(mActivity, data.getThumb(), anchor_face_image);
-                anchor_introduce_name.setText(data.getName());
-                tvTitle.setText("主播-" + data.getName());
-                if (!TextUtils.isEmpty(data.getDeclaration())) {
-                    anchor_introduce_text.setText(data.getDeclaration());
-                } else {
-                    anchor_introduce_text.setText("主人很懒，什么都没留下");
-                }
-
-                anchorWorkSubView.setData(data.getWorks(), anchorID);
-                rewardRankSubView.setData(data.getReward(), anchorID);
-            }
-
-            @Override
-            public void error() {
-                super.error();
+                anchor_fource_text.setTag(result.getHostData().getFocus());
+                UtilGlide.loadAnchorImg(mActivity, result.getHostData().getUserImage(), anchor_face_image);
+                anchor_introduce_name.setText(result.getHostData().getNickname());
+                tvTitle.setText("主播-" + result.getHostData().getNickname());
+                anchorWorkSubView = new AnchorWorkSubView((AnchorMainActivity) mActivity);
+                anchorWorkSubView.setData(result.getBookData());
+                rewardRankSubView = new RewardRankSubView((AnchorMainActivity) mActivity);
+                rewardRankSubView.setData(result.getGiftData());
+                anchorSubViews.add(anchorWorkSubView);
+                anchorSubViews.add(rewardRankSubView);
+                AnchorMainadapter anchorMainadapter = new AnchorMainadapter(anchorSubViews);
+                anchor_main_viewpager.setAdapter(anchorMainadapter);
+                anchor_main_viewpager.setCurrentItem(0);
             }
         };
         mDisposable.add(baseObserver);
-        UtilRetrofit.getInstance().create(HttpService.class).getBroadcasterInfo(TokenManager.getUid(mActivity), anchorID).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
+        UtilRetrofit.getInstance().create(HttpService.class).hostDetail(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
     }
 
 
     @Override
     protected void initView() {
         height = UtilPixelTransfrom.dip2px(this, 216 - 46);
-        ivBack = (ImageView) findViewById(R.id.iv_back);
+        ivBack =  findViewById(R.id.iv_back);
         line = flContent.findViewById(R.id.actiobar_line);
         tvTitle = flContent.findViewById(R.id.tv_title);
-        mTabLayout = (TabLayout) findViewById(R.id.tab_layout);
-        anchor_face_image = (CircleImageView) findViewById(R.id.anchor_face_image);//主播头像
-        anchor_introduce_name = (TextView) findViewById(R.id.anchor_introduce_name);//主播名字
-        anchor_introduce_text = (TextView) findViewById(R.id.anchor_introduce_text);//主播介绍
-        tv_anchor_rank = (TextView) findViewById(R.id.tv_anchor_rank);
-        dashang_layout1 = (LinearLayout) findViewById(R.id.dashang_layout);//打赏催更
-        follow_anchor_layout1 = (LinearLayout) findViewById(R.id.follow_anchor_layout);//关注主播
-        anchor_fource_text = (TextView) findViewById(R.id.anchor_fource_text);
+        mTabLayout =  findViewById(R.id.tab_layout);
+        anchor_face_image =  findViewById(R.id.anchor_face_image);//主播头像
+        anchor_introduce_name =  findViewById(R.id.anchor_introduce_name);//主播名字
+        tv_anchor_rank =  findViewById(R.id.tv_anchor_rank);
+        dashang_layout1 =  findViewById(R.id.dashang_layout);//打赏催更
+        follow_anchor_layout1 =  findViewById(R.id.follow_anchor_layout);//关注主播
+        anchor_fource_text =  findViewById(R.id.anchor_fource_text);
         dashang_layout1.setOnClickListener(this);
         follow_anchor_layout1.setOnClickListener(this);
         ivBack.setOnClickListener(this);
-        anchor_main_viewpager = (ViewPager) findViewById(R.id.anchor_main_viewpager);
+        anchor_main_viewpager =  findViewById(R.id.anchor_main_viewpager);
         mTabLayout.setupWithViewPager(anchor_main_viewpager);
         setViewPager();
         mAppBarLayout = flContent.findViewById(R.id.appbar);
@@ -183,7 +183,13 @@ public class AnchorMainActivity extends BaseActivity implements View.OnClickList
 
     @Override
     protected void getIntentData() {
-
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null) {
+            this.anchorID = bundle.getString("anchorId");
+        } else {
+            showToast("数据加载失败");
+            return;
+        }
     }
 
     @Override
@@ -199,7 +205,8 @@ public class AnchorMainActivity extends BaseActivity implements View.OnClickList
                 if (!TokenManager.isLogin(mActivity)) {
                     intent(LoginMainActivity.class);
                 } else {
-                    if (anchor_fource_text.getText().toString().equals("关注")) {
+                    int focus = (int) anchor_fource_text.getTag();
+                    if (focus == 1) {
                         forceAnchor();
                     } else {
                         cancleAnchor();
@@ -211,28 +218,23 @@ public class AnchorMainActivity extends BaseActivity implements View.OnClickList
                 if (!TokenManager.isLogin(this)) {
                     intent(LoginMainActivity.class);
                 } else {
-                    if (AppData.liWuResult != null) {
+                    if (GiftManager.getGifts() != null) {
                         GiftDialog dialog = new GiftDialog(this);
-                        dialog.setAnchorId(Integer.valueOf(anchorID));
+                        dialog.setHostId(anchorID);
                         dialog.show();
                     } else {
-                        BaseObserver baseObserver = new BaseObserver<LiWuResult>(this) {
+                        BaseObserver baseObserver = new BaseObserver<BaseResult<List<GiftVO>>>(this) {
                             @Override
-                            public void success(LiWuResult data) {
+                            public void success(BaseResult<List<GiftVO>> data) {
                                 super.success(data);
-                                AppData.liWuResult = data;
+                                GiftManager.setGifts(data.getData());
                                 GiftDialog dialog = new GiftDialog(mActivity);
-                                dialog.setAnchorId(Integer.valueOf(anchorID));
+                                dialog.setHostId(anchorID);
                                 dialog.show();
-                            }
-
-                            @Override
-                            public void error() {
-                                showToast("礼物数据获取失败，请重试");
                             }
                         };
                         mDisposable.add(baseObserver);
-                        UtilRetrofit.getInstance().create(HttpService.class).getRewardSymbol().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
+                        UtilRetrofit.getInstance().create(HttpService.class).gift().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
                     }
                 }
 
@@ -252,22 +254,20 @@ public class AnchorMainActivity extends BaseActivity implements View.OnClickList
      */
     private void forceAnchor() {
         map.put("uid", TokenManager.getUid(this));
-        map.put("bid", anchorID);
-        map.put("op", "focus");
-        BaseObserver baseObserver = new BaseObserver<BaseResult>(mActivity) {
+        map.put("hostId", anchorID);
+        BaseObserver baseObserver = new BaseObserver<BaseResult>(mActivity, BaseObserver.MODEL_SHOW_DIALOG_TOAST) {
             @Override
             public void success(BaseResult data) {
                 super.success(data);
                 anchor_fource_text.setText("已关注");
-            }
-
-            @Override
-            public void error() {
-                showToast("出错了，请重新关注");
+                anchor_fource_text.setTag(0);
+                anchor_fource_text.setTextColor(0xff666666);
+                anchor_fource_text.setCompoundDrawablesWithIntrinsicBounds(R.mipmap.anchor_focus, 0,0,0);
+                mActivity.showToast("关注成功");
             }
         };
         mDisposable.add(baseObserver);
-        UtilRetrofit.getInstance().create(HttpService.class).setFocus(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
+        UtilRetrofit.getInstance().create(HttpService.class).focusHost(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
     }
 
     /**
@@ -275,22 +275,21 @@ public class AnchorMainActivity extends BaseActivity implements View.OnClickList
      */
     private void cancleAnchor() {
         map.put("uid", TokenManager.getUid(this));
-        map.put("bid", anchorID);
-        map.put("op", "cancel");
-        BaseObserver baseObserver = new BaseObserver<BaseResult>(mActivity) {
+        map.put("hostId", anchorID);
+        BaseObserver baseObserver = new BaseObserver<BaseResult>(mActivity, BaseObserver.MODEL_SHOW_DIALOG_TOAST) {
             @Override
             public void success(BaseResult data) {
                 super.success(data);
                 anchor_fource_text.setText("关注");
+                anchor_fource_text.setTag(1);
+                anchor_fource_text.setTextColor(0xff46bafc);
+                anchor_fource_text.setCompoundDrawablesWithIntrinsicBounds(R.mipmap.anchor_unfocus, 0,0,0);
+                mActivity.showToast("取消关注");
             }
 
-            @Override
-            public void error() {
-                showToast("出错了，请重新取消");
-            }
         };
         mDisposable.add(baseObserver);
-        UtilRetrofit.getInstance().create(HttpService.class).setFocus(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
+        UtilRetrofit.getInstance().create(HttpService.class).cancleFocusHost(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
     }
 
 
@@ -298,15 +297,7 @@ public class AnchorMainActivity extends BaseActivity implements View.OnClickList
      * 往里面添加viewPager数据
      */
     private void setViewPager() {
-        anchorWorkSubView = new AnchorWorkSubView(this);
-//        followAnchorSubView = new FollowAnchorSubView(this);
-        rewardRankSubView = new RewardRankSubView(this);
-        anchorSubViews.add(anchorWorkSubView);
-//        anchorSubViews.add(followAnchorSubView);
-        anchorSubViews.add(rewardRankSubView);
-        AnchorMainadapter anchorMainadapter = new AnchorMainadapter(anchorSubViews);
-        anchor_main_viewpager.setAdapter(anchorMainadapter);
-        anchor_main_viewpager.setCurrentItem(0);
+
     }
 
 

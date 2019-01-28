@@ -20,6 +20,7 @@ import android.media.RemoteControlClient;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -37,6 +38,7 @@ import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.PlaybackParameters;
+import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.audio.AudioAttributes;
@@ -51,22 +53,29 @@ import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 import com.ting.base.BaseObserver;
+import com.ting.base.BaseToast;
+import com.ting.bean.BaseResult;
+import com.ting.bean.ChapterResult;
 import com.ting.bean.play.PlayingVO;
+import com.ting.bean.vo.ChapterListVO;
 import com.ting.common.AppData;
 import com.ting.common.TokenManager;
 import com.ting.common.http.HttpService;
 import com.ting.db.DBChapter;
 import com.ting.db.DBListenHistory;
 import com.ting.bean.play.PlayListVO;
+import com.ting.play.AESDataSourceFactory;
 import com.ting.play.adapter.PlayListAdapter;
 import com.ting.play.controller.MusicDBController;
 import com.ting.bean.play.PlayResult;
 import com.ting.play.receiver.MyRemoteControlEventReceiver;
 import com.ting.play.state.MusicNotification;
 import com.ting.util.UtilGson;
+import com.ting.util.UtilMD5Encryption;
 import com.ting.util.UtilRetrofit;
 import com.ting.util.UtilSPutil;
 import com.ting.util.UtilStr;
+import com.ting.view.MyToast;
 import com.ting.welcome.MainActivity;
 
 import java.io.File;
@@ -131,10 +140,14 @@ public class MusicService extends Service {
     public static final int SEEKTO_MSG = 6;// 继续播放
     public static final int TIME_START = 7; //开启定时
     public static final int TIME_STOP = 8; //关闭定时
+    public static final int SPEED = 9; //倍速播放
+    public static final int SEEKTO_PLAY_MSG = 10;  //播放
 
     private ExoPlayerEventListener mEventListener = new ExoPlayerEventListener();
     private boolean mAudioNoisyReceiverRegistered;
     private boolean mPlayOnFocusGain;
+
+
     private boolean mExoPlayerNullIsStopped = false;
     private final IntentFilter mAudioNoisyIntentFilter =
             new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
@@ -177,31 +190,17 @@ public class MusicService extends Service {
     AudioFocus mAudioFocus = AudioFocus.NoFocusNoDuck;
 
     private SimpleExoPlayer mExoPlayer; // 媒体播放器对象
-    private String url = null;
     private String currentURL = null;
     private Long time; // 播放进度
     private int msg;// 播放控制消息
     //书籍ID
-    private int bookId = -1;
+    private String bookId = null;
     //章节ID
-    private int cid = -1;
-    //书籍标题
-    private String bookname = null;
-    //章节名称
-    private String cateTitle;
-    //主播名
-    private String host;
-    //书籍图片
-    private String pic;
+    private String chapterId = null;
     //播放集合
-    public static PlayListVO vOs;
-    private int total = 0;
+    private ArrayList<DBChapter> data;
     public static MusicNotification notification;
-
     private NotificationReceiver notificationReceiver;
-
-    //排序方式
-    private String sort = "asc";
     //定时器
     private Timer tTimer;
     //wifi锁
@@ -221,9 +220,13 @@ public class MusicService extends Service {
     //定时时间
     private int timimg = 0;
 
+    private DBChapter currentPlayVO = null;
+
     private ComponentName mMediaButtonReceiverComponent;
-    //是否正常关闭
-    private boolean isNormalDestory = false;
+
+
+    //当前播放完毕, 停止播放  true是停止， false是不停止
+    private boolean currentPlayComplete = false;
 
     @Override
     public void onCreate() {
@@ -238,7 +241,7 @@ public class MusicService extends Service {
         filter.addAction(MusicNotification.CLOSE_MSG);
         filter.addAction(MusicNotification.SHOW_PLAY_MSG);
         registerReceiver(notificationReceiver, filter);
-        notification = new MusicNotification(this);
+        notification = new MusicNotification(getApplicationContext());
         mMediaButtonReceiverComponent = new ComponentName(this, MyRemoteControlEventReceiver.class);
     }
 
@@ -248,34 +251,25 @@ public class MusicService extends Service {
 
         /* 得到从startService传来的动作，后是默认参数，这里是我自定义的常量 */
         if (intent == null) {
-            record(false);
-            isNormalDestory = true;
-            MusicService.this.stopSelf();
             return super.onStartCommand(intent, flags, startId);
         }
         if (mState == State.Preparing) {
             return super.onStartCommand(intent, flags, startId);
         }
-        msg = intent.getIntExtra("MSG", 0); // 播放信息
+        Bundle bundle = intent.getExtras();
+        msg = bundle.getInt("MSG", 0);
         switch (msg) {
             //播放
             case PLAY_MSG: {
-                url = intent.getStringExtra("url");
-                bookId = intent.getIntExtra("bookid", -1);
-                cid = intent.getIntExtra("cid", -1);
-                sort = intent.getStringExtra("sort");
-                cateTitle = intent.getStringExtra("cateTitle");
-                bookname = intent.getStringExtra("bookName");
-                host = intent.getStringExtra("host");
-                pic = intent.getStringExtra("pic");
-                UtilSPutil.getInstance(this).setInt("bookid", bookId);
-                if (intent.getParcelableExtra("vos") != null) {
-                    vOs = intent.getParcelableExtra("vos");
+                if (currentPlayVO != null) {
+                    record();
                 }
-                if (url != null) {
+                currentPlayVO = bundle.getParcelable("vo");
+                if (bundle.getParcelableArrayList("data") != null) {
+                    data = bundle.getParcelableArrayList("data");
+                }
+                if (currentPlayVO != null) {
                     play();
-                } else {
-                    notifyError();
                 }
             }
             break;
@@ -292,46 +286,17 @@ public class MusicService extends Service {
                     Toast.makeText(this, "前面没有更多章节", Toast.LENGTH_SHORT).show();
                     break;
                 }
-                if (vOs.getData() != null) {
-                    int position = vOs.getData().get(0).getPosition();
-                    int page = position / 50 + 1;
-                    if (page == 1) {
-                        if (currentPosition == 0) {
-                            Toast.makeText(this, "前面没有更多章节", Toast.LENGTH_SHORT).show();
-                        } else {
-                            PlayingVO vo = vOs.getData().get(currentPosition - 1);
-                            if (UtilStr.isEmpty(vo.getUrl())) {
-                                Toast.makeText(MusicService.this, "此章节收费", Toast.LENGTH_SHORT).show();
-                            } else {
-                                cid = vo.getId();
-                                url = vo.getUrl();
-                                cateTitle = vo.getTitle();
-                                play();
-                            }
-                        }
-                    } else {
-                        if (currentPosition == 0) {
-                            Toast.makeText(this, "前面没有更多章节", Toast.LENGTH_SHORT).show();
-                        } else {
-                            PlayingVO vo = vOs.getData().get(currentPosition - 1);
-                            if (UtilStr.isEmpty(vo.getUrl())) {
-                                Toast.makeText(MusicService.this, "此章节收费", Toast.LENGTH_SHORT).show();
-                            } else {
-                                cid = vo.getId();
-                                url = vo.getUrl();
-                                cateTitle = vo.getTitle();
-                                play();
-                            }
-                        }
-                    }
+                if (currentPosition == 0) {
+                    Toast.makeText(this, "前面没有更多章节", Toast.LENGTH_SHORT).show();
                 } else {
-                    if (currentPosition == 0) {
-                        Toast.makeText(this, "前面没有更多章节", Toast.LENGTH_SHORT).show();
+                    DBChapter vo = data.get(currentPosition - 1);
+                    if (UtilStr.isEmpty(vo.getUrl())) {
+                        Toast.makeText(MusicService.this, "此章节收费", Toast.LENGTH_SHORT).show();
                     } else {
-                        DBChapter vo = vOs.getOfflineData().get(currentPosition - 1);
-                        cid = vo.getChapterId();
-                        url = vo.getChapterUrl();
-                        cateTitle = vo.getChapterTitle();
+                        if (currentPlayVO != null) {
+                            record();
+                        }
+                        currentPlayVO = vo;
                         play();
                     }
                 }
@@ -345,45 +310,31 @@ public class MusicService extends Service {
                     break;
                 }
                 if (currentPosition == -2) {
-                    if (vOs.getData() != null && !vOs.getData().isEmpty()) {
-                        PlayingVO vo = vOs.getData().get(0);
+                    if (data != null && !data.isEmpty()) {
+                        DBChapter vo = data.get(0);
                         if (UtilStr.isEmpty(vo.getUrl())) {
                             Toast.makeText(MusicService.this, "此章节收费", Toast.LENGTH_SHORT).show();
                         } else {
-                            cid = vo.getId();
-                            url = vo.getUrl();
-                            cateTitle = vo.getTitle();
+                            if (currentPlayVO != null) {
+                                record();
+                            }
+                            currentPlayVO = vo;
                             play();
                         }
-                    } else {
-                        DBChapter chapter = vOs.getOfflineData().get(0);
-                        cid = chapter.getChapterId();
-                        url = chapter.getChapterUrl();
-                        cateTitle = chapter.getChapterTitle();
-                        play();
                     }
                 } else {
-                    if (vOs.getData() != null && !vOs.getData().isEmpty()) {
-                        if (currentPosition < vOs.getData().size() - 1) {
-                            PlayingVO vo = vOs.getData().get(currentPosition + 1);
+                    if (data != null && !data.isEmpty()) {
+                        if (currentPosition < data.size() - 1) {
+                            DBChapter vo = data.get(currentPosition + 1);
                             if (UtilStr.isEmpty(vo.getUrl())) {
                                 Toast.makeText(MusicService.this, "此章节收费", Toast.LENGTH_SHORT).show();
                             } else {
-                                cid = vo.getId();
-                                url = vo.getUrl();
-                                cateTitle = vo.getTitle();
+                                if (currentPlayVO != null) {
+                                    record();
+                                }
+                                currentPlayVO = vo;
                                 play();
                             }
-                        } else {
-                            Toast.makeText(MusicService.this, "后面没有更多章节", Toast.LENGTH_SHORT).show();
-                        }
-                    } else {
-                        if (currentPosition < vOs.getOfflineData().size() - 1) {
-                            DBChapter chapter = vOs.getOfflineData().get(currentPosition + 1);
-                            cid = chapter.getChapterId();
-                            url = chapter.getChapterUrl();
-                            cateTitle = chapter.getChapterTitle();
-                            play();
                         } else {
                             Toast.makeText(MusicService.this, "后面没有更多章节", Toast.LENGTH_SHORT).show();
                         }
@@ -393,29 +344,25 @@ public class MusicService extends Service {
             break;
             //跳转
             case SEEKTO_MSG: {
-                time = intent.getLongExtra("seekTime", 0);
-                seekType = intent.getIntExtra("seekType", 1);
-                if (seekType == 0) {
-                    url = intent.getStringExtra("url");
-                    bookId = intent.getIntExtra("bookid", -1);
-                    cid = intent.getIntExtra("cid", -1);
-                    sort = intent.getStringExtra("sort");
-                    cateTitle = intent.getStringExtra("cateTitle");
-                    bookname = intent.getStringExtra("bookName");
-                    host = intent.getStringExtra("host");
-                    pic = intent.getStringExtra("pic");
-                    UtilSPutil.getInstance(this).setInt("bookid", bookId);
-                    if (intent.getParcelableExtra("vos") != null) {
-                        vOs = intent.getParcelableExtra("vos");
-                    }
+                time = bundle.getLong("seekTime", 0);
+                if (mExoPlayer != null) {
+                    mExoPlayer.seekTo(time);
+                    mExoPlayer.setPlayWhenReady(true);
                 }
-                if (seekType == 0) {
+            }
+            break;
+
+            case SEEKTO_PLAY_MSG: {
+                time = bundle.getLong("seekTime", 0);
+                if (currentPlayVO != null) {
+                    record();
+                }
+                currentPlayVO = bundle.getParcelable("vo");
+                if (bundle.getParcelableArrayList("data") != null) {
+                    data = bundle.getParcelableArrayList("data");
+                }
+                if (currentPlayVO != null) {
                     play();
-                } else {
-                    if (mExoPlayer != null) {
-                        mExoPlayer.seekTo(time);
-                        mExoPlayer.setPlayWhenReady(true);
-                    }
                 }
             }
             break;
@@ -437,8 +384,8 @@ public class MusicService extends Service {
                                 notifyTimerComplete();
                                 AppData.ifTimeSetting = false;
                                 AppData.shutDownTimer = 0;
-                                record(false);
-                                isNormalDestory = true;
+                                record();
+                                notifyPlayStop();
                                 MusicService.this.stopSelf();
                             } else {
                                 timimg--;
@@ -459,6 +406,14 @@ public class MusicService extends Service {
             }
             break;
 
+            case SPEED:
+                float speed = intent.getFloatExtra("speed", 1.0f);
+                if (mExoPlayer != null) {
+                    PlaybackParameters playbackParameters = new PlaybackParameters(speed, 1.0F);
+                    mExoPlayer.setPlaybackParameters(playbackParameters);
+                }
+                break;
+
             default:
                 notifyError();
                 break;
@@ -472,31 +427,29 @@ public class MusicService extends Service {
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     private void play() {
         Log.d("aaa", "play----------播放");
+        String url = currentPlayVO.getUrl();
         mPlayOnFocusGain = true;
         tryToGetAudioFocus();
         registerAudioNoisyReceiver();
-        String localFile = AppData.FILE_PATH + bookId + "/" + bookId + "" + cid + ".mp3";
+        String localFile = AppData.FILE_PATH + currentPlayVO.getBookId() + "/" + UtilMD5Encryption.getMd5Value(currentPlayVO.getChapterId()) + ".tsj";
         File file = new File(localFile);
         if (file.exists()) {
             url = localFile;
         }
+        url = url.replaceAll(" ", "%20");
         boolean mediaHasChanged = !TextUtils.equals(url, currentURL);
         if (mediaHasChanged) {
             currentURL = url;
         }
         if (mediaHasChanged || mExoPlayer == null) {
             releaseResources(false);
-            //判断是否本地播放
-            if (!TextUtils.isEmpty(currentURL)) {
-                currentURL = currentURL.replaceAll(" ", "%20"); // Escape spaces for URLs
-            }
             if (mExoPlayer == null) {
                 mExoPlayer = ExoPlayerFactory.newSimpleInstance(this, new DefaultTrackSelector(), new DefaultLoadControl());
                 mExoPlayer.addListener(mEventListener);
             }
             final AudioAttributes audioAttributes = new AudioAttributes.Builder().setContentType(CONTENT_TYPE_MUSIC).setUsage(USAGE_MEDIA).build();
             mExoPlayer.setAudioAttributes(audioAttributes);
-            DataSource.Factory factory = new DefaultDataSourceFactory(this, Util.getUserAgent(this, "listen"));
+            AESDataSourceFactory factory = new AESDataSourceFactory(this, Util.getUserAgent(this, "listen"));
             ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
             Log.d("aaa", "播放链接===========" + currentURL);
             MediaSource mediaSource = new ExtractorMediaSource(Uri.parse(currentURL), factory, extractorsFactory, null, null);
@@ -504,67 +457,20 @@ public class MusicService extends Service {
             mWifiLock.acquire();
         }
         configurePlayerState();
-        if (mControlClient == null) {
-            Intent intent = new Intent(Intent.ACTION_MEDIA_BUTTON);
-            intent.setComponent(mMediaButtonReceiverComponent);
-            mControlClient = new RemoteControlClient(
-                    PendingIntent.getBroadcast(this /*context*/,
-                            0 /*requestCode, ignored*/, intent /*intent*/, 0 /*flags*/));
-            mAudioManager.registerRemoteControlClient(mControlClient);
-            mAudioManager.registerMediaButtonEventReceiver(mMediaButtonReceiverComponent);
-            mControlClient.setOnGetPlaybackPositionListener(new RemoteControlClient.OnGetPlaybackPositionListener() {
-                @Override
-                public long onGetPlaybackPosition() {
-                    if (mExoPlayer == null) {
-                        return 0;
-                    } else {
-                        return mExoPlayer.getCurrentPosition();
-                    }
-                }
-            });
-            mControlClient.setPlaybackPositionUpdateListener(new RemoteControlClient.OnPlaybackPositionUpdateListener() {
-                @Override
-                public void onPlaybackPositionUpdate(long newPositionMs) {
-
-                }
-            });
-        }
-
-        mControlClient.setPlaybackState(
-                RemoteControlClient.PLAYSTATE_PLAYING);
-
-        mControlClient.setTransportControlFlags(
-                RemoteControlClient.FLAG_KEY_MEDIA_PLAY |
-                        RemoteControlClient.FLAG_KEY_MEDIA_PAUSE |
-                        RemoteControlClient.FLAG_KEY_MEDIA_NEXT |
-                        RemoteControlClient.FLAG_KEY_MEDIA_STOP);
-
-
-        // Update the remote controls
-        mControlClient.editMetadata(true)
-                .putString(MediaMetadataRetriever.METADATA_KEY_ARTIST, host)
-                .putString(MediaMetadataRetriever.METADATA_KEY_ALBUM, bookname)
-                .putString(MediaMetadataRetriever.METADATA_KEY_TITLE, cateTitle)
-                .putLong(MediaMetadataRetriever.METADATA_KEY_DURATION,
-                        mExoPlayer.getDuration())
-                .apply();
     }
 
     /**
      * 暂停
      */
     private void pause() {
-        if (mControlClient != null) {
-            mControlClient.setPlaybackState(
-                    RemoteControlClient.PLAYSTATE_PAUSED);
-        }
-        record(false);
+        mState = State.Paused;
+        record();
         if (mExoPlayer != null) {
             mExoPlayer.setPlayWhenReady(false);
         }
         releaseResources(false);
         unregisterAudioNoisyReceiver();
-        stopForeground(false);
+//        stopForeground(false);
         notifyPause();
     }
 
@@ -572,17 +478,8 @@ public class MusicService extends Service {
     @Override
     public void onDestroy() {
         Log.d("aaa", "onDestroy");
-        if(!isNormalDestory) {
-            record(false);
-        }
-        errorRelease();
-        if (notificationReceiver != null) {
-            this.unregisterReceiver(notificationReceiver);
-        }
-        Intent intent = new Intent();
-        intent.setAction(MUSIC_DESTORY);
-        sendBroadcast(intent);
         super.onDestroy();
+        errorRelease();
     }
 
     /**
@@ -590,71 +487,47 @@ public class MusicService extends Service {
      */
     public void errorRelease() {
         mState = State.Stopped;
-        if (mControlClient != null) {
-            mControlClient.setPlaybackState(RemoteControlClient.PLAYSTATE_STOPPED);
+        currentPlayVO = null;
+        if (notificationReceiver != null) {
+            this.unregisterReceiver(notificationReceiver);
         }
-        notifyComplete();
         sendPauseStatus();
         giveUpAudioFocus();
         stopForeground(true);
         unregisterAudioNoisyReceiver();
-        AppData.playKey = null;
-        AppData.currPlayBookId = -1;
-        AppData.isPlaying = false;
         releaseResources(true);
         if (tTimer != null) {
             tTimer.cancel();
             tTimer = null;
         }
+        AppData.playKey = null;
+        AppData.isPlaying = false;
+        AppData.loadingKey = null;
     }
 
-    public void record(boolean isComplete) {
-        if (!TextUtils.isEmpty(url) && getCurrPlayPostion() != -1 && vOs != null) {
+    public void record() {
+        if (currentPlayVO != null) {
             MusicDBController controller = new MusicDBController();
             DBListenHistory vo = new DBListenHistory();
-            vo.setBookid(bookId);
-            vo.setChapter_name(cateTitle);
-            vo.setCid(cid);
-            vo.setUrl(url);
-            vo.setDate(System.currentTimeMillis());
-
-            //在线播放记忆位置
-            if (vOs.getData() != null && !vOs.getData().isEmpty()) {
-                int position = getCurrPlayPostion();
-                Log.d("aaa", "postion========" + position + "=========");
-                if (position != -1 && position != -2) {
-                    vo.setPosition(vOs.getData().get(getCurrPlayPostion()).getPosition());
-                } else {
-                    vo.setPosition(0);
-                }
-            }
-            //离线播放记忆位置
-            else {
-                int position = getCurrPlayPostion();
-                if (position != -1 && position != -2) {
-                    vo.setPosition(vOs.getOfflineData().get(getCurrPlayPostion()).getPosition());
-                } else {
-                    vo.setPosition(0);
-                }
-            }
-            vo.setBookname(bookname);
-            vo.setHost(host);
-            vo.setPic(pic);
+            vo.setBookId(currentPlayVO.getBookId());
+            vo.setChapterTitle(currentPlayVO.getTitle());
+            vo.setChapterId(currentPlayVO.getChapterId());
+            vo.setChapterUrl(currentPlayVO.getUrl());
+            vo.setPosition(currentPlayVO.getPosition());
+            vo.setBookTitle(currentPlayVO.getBookTitle());
+            vo.setBookHost(currentPlayVO.getBookHost());
+            vo.setBookImage(currentPlayVO.getBookImage());
+            vo.setSystemTime(System.currentTimeMillis());
             //播放完成
-            if (isComplete) {
-                vo.setDuration(0L);
-                vo.setTotal(0L);
+            if (mExoPlayer != null && mExoPlayer.getCurrentPosition() > 0) {
+                vo.setDuration(mExoPlayer.getCurrentPosition());
             } else {
-                if (mExoPlayer != null && mExoPlayer.getCurrentPosition() > 0) {
-                    vo.setDuration(mExoPlayer.getCurrentPosition());
-                } else {
-                    vo.setDuration(0L);
-                }
-                if (mExoPlayer != null && mExoPlayer.getDuration() > 0) {
-                    vo.setTotal(mExoPlayer.getDuration());
-                } else {
-                    vo.setTotal(0L);
-                }
+                vo.setDuration(0L);
+            }
+            if (mExoPlayer != null && mExoPlayer.getDuration() > 0) {
+                vo.setTotal(mExoPlayer.getDuration());
+            } else {
+                vo.setTotal(0L);
             }
             controller.insert(vo);
         }
@@ -669,10 +542,6 @@ public class MusicService extends Service {
             mAudioFocus = AudioFocus.Focused;
         } else {
             mAudioFocus = AudioFocus.NoFocusNoDuck;
-        }
-        if (mAudioFocus != AudioFocus.Focused && AudioManager.AUDIOFOCUS_REQUEST_GRANTED ==
-                mAudioManager.requestAudioFocus(mAudioFocusChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN)) {
-            mAudioFocus = AudioFocus.Focused;
         }
     }
 
@@ -692,7 +561,6 @@ public class MusicService extends Service {
      * @param b
      */
     private void releaseResources(boolean b) {
-//        stopForeground(true);
         if (b && mExoPlayer != null) {
             mExoPlayer.release();
             mExoPlayer.removeListener(mEventListener);
@@ -778,11 +646,8 @@ public class MusicService extends Service {
      * 通知加载
      */
     private void notifyLoading() {
+        AppData.loadingKey = currentPlayVO.getChapterId();
         Intent intent = new Intent();
-        intent.putExtra("bookid", bookId);
-        intent.putExtra("cid", cid);
-        AppData.playKey = bookId + "-" + cid;
-        AppData.isPlaying = false;
         intent.setAction(MUSIC_LOADING);
         sendBroadcast(intent);
     }
@@ -792,20 +657,20 @@ public class MusicService extends Service {
      */
     private void notifyStartPlay() {
         Log.d("aaa", "通知播放");
-        seekType = 1;
+        if(mState != State.Paused) {
+            startForeground(NOTIFICATION_ID, notification.getNotification());
+        }
         mState = State.Playing;
+        record();
+        notification.notifyInit(currentPlayVO.getBookTitle(), currentPlayVO.getTitle(), currentPlayVO.getBookImage());
         Intent intent = new Intent();
-        intent.putExtra("TotalTime", mExoPlayer.getDuration());
-        intent.putExtra("bookid", bookId);
-        intent.putExtra("cid", cid);
-        intent.putExtra("cateTitle", cateTitle);
+        intent.putExtra("totalTime", mExoPlayer.getDuration());
+        intent.putExtra("chapterTitle", currentPlayVO.getTitle());
         intent.setAction(MUSIC_PLAY);
         sendBroadcast(intent);
-        startForeground(NOTIFICATION_ID, notification.getNotification());
-        notification.notifyInit(bookId, bookname, cateTitle, pic);
+        AppData.loadingKey = null;
         AppData.isPlaying = true;
-        AppData.playKey = bookId + "-" + cid;
-        AppData.currPlayBookId = bookId;
+        AppData.playKey = currentPlayVO.getChapterId();
         updateProgress();
     }
 
@@ -815,22 +680,24 @@ public class MusicService extends Service {
     private void notifyPause() {
         handler.removeCallbacksAndMessages(null);
         Intent intent = new Intent();
-        intent.putExtra("bookid", bookId);
+        intent.putExtra("bookId", currentPlayVO.getBookId());
         intent.setAction(MUSIC_PAUSE);
         sendBroadcast(intent);
         notification.notifyPause();
+        AppData.loadingKey = null;
         AppData.isPlaying = false;
     }
 
 
-    protected void notifyComplete() {
-        Log.d("aaa--MusicService", "播放完成");
+    protected void notifyPlayStop() {
+        Log.d("aaa", "MusicService--------播放完成");
+        mState = State.Stopped;
         handler.removeCallbacksAndMessages(null);
         Intent intent = new Intent();
-        intent.putExtra("bookid", bookId);
         notification.notifyCancel();
         intent.setAction(MUSIC_COMPLETE);
         sendBroadcast(intent);
+        AppData.loadingKey = null;
         AppData.isPlaying = false;
         AppData.playKey = null;
     }
@@ -867,7 +734,7 @@ public class MusicService extends Service {
     private void notifyError() {
         mState = State.Stopped;
         AppData.playKey = null;
-        AppData.currPlayBookId = -1;
+        AppData.loadingKey = null;
         AppData.isPlaying = false;
         Intent intent = new Intent();
         intent.putExtra("bookid", bookId);
@@ -885,9 +752,8 @@ public class MusicService extends Service {
                 Intent intent = new Intent();
                 intent.putExtra("currentTime", mExoPlayer.getCurrentPosition());
                 intent.putExtra("totalTime", mExoPlayer.getDuration());
-                intent.putExtra("bookid", bookId);
-                intent.putExtra("cateTitle", cateTitle);
-                intent.putExtra("bookName", bookname);
+                intent.putExtra("chapterTitle", currentPlayVO.getTitle());
+                intent.putExtra("bookTitle", currentPlayVO.getBookTitle());
                 intent.setAction(MUSIC_PROGRESS);
                 sendBroadcast(intent);
             } catch (Exception e) {
@@ -900,7 +766,6 @@ public class MusicService extends Service {
     private void notifyBuffStart() {
         mState = State.Preparing;
         Intent intent = new Intent();
-        intent.putExtra("bookid", bookId);
         intent.setAction(MUSIC_BUFFER_START);
         sendBroadcast(intent);
     }
@@ -909,11 +774,9 @@ public class MusicService extends Service {
     private void notifyBuffEnd() {
         mState = State.Playing;
         Intent intent = new Intent();
-        intent.putExtra("bookid", bookId);
         intent.setAction(MUSIC_BUFFER_END);
         sendBroadcast(intent);
     }
-
 
 
     /**
@@ -941,7 +804,7 @@ public class MusicService extends Service {
 
     /*
      * 接受notification发来的广播控制播放器
-	 */
+     */
     public class NotificationReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -957,10 +820,9 @@ public class MusicService extends Service {
                     sendPauseStatus();
                     break;
                 case MusicNotification.CLOSE_MSG:
-                    AppData.currPlayBookId = -1;
-                    record(false);
+                    record();
+                    notifyPlayStop();
                     sendPauseStatus();
-                    isNormalDestory = true;
                     MusicService.this.stopSelf();
                     break;
 
@@ -977,30 +839,15 @@ public class MusicService extends Service {
      * @return -1：没有相关数据   -2：当前播放url不在播放队列中
      */
     private int getCurrPlayPostion() {
-        if (vOs.getData() != null && !vOs.getData().isEmpty()) {
-            List<PlayingVO> data = vOs.getData();
-            if (data == null) {
-                return -1;
-            } else {
-                for (int i = 0; i < data.size(); i++) {
-                    if (cid == data.get(i).getId()) {
-                        return i;
-                    }
+        if (data != null && !data.isEmpty()) {
+            for (int i = 0; i < data.size(); i++) {
+                if(TextUtils.equals(currentPlayVO.getChapterId(), data.get(i).getChapterId())){
+                    return i;
                 }
-                return -2;
             }
+            return -2;
         } else {
-            List<DBChapter> data = vOs.getOfflineData();
-            if (data == null) {
-                return -1;
-            } else {
-                for (int i = 0; i < data.size(); i++) {
-                    if (cid == data.get(i).getChapterId()) {
-                        return i;
-                    }
-                }
-                return -2;
-            }
+            return -1;
         }
     }
 
@@ -1010,150 +857,90 @@ public class MusicService extends Service {
     private void playCompletion() {
         //播放完成
         msg = PLAY_MSG;
-        if (vOs != null && ((vOs.getData() != null && vOs.getData().size() > 0) || (vOs.getOfflineData() != null && vOs.getOfflineData().size() > 0))) {
-            int index = getCurrPlayPostion();
-            if (index != -1) {
-                //在线逻辑
-                if (vOs.getData() != null && !vOs.getData().isEmpty()) {
-                    if (index == -2) {
-                        PlayingVO vo = vOs.getData().get(0);
-                        if (UtilStr.isEmpty(vo.getUrl())) {
-                            record(true);
-                            Toast.makeText(MusicService.this, "此章节收费", Toast.LENGTH_SHORT).show();
-                            isNormalDestory = true;
-                            MusicService.this.stopSelf();
-                        } else {
-                            cid = vo.getId();
-                            url = vo.getUrl();
-                            cateTitle = vo.getTitle();
-                            play();
-                        }
+        currentURL = null;
+        if (!currentPlayComplete) {
+            if (data != null && !data.isEmpty()) {
+                int index = getCurrPlayPostion();
+                if (index == -2) {
+                    DBChapter vo = data.get(0);
+                    if (TextUtils.isEmpty(vo.getUrl())) {
+                        BaseToast.makeText(MusicService.this, "此章节收费", Toast.LENGTH_SHORT).show();
+                        MusicService.this.stopSelf();
                     } else {
-                        if (index < vOs.getData().size() - 1) {
-                            PlayingVO vo = vOs.getData().get(index + 1);
-                            if (UtilStr.isEmpty(vo.getUrl())) {
-                                record(true);
-                                Toast.makeText(MusicService.this, "此章节收费", Toast.LENGTH_SHORT).show();
-                                isNormalDestory = true;
-                                MusicService.this.stopSelf();
-                            } else {
-                                Log.d("service", "下一集");
-                                cid = vo.getId();
-                                url = vo.getUrl();
-                                cateTitle = vo.getTitle();
-                                play();
-                            }
-                        } else {
-                            List<PlayingVO> data = vOs.getData();
-                            int position = data.get(data.size() - 1).getPosition();
-                            int page = position / 50 + 2;
-                            loadData(page);
-                        }
-                    }
-                }
-                //离线逻辑
-                else {
-                    if (index == -2) {
-                        DBChapter vo = vOs.getOfflineData().get(0);
-                        cid = vo.getChapterId();
-                        url = vo.getChapterUrl();
-                        cateTitle = vo.getChapterTitle();
+                        currentPlayVO = vo;
                         play();
-                    } else {
-                        if (index < vOs.getOfflineData().size() - 1) {
-                            DBChapter vo = vOs.getOfflineData().get(index + 1);
-                            cid = vo.getChapterId();
-                            url = vo.getChapterUrl();
-                            cateTitle = vo.getChapterTitle();
-                            play();
-                        } else {
-                            Toast.makeText(MusicService.this, "播放完成", Toast.LENGTH_SHORT).show();
-                            record(true);
-                            isNormalDestory = true;
+                    }
+                } else {
+                    if (index < data.size() - 1) {
+                        DBChapter vo = data.get(index + 1);
+                        if (TextUtils.isEmpty(vo.getUrl())) {
+                            BaseToast.makeText(MusicService.this, "此章节收费", Toast.LENGTH_SHORT).show();
                             MusicService.this.stopSelf();
+                        } else {
+                            Log.d("service", "下一集");
+                            currentPlayVO = vo;
+                            play();
                         }
+                    } else {
+                        int position = (data.get(index).getPosition() - 1) / 50 + 2;
+                        int page = position / 50 + 2;
+                        loadData(page);
                     }
                 }
+            } else {
+                BaseToast.makeText(MusicService.this, "播放完成", Toast.LENGTH_SHORT).show();
+                MusicService.this.stopSelf();
             }
-        } else {
-            Toast.makeText(MusicService.this, "播放完成", Toast.LENGTH_SHORT).show();
-            record(true);
-            isNormalDestory = true;
-            MusicService.this.stopSelf();
         }
     }
 
     /**
      * 加载数据
      *
-     * @param page
+     * @param pages
      */
     private void loadData(final int pages) {
         Map<String, String> map = new HashMap<String, String>();
-        map.put("page", pages + "");
-        map.put("type", "works");
-        map.put("count", "50");
-        map.put("bookID", bookId + "");
+        map.put("page", String.valueOf(pages));
+        map.put("size", "50");
+        map.put("bookId", currentPlayVO.getBookId());
         if (TokenManager.isLogin(this)) {
             map.put("uid", TokenManager.getUid(this));
         }
-        map.put("sort", sort);
-        BaseObserver baseObserver = new BaseObserver<PlayResult>() {
+        BaseObserver baseObserver = new BaseObserver<BaseResult<ChapterResult>>() {
             @Override
-            public void success(PlayResult data) {
+            public void success(BaseResult<ChapterResult> data) {
                 super.success(data);
-                if (data.getData() != null && data.getData().getData() != null && data.getData().getData().size() > 0) {
-                    int page = data.getData().getPage();
-                    int count = data.getData().getCount();
-                    int length = data.getData().getLenght();
-                    for (int i = 0; i < data.getData().getData().size(); i++) {
-                        int position = -1;
-                        if (sort.equals("asc")) {
-                            position = (page - 1) * count + i;
-                        } else {
-                            position = length - ((page - 1) * count + i);
-                        }
-                        data.getData().getData().get(i).setPosition(position);
+                ChapterResult result = data.getData();
+                Log.d("aaa", "请求网络");
+                if (result != null && result.getList() != null && !result.getList().isEmpty()) {
+                    DBChapter vo = result.getList().get(0);
+                    if (TextUtils.isEmpty(vo.getUrl())) {
+                        BaseToast.makeText(MusicService.this, "此章节收费").show();
+                        MusicService.this.stopSelf();
+                    } else {
+                        currentPlayVO = vo;
+                        play();
                     }
-                    if(pages != page) {
-                        vOs.getData().addAll(data.getData().getData());
-                        Log.d("aaa", "请求网络");
-                        notifyDataUpdate(vOs);
-                        int index = getCurrPlayPostion();
-                        if (index != -1) {
-                            if (index < vOs.getData().size() - 1) {
-                                PlayingVO vo = vOs.getData().get(index + 1);
-                                if (UtilStr.isEmpty(vo.getUrl())) {
-                                    Toast.makeText(MusicService.this, "此章节收费", Toast.LENGTH_SHORT).show();
-                                    record(true);
-                                    isNormalDestory = true;
-                                    MusicService.this.stopSelf();
-                                } else {
-                                    cid = vo.getId();
-                                    url = vo.getUrl();
-                                    cateTitle = vo.getTitle();
-                                    play();
-                                }
-                            }
-                        }
-                    }
+                    MusicService.this.data.addAll(result.getList());
+                } else {
+                    BaseToast.makeText(MusicService.this, "最后一章").show();
+                    MusicService.this.stopSelf();
                 }
             }
 
+
             @Override
-            public void error() {
-                super.error();
-                Toast.makeText(MusicService.this, "最后一章", Toast.LENGTH_SHORT).show();
-                record(true);
-                isNormalDestory = true;
+            public void error(BaseResult<ChapterResult> value, Throwable e) {
+                super.error(value, e);
+                BaseToast.makeText(MusicService.this, "最后一章").show();
                 MusicService.this.stopSelf();
             }
         };
-        UtilRetrofit.getInstance().create(HttpService.class).getPlayerList(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
+        UtilRetrofit.getInstance().create(HttpService.class).chapter(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
     }
 
     private void updateProgress() {
-        Log.d("bbb", mExoPlayer.getCurrentPosition() + "");
         handler.removeCallbacksAndMessages(null);
         notifyProgress();
         handler.sendEmptyMessageDelayed(0, 1000);
@@ -1199,29 +986,28 @@ public class MusicService extends Service {
         public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
             Log.d("aaa", "onPlayerStateChanged ------- " + playbackState + "--------------" + playWhenReady);
             switch (playbackState) {
-                case ExoPlayer.STATE_IDLE:
+                case Player.STATE_IDLE:
                     break;
-                case ExoPlayer.STATE_BUFFERING:
+                case Player.STATE_BUFFERING:
                     notifyLoading();
                     break;
-                case ExoPlayer.STATE_READY:
+                case Player.STATE_READY:
                     if (playWhenReady) {
-                        if (msg == SEEKTO_MSG) {
+                        if (msg == SEEKTO_PLAY_MSG) {
                             if (mExoPlayer != null) {
                                 mExoPlayer.seekTo(time);
                             }
+                            record();
                             msg = PLAY_MSG;
                         }
-                        record(false);
                         notifyStartPlay();
                     }
                     break;
-                case ExoPlayer.STATE_ENDED:
-                    notifyComplete();
+                case Player.STATE_ENDED:
+                    record();
+                    notifyPlayStop();
                     if (playWhenReady) {
                         playCompletion();
-                    } else {
-
                     }
                     break;
 
@@ -1246,20 +1032,17 @@ public class MusicService extends Service {
             switch (error.type) {
                 case ExoPlaybackException.TYPE_SOURCE:
                     what = error.getSourceException().getMessage();
-                    record(false);
-                    isNormalDestory = true;
+                    record();
                     MusicService.this.stopSelf();
                     break;
                 case ExoPlaybackException.TYPE_RENDERER:
                     what = error.getRendererException().getMessage();
-                    record(false);
-                    isNormalDestory = true;
+                    record();
                     MusicService.this.stopSelf();
                     break;
                 case ExoPlaybackException.TYPE_UNEXPECTED:
                     what = error.getUnexpectedException().getMessage();
-                    record(false);
-                    isNormalDestory = true;
+                    record();
                     MusicService.this.stopSelf();
                     break;
                 default:

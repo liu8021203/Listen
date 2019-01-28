@@ -42,6 +42,25 @@
 
     </RelativeLayout>
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/rl_header"
+        android:layout_above="@+id/play_name">
+
+        <TextView
+            android:id="@+id/tv_speed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:text="1X倍速"
+            android:padding="5dp"
+            android:layout_centerInParent="true"/>
+
+    </RelativeLayout>
+
+
+
 
     <TextView
         android:id="@+id/play_name"
@@ -56,6 +75,9 @@
         android:lines="1"
         android:text=""
         android:textColor="@color/white"
+        android:drawableRight="@mipmap/play_arrow_right"
+        android:drawablePadding="5dp"
+        android:gravity="center_vertical"
         android:textSize="@dimen/px30"/>
 
     <TextView
@@ -128,7 +150,7 @@
                     android:layout_width="@dimen/dpx96"
                     android:layout_height="@dimen/dpx96"
                     android:layout_centerInParent="true"
-                    android:indeterminateDrawable="@drawable/music_progress"
+                    android:indeterminateTint="@color/white"
                     android:visibility="gone"/>
 
             </RelativeLayout>

@@ -7,8 +7,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.ting.R;
-import com.ting.bean.myself.DouPayRank;
+import com.ting.bean.vo.MoneyListVO;
 import com.ting.myself.MyDouActivity;
+import com.ting.myself.dialog.PayDialog;
 
 import java.util.List;
 
@@ -18,7 +19,7 @@ import java.util.List;
 
 public class MyDouAdapter extends RecyclerView.Adapter<MyDouAdapter.ItemViewHolder>{
     private MyDouActivity mActivity;
-    private List<DouPayRank> data;
+    private List<MoneyListVO> data;
     private LayoutInflater mInflater;
 
     public MyDouAdapter(MyDouActivity activity) {
@@ -26,7 +27,7 @@ public class MyDouAdapter extends RecyclerView.Adapter<MyDouAdapter.ItemViewHold
         this.mInflater = LayoutInflater.from(activity);
     }
 
-    public void setData(List<DouPayRank> data) {
+    public void setData(List<MoneyListVO> data) {
         this.data = data;
     }
 
@@ -39,15 +40,15 @@ public class MyDouAdapter extends RecyclerView.Adapter<MyDouAdapter.ItemViewHold
 
     @Override
     public void onBindViewHolder(ItemViewHolder holder, int position) {
-        final DouPayRank vo = data.get(position);
-        holder.tvName.setText(vo.getName());
+        final MoneyListVO vo = data.get(position);
+        holder.tvName.setText(vo.getMoneyDesc());
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mActivity.showPayDialog(vo);
+                PayDialog dialog = new PayDialog(mActivity);
+                dialog.setVO(vo);
+                dialog.show();
             }
-
-
         });
     }
 

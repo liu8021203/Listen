@@ -12,13 +12,21 @@ import android.widget.TextView;
 import com.ting.R;
 import com.ting.base.BaseActivity;
 import com.ting.base.BaseObserver;
+import com.ting.base.MessageEventBus;
 import com.ting.bean.BaseResult;
+import com.ting.bean.UserInfoResult;
+import com.ting.common.TokenManager;
 import com.ting.common.http.HttpService;
 import com.ting.util.StrUtil;
 import com.ting.util.UtilIntent;
 import com.ting.util.UtilRetrofit;
 import com.ting.welcome.MainActivity;
 
+
+import org.greenrobot.eventbus.EventBus;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -136,55 +144,57 @@ public class RegistMainActivity extends BaseActivity implements View.OnClickList
      * 获取验证码
      */
     private void getAuctoCode(String phone) {
-        BaseObserver baseObserver = new BaseObserver<BaseResult>(this) {
+        Map<String, String> map = new HashMap<>();
+        map.put("phone", phone);
+        get_identifying_code.setEnabled(false);
+        BaseObserver baseObserver = new BaseObserver<BaseResult>(this, BaseObserver.MODEL_SHOW_DIALOG_TOAST) {
 
             @Override
-            protected void onStart() {
-                super.onStart();
-                get_identifying_code.setEnabled(false);
+            public void error(BaseResult value, Throwable e) {
+                super.error(value, e);
+                get_identifying_code.setEnabled(true);
             }
+
 
             @Override
             public void success(BaseResult data) {
                 super.success(data);
                 mHandler.sendEmptyMessage(0);
             }
-
-            @Override
-            public void error() {
-                removeProgressDialog();
-                get_identifying_code.setEnabled(true);
-            }
         };
         mDisposable.add(baseObserver);
-        UtilRetrofit.getInstance().create(HttpService.class).getCellPhoneValidation(phone).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
+        UtilRetrofit.getInstance().create(HttpService.class).sendSms(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
     }
 
     private void register(String phone, String code, String password) {
-        BaseObserver baseObserver = new BaseObserver<BaseResult>(this) {
+        regist_immediately.setEnabled(false);
+        Map<String, String> map = new HashMap<>();
+        map.put("phone", phone);
+        map.put("password", password);
+        map.put("code", code);
+        BaseObserver baseObserver = new BaseObserver<BaseResult<UserInfoResult>>(this, BaseObserver.MODEL_SHOW_DIALOG_TOAST) {
 
             @Override
-            protected void onStart() {
-                super.onStart();
-                regist_immediately.setEnabled(false);
-            }
-
-            @Override
-            public void success(BaseResult data) {
+            public void success(BaseResult<UserInfoResult> data) {
                 super.success(data);
                 regist_immediately.setEnabled(true);
+                TokenManager.setInfo(data.getData());
+                TokenManager.setUid(mActivity, data.getData().getId());
+                TokenManager.setToken(mActivity, data.getData().getToken());
+                EventBus.getDefault().post(new MessageEventBus(MessageEventBus.LOGIN));
                 UtilIntent.intentDIY(RegistMainActivity.this, MainActivity.class);
                 finish();
             }
 
             @Override
-            public void error() {
-                removeProgressDialog();
+            public void error(BaseResult value, Throwable e) {
+                super.error(value, e);
                 regist_immediately.setEnabled(true);
             }
+
         };
         mDisposable.add(baseObserver);
-        UtilRetrofit.getInstance().create(HttpService.class).getUserRegister(phone, password, code).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
+        UtilRetrofit.getInstance().create(HttpService.class).register(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
     }
 
 

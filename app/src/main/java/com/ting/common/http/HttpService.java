@@ -1,6 +1,14 @@
 package com.ting.common.http;
 
 import com.ting.bean.AdResult;
+import com.ting.bean.AppSearchResult;
+import com.ting.bean.AppWxPayResult;
+import com.ting.bean.BookResult;
+import com.ting.bean.ChapterResult;
+import com.ting.bean.CommentListResult;
+import com.ting.bean.ExpenseResult;
+import com.ting.bean.HostDetailResult;
+import com.ting.bean.MoneyResult;
 import com.ting.bean.anchor.AnchorMessResult;
 import com.ting.bean.anchor.AnchorResult;
 import com.ting.bean.anchor.LiWuResult;
@@ -9,6 +17,7 @@ import com.ting.bean.HomeResult;
 import com.ting.bean.apk.ApkResult;
 import com.ting.bean.bookrack.RandomRackResult;
 import com.ting.bean.home.BookCityResult;
+import com.ting.bean.home.CategoryListResult;
 import com.ting.bean.home.HomeHotAnchorResult;
 import com.ting.bean.home.HomeSpecialResult;
 import com.ting.bean.home.HotRecommendResult;
@@ -22,7 +31,6 @@ import com.ting.bean.home.FineRecommendResult;
 import com.ting.bean.home.HotAnchorResult;
 import com.ting.bean.classfi.ClassIntroduceResult;
 import com.ting.bean.classfi.ClassMainResult;
-import com.ting.bean.myself.MyDouResult;
 import com.ting.bean.myself.MySeeResult;
 import com.ting.bean.play.MessageResult;
 import com.ting.bean.play.PayResult;
@@ -32,7 +40,16 @@ import com.ting.bean.myself.CollectResult;
 import com.ting.bean.UserInfoResult;
 import com.ting.bean.search.SearchHotResult;
 import com.ting.bean.search.SearchResult;
+import com.ting.bean.vo.BookVO;
+import com.ting.bean.vo.CardListVO;
+import com.ting.bean.vo.CategoryVO;
+import com.ting.bean.vo.CommentListVO;
+import com.ting.bean.vo.GiftVO;
+import com.ting.bean.vo.HostVO;
+import com.ting.bean.vo.HotSearchVO;
+import com.ting.db.DBChapter;
 
+import java.util.List;
 import java.util.Map;
 
 import io.reactivex.Observable;
@@ -228,12 +245,9 @@ public interface HttpService {
     @POST("index.php?s=Home/App/setDot")
     Observable<BaseResult> setDot(@Field("uid") String uid);
 
-    @FormUrlEncoded
-    @POST("index.php?s=Home/App/getUserBalance")
-    Observable<MyDouResult> getUserBalance(@Field("uid") String uid);
 
-    @POST("index.php?s=Home/App/addguestbook")
-    Observable<BaseResult> addguestbook(@QueryMap Map<String, String> map);
+    @POST("listen/api/feedback")
+    Observable<BaseResult> feedback(@QueryMap Map<String, String> map);
 
     /**
      * 获取热门搜索词
@@ -296,13 +310,6 @@ public interface HttpService {
     @POST("index.php?s=Home/App/setUserInfo")
     Observable<UserInfoResult> setUserInfo(@PartMap Map<String, RequestBody> map);
 
-    /**
-     * 支付
-     * @param map
-     * @return
-     */
-    @POST("index.php?s=Home/App/callbackCharge")
-    Observable<com.ting.bean.myself.PayResult> callbackCharge(@QueryMap Map<String, String> map);
 
     /**
      * 检测更新
@@ -357,4 +364,236 @@ public interface HttpService {
 
     @POST("index.php?s=Home/App/buy_vip")
     Observable<BaseResult> buy_vip(@QueryMap Map<String, String> map);
+
+
+    @POST("listen/api/login")
+    Observable<BaseResult<UserInfoResult>> login(@QueryMap Map<String, String> map);
+
+
+    @GET("listen/api/getUserInfo")
+    Observable<BaseResult<UserInfoResult>> getUserInfo(@QueryMap Map<String, String> map);
+
+
+    @GET("listen/api/appHome")
+    Observable<BaseResult<HomeResult>> appHome();
+
+
+    @GET("listen/api/book")
+    Observable<BaseResult<BookResult>> book(@QueryMap Map<String, String> map);
+
+
+    @POST("listen/api/comments")
+    Observable<BaseResult<CommentListVO>> comments(@QueryMap Map<String, String> map);
+
+    @GET("listen/api/chapter")
+    Observable<BaseResult<ChapterResult>> chapter(@QueryMap Map<String, String> map);
+
+    @GET("listen/api/money")
+    Observable<BaseResult<MoneyResult>> money(@QueryMap Map<String, String> map);
+
+
+    @POST("listen/api/appWxPay")
+    Observable<BaseResult<AppWxPayResult>> appWxPay(@QueryMap Map<String, String> map);
+
+
+    @POST("listen/api/appAliPay")
+    Observable<BaseResult<String>> appAliPay(@QueryMap Map<String, String> map);
+
+
+    @GET("listen/api/expense")
+    Observable<BaseResult<ExpenseResult>> expense(@QueryMap Map<String, String> map);
+
+    @POST("listen/api/buyCard")
+    Observable<BaseResult> buyCard(@QueryMap Map<String, String> map);
+
+
+    @GET("listen/api/cardList")
+    Observable<BaseResult<List<CardListVO>>> cardList(@QueryMap Map<String, String> map);
+
+
+    @Multipart
+    @POST("listen/api/modifyUserInfo")
+    Observable<BaseResult<UserInfoResult>> modifyUserInfo(@PartMap Map<String, RequestBody> map);
+
+
+    @GET("listen/api/category")
+    Observable<BaseResult<List<CategoryVO>>> category();
+
+
+    @GET("listen/api/categoryList")
+    Observable<BaseResult<CategoryListResult>> categoryList(@QueryMap Map<String, String> map);
+
+    @GET("listen/api/hostList")
+    Observable<BaseResult<List<HostVO>>> hostList(@QueryMap Map<String, String> map);
+
+
+    @POST("listen/api/buyChapter")
+    Observable<BaseResult<DBChapter>> buyChapter(@QueryMap Map<String, String> map);
+
+
+    @POST("listen/api/buyBook")
+    Observable<BaseResult> buyBook(@QueryMap Map<String, String> map);
+
+    @POST("listen/api/batchBuyChapter")
+    Observable<BaseResult> batchBuyChapter(@QueryMap Map<String, String> map);
+
+
+    @GET("listen/api/queryComments")
+    Observable<BaseResult<CommentListResult>> queryComments(@QueryMap Map<String, String> map);
+
+    @POST("listen/api/collect")
+    Observable<BaseResult> collect(@QueryMap Map<String, String> map);
+
+    @POST("listen/api/unCollect")
+    Observable<BaseResult> unCollect(@QueryMap Map<String, String> map);
+
+    @GET("listen/api/collectList")
+    Observable<BaseResult<List<BookVO>>> collectList(@QueryMap Map<String, String> map);
+
+
+    @GET("listen/api/gift")
+    Observable<BaseResult<List<GiftVO>>> gift();
+
+    /**
+     * 打赏礼物
+     * @param map
+     * @return
+     */
+    @POST("listen/api/sendGift")
+    Observable<BaseResult> sendGift(@QueryMap Map<String, String> map);
+
+
+    /**
+     * 主播详情
+     * @param map
+     * @return
+     */
+    @GET("listen/api/hostDetail")
+    Observable<BaseResult<HostDetailResult>> hostDetail(@QueryMap Map<String, String> map);
+
+
+    /**
+     * 关注主播
+     * @param map
+     * @return
+     */
+    @POST("listen/api/focusHost")
+    Observable<BaseResult> focusHost(@QueryMap Map<String, String> map);
+
+
+    /**
+     * 取消关注主播
+     * @param map
+     * @return
+     */
+    @POST("listen/api/cancleFocusHost")
+    Observable<BaseResult> cancleFocusHost(@QueryMap Map<String, String> map);
+
+
+    /**
+     * 热门搜索关键词
+     * @return
+     */
+    @GET("listen/api/hotSearchList")
+    Observable<BaseResult<List<HotSearchVO>>> hotSearchList();
+
+
+    /**
+     * 热门搜索关键词
+     * @return
+     */
+    @GET("listen/api/appSearch")
+    Observable<BaseResult<AppSearchResult>> appSearch(@QueryMap Map<String, String> map);
+
+
+    /**
+     * 用户关注主播列表
+     * @return
+     */
+    @GET("listen/api/getHostListByUid")
+    Observable<BaseResult<List<HostVO>>> getHostListByUid(@QueryMap Map<String, String> map);
+
+
+
+    /**
+     * 签到
+     * @return
+     */
+    @GET("listen/api/sign")
+    Observable<BaseResult> sign(@QueryMap Map<String, String> map);
+
+
+    /**
+     * 是否签到
+     * @return
+     */
+    @GET("listen/api/isSign")
+    Observable<BaseResult<Integer>> isSign(@QueryMap Map<String, String> map);
+
+
+    /**
+     * 书架推荐书籍
+     * @return
+     */
+    @GET("listen/api/bookrackRecommend")
+    Observable<BaseResult<BookVO>> bookrackRecommend();
+
+
+
+    /**
+     * 第三方书籍列表
+     * @return
+     */
+    @GET("listen/api/getTeamBooks")
+    Observable<BaseResult<List<BookVO>>> getTeamBooks(@QueryMap Map<String, String> map);
+
+
+
+    /**
+     * 热门推荐列表
+     * @return
+     */
+    @GET("listen/api/hotRecommendList")
+    Observable<BaseResult<CategoryListResult>> hotRecommendList(@QueryMap Map<String, String> map);
+
+
+
+    /**
+     * 获取验证码
+     * @return
+     */
+    @GET("listen/api/sendSms")
+    Observable<BaseResult> sendSms(@QueryMap Map<String, String> map);
+
+
+    /**
+     * 注册
+     * @return
+     */
+    @POST("listen/api/register")
+    Observable<BaseResult<UserInfoResult>> register(@QueryMap Map<String, String> map);
+
+
+    /**
+     * 注册
+     * @return
+     */
+    @POST("listen/api/findPassword")
+    Observable<BaseResult> findPassword(@QueryMap Map<String, String> map);
+
+
+    /**
+     * 版本更新
+     * @return
+     */
+    @GET("listen/api/appVersionUpdate")
+    Observable<BaseResult<ApkResult>> appVersionUpdate(@QueryMap Map<String, String> map);
+
+
+    /**
+     * 版本更新
+     * @return
+     */
+    @GET("listen/api/test")
+    Observable<BaseResult> test(@QueryMap Map<String, String> map);
 }

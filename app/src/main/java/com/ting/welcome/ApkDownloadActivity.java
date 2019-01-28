@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.ting.R;
 import com.ting.base.BaseActivity;
-import com.ting.bean.apk.ApkBean;
+import com.ting.bean.apk.ApkResult;
 import com.ting.download.ApkDownload;
 
 /**
@@ -24,7 +24,7 @@ public class ApkDownloadActivity extends BaseActivity implements View.OnClickLis
     private LinearLayout llMustDownload;
     private Button btnMustDonwload;
     private ImageView ivApk;
-    private ApkBean result;
+    private ApkResult result;
     private ApkDownload apkDownload;
 
     @Override
@@ -51,7 +51,7 @@ public class ApkDownloadActivity extends BaseActivity implements View.OnClickLis
         btnCancle.setOnClickListener( this );
         btnNotMustDownload.setOnClickListener( this );
         btnMustDonwload.setOnClickListener( this );
-        if(result.getUpdate_status() == 1)
+        if(result.getUpdate() == 0)
         {
             llNotMustDownload.setVisibility(View.GONE);
             llMustDownload.setVisibility(View.VISIBLE);
@@ -72,7 +72,7 @@ public class ApkDownloadActivity extends BaseActivity implements View.OnClickLis
     @Override
     protected void getIntentData() {
         Bundle bundle = getIntent().getExtras();
-        result = (ApkBean) bundle.getSerializable("vo");
+        result = (ApkResult) bundle.getSerializable("vo");
     }
 
     @Override
@@ -91,20 +91,20 @@ public class ApkDownloadActivity extends BaseActivity implements View.OnClickLis
             case R.id.btn_not_must_download:
                 showToast("开始下载");
                 finish();
-                apkDownload.download(result.getFile_path(), "听世界听书","");
+                apkDownload.download(result.getDownloadUrl(), "听世界听书","");
                 break;
 
             case R.id.btn_must_donwload:
                 showToast("开始下载");
                 btnMustDonwload.setEnabled(false);
-                apkDownload.download(result.getFile_path(), "听世界听书","");
+                apkDownload.download(result.getDownloadUrl(), "听世界听书","");
                 break;
         }
     }
 
     @Override
     public void onBackPressed() {
-        if(result.getUpdate_status() != 1)
+        if(result.getUpdate() == 1)
         {
             finish();
         }

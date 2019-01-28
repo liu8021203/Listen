@@ -1,20 +1,29 @@
 package com.ting.play.controller;
 
+import android.annotation.TargetApi;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.Parcelable;
+import android.text.TextUtils;
 import android.widget.Toast;
 
 import com.ting.base.BaseActivity;
 import com.ting.bean.play.PlayingVO;
+import com.ting.bean.vo.ChapterListVO;
+import com.ting.db.DBChapter;
 import com.ting.play.BookDetailsActivity;
 import com.ting.bean.play.PlayListVO;
 import com.ting.play.service.MusicService;
 import com.ting.util.UtilLog;
 import com.ting.util.UtilStr;
+import com.ting.view.MyToast;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.crypto.Mac;
 
@@ -71,6 +80,47 @@ public class MusicController {
             playIntent.putExtra("pic", pic);
             mContext.startService(playIntent);
         }
+    }
+
+
+    public void play(DBChapter vo, List<DBChapter> data){
+        if(vo == null){
+            MyToast.makeText(mContext, "数据有误，请联系客服", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if(TextUtils.isEmpty(vo.getUrl())){
+            MyToast.makeText(mContext, "数据有误，请联系客服", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Bundle bundle = new Bundle();
+        Intent intent = new Intent(mContext, MusicService.class);
+        bundle.putParcelable("vo", vo);
+        bundle.putParcelableArrayList("data", (ArrayList<? extends Parcelable>) data);
+        bundle.putInt("MSG", MusicService.PLAY_MSG);
+        intent.putExtras(bundle);
+        mContext.startService(intent);
+    }
+
+
+
+
+    public void seekToPlay(Long time, DBChapter vo, List<DBChapter> data){
+        if(vo == null){
+            MyToast.makeText(mContext, "数据有误，请联系客服", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if(TextUtils.isEmpty(vo.getUrl())){
+            MyToast.makeText(mContext, "数据有误，请联系客服", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Bundle bundle = new Bundle();
+        Intent intent = new Intent(mContext, MusicService.class);
+        bundle.putParcelable("vo", vo);
+        bundle.putParcelableArrayList("data", (ArrayList<? extends Parcelable>) data);
+        bundle.putInt("MSG", MusicService.SEEKTO_PLAY_MSG);
+        bundle.putLong("seekTime", time);
+        intent.putExtras(bundle);
+        mContext.startService(intent);
     }
 
     /**
@@ -167,4 +217,10 @@ public class MusicController {
         mContext.startService(playIntent);
     }
 
+    public void speed(float speed) {
+        Intent playIntent = new Intent(mContext, MusicService.class);
+        playIntent.putExtra("MSG", MusicService.SPEED);
+        playIntent.putExtra("speed", speed);
+        mContext.startService(playIntent);
+    }
 }

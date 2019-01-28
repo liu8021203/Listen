@@ -15,6 +15,8 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+
+
 #-----------------混淆配置设定------------------------------------------------------------------------
 -optimizationpasses 5                                                       #指定代码压缩级别
 -dontusemixedcaseclassnames                                                 #混淆时不会产生形形色色的类名
@@ -48,6 +50,7 @@
     public <init>(android.content.Context, android.util.AttributeSet, int);
 }
 -keep class com.ting.bean.**{*;}                                   #过滤掉自己编写的实体类
+-keep class com.ting.db.**{*;}
 
 -keepclasseswithmembernames class * {  # 保持 native 方法不被混淆
     native <methods>;
@@ -260,4 +263,3 @@ public static java.lang.String TABLENAME;
 #-keep class com.xiaomi.mipush.sdk.DemoMessageReceiver {*;}
 #可以防止一个误报的 warning 导致无法成功编译，如果编译使用的 Android 版本是 23。
 -keep class com.xiaomi.**{ *; }
-

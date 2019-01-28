@@ -2,11 +2,14 @@ package com.ting.download;
 
 
 import com.ting.base.BaseApplication;
+import com.ting.common.AppData;
 import com.ting.db.DBBook;
 import com.ting.db.DBBookDao;
 import com.ting.db.DBChapter;
 import com.ting.db.DBChapterDao;
+import com.ting.db.DBListenHistory;
 import com.ting.db.DBListenHistoryDao;
+import com.ting.util.UtilFileManage;
 
 import java.util.List;
 
@@ -35,9 +38,9 @@ public class DownloadController {
         if(dbBooks == null || (dbBooks != null && dbBooks.size() == 0)){
             DBBook book = new DBBook();
             book.setBookId(String.valueOf(result.getBookId()));
-            book.setBookName(result.getBookName());
-            book.setBookHost(result.getHost());
-            book.setBookUrl(result.getBookUrl());
+            book.setBookName(result.getBookTitle());
+            book.setBookHost(result.getBookHost());
+            book.setBookUrl(result.getBookImage());
             bookDao.insert(book);
         }
         DBChapterDao chapterDao = BaseApplication.getInstance().getDaoSession().getDBChapterDao();
@@ -84,7 +87,6 @@ public class DownloadController {
     public List<DBChapter> queryData(String BOOK_ID, String STATE)
     {
         DBChapterDao dao = BaseApplication.getInstance().getDaoSession().getDBChapterDao();
-//        List<DBChapter> data = dao.queryRaw("where BOOK_ID = ? and STATE = ?", new String[]{BOOK_ID, STATE});
         List<DBChapter> data = dao.queryBuilder().orderAsc(DBChapterDao.Properties.Position).where(DBChapterDao.Properties.BookId.eq(BOOK_ID), DBChapterDao.Properties.State.eq(STATE)).list();
         return data;
     }
@@ -107,33 +109,16 @@ public class DownloadController {
     {
         DBChapterDao dao = BaseApplication.getInstance().getDaoSession().getDBChapterDao();
         dao.delete(vo);
-        if(queryData(String.valueOf(vo.getBookId())) == null){
-            DBBookDao bookDao = BaseApplication.getInstance().getDaoSession().getDBBookDao();
-            List<DBBook> books = bookDao.queryRaw("where BOOK_ID = ?", new String[]{String.valueOf(vo.getBookId())});
-            if(books != null && books.size() > 0){
-                bookDao.delete(books.get(0));
-            }
-        }
     }
 
     /**
      * 删除书籍
-     * @param vo
      */
-    public void deleteBook(DBBook vo)
+    public void deleteBook(String bookId)
     {
-        DBBookDao dao = BaseApplication.getInstance().getDaoSession().getDBBookDao();
-        List<DBBook> books = dao.queryRaw("where BOOK_ID = ?", new String[]{vo.getBookId()});
-        if(books != null && books.size() > 0){
-            List<DBChapter> data = queryData(books.get(0).getBookId());
-            if(data != null && !data.isEmpty()){
-                for(int i = 0; i < data.size(); i++){
-                    DBChapterDao dao1 = BaseApplication.getInstance().getDaoSession().getDBChapterDao();
-                    dao1.delete(data.get(i));
-                }
-            }
-            dao.delete(books.get(0));
-        }
+        UtilFileManage.deleteFolderFile(AppData.FILE_PATH + bookId);
+        DBChapterDao dao = BaseApplication.getInstance().getDaoSession().getDBChapterDao();
+        dao.queryBuilder().where(DBChapterDao.Properties.BookId.eq(bookId)).buildDelete().executeDeleteWithoutDetachingEntities();
     }
 
     public void deleteAll()
@@ -150,5 +135,14 @@ public class DownloadController {
         DBBookDao dao = BaseApplication.getInstance().getDaoSession().getDBBookDao();
         return dao.loadAll();
     }
+
+
+    public List<DBChapter> getDownloadBook(){
+        DBChapterDao dao = BaseApplication.getInstance().getDaoSession().getDBChapterDao();
+        return dao.queryRaw("where STATE = ? group by BOOK_ID", new String[]{"4"});
+    }
+
+
+
 
 }

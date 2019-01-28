@@ -17,6 +17,7 @@ import com.ting.R;
 import com.ting.base.BaseActivity;
 import com.ting.base.BaseObserver;
 import com.ting.base.MessageEventBus;
+import com.ting.bean.BaseResult;
 import com.ting.common.TokenManager;
 import com.ting.common.http.HttpService;
 import com.ting.regist.RegistMainActivity;
@@ -42,8 +43,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
 /**
- * Created by gengjiajia on 15/9/9.
- * &#x767b;&#x5f55;&#x4e3b;frame
+ * liu
  */
 public class LoginMainActivity extends BaseActivity implements UtilPermission.PermissionCallbacks {
     private TextView login_immediately;
@@ -51,7 +51,6 @@ public class LoginMainActivity extends BaseActivity implements UtilPermission.Pe
     private TextView forget_password_textview;
     private EditText user_name_editext;
     private EditText password_editext;
-    private ImageView singn_login;//新浪登录
     private ImageView qq_login;//qq登录
     private ImageView weixin_login;//微信登录
     private UMShareAPI mShareAPI;
@@ -79,10 +78,8 @@ public class LoginMainActivity extends BaseActivity implements UtilPermission.Pe
         forget_password_textview = (TextView) findViewById(R.id.forget_password_textview);
         user_name_editext = (EditText) findViewById(R.id.user_name_editext);//用户名
         password_editext = (EditText) findViewById(R.id.password_editext);//密码
-        singn_login = (ImageView) findViewById(R.id.singn_login);//新浪登录
         qq_login = (ImageView) findViewById(R.id.qq_login);//QQ登录
         weixin_login = (ImageView) findViewById(R.id.weixin_login);//微信登录
-        singn_login.setOnClickListener(this);
         qq_login.setOnClickListener(this);
         weixin_login.setOnClickListener(this);
         login_immediately.setOnClickListener(this);
@@ -114,16 +111,9 @@ public class LoginMainActivity extends BaseActivity implements UtilPermission.Pe
     public void onClick(View v) {
         super.onClick(v);
         switch (v.getId()) {
-            case R.id.singn_login:
-                source = "3";
-                mShareAPI.getPlatformInfo(this, SHARE_MEDIA.SINA, umAuthListener);
-                break;
-
             case R.id.qq_login:
                 source = "2";
                 mShareAPI.getPlatformInfo(this, SHARE_MEDIA.QQ, umAuthListener);
-
-
                 break;
             case R.id.weixin_login:
                 source = "1";
@@ -170,13 +160,11 @@ public class LoginMainActivity extends BaseActivity implements UtilPermission.Pe
             /**
              * 授权成功，获取用户信息第三方标识，1--微信 2--QQ 3--新浪微博
              */
-            String type;
+            String type = null;
             if (source.equals("1")) {
-                type = "wechat";
+                type = "3";
             } else if (source.equals("2")) {
-                type = "qq";
-            } else {
-                type = "sinaWeiBo";
+                type = "4";
             }
             String nickname = data.get("name");
             String sex;
@@ -212,7 +200,6 @@ public class LoginMainActivity extends BaseActivity implements UtilPermission.Pe
 
     private void Login(String user_name, String password) {
         Map<String, String> map = new HashMap<>();
-
         String name = null;
         String pwd = StrUtil.md5(password);
         UtilSPutil.getInstance(mActivity).setString("user_name", user_name);
@@ -221,48 +208,55 @@ public class LoginMainActivity extends BaseActivity implements UtilPermission.Pe
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        map.put("cellphoneNumber", name);
+        map.put("phone", name);
+        map.put("type", "1");
         map.put("password", pwd);
-        BaseObserver baseObserver = new BaseObserver<UserInfoResult>(mActivity) {
+        BaseObserver baseObserver = new BaseObserver<BaseResult<UserInfoResult>>(mActivity, BaseObserver.MODEL_SHOW_DIALOG_TOAST) {
             @Override
-            public void success(UserInfoResult data) {
+            public void success(BaseResult<UserInfoResult> data) {
                 super.success(data);
-                TokenManager.setInfo(mActivity, data);
-                TokenManager.setUid(mActivity, String.valueOf(data.getUid()));
-                TokenManager.setToken(mActivity, data.getToken());
-                EventBus.getDefault().post(new MessageEventBus(MessageEventBus.LOGIN));
-                showToast("登陆成功");
-                finish();
+                UserInfoResult result = data.getData();
+                if(result != null){
+                    TokenManager.setInfo(result);
+                    TokenManager.setUid(mActivity, String.valueOf(result.getId()));
+                    TokenManager.setToken(mActivity, result.getToken());
+                    EventBus.getDefault().post(new MessageEventBus(MessageEventBus.LOGIN));
+                    showToast("登陆成功");
+                    finish();
+                }
             }
 
             @Override
-            public void error() {
+            public void error(BaseResult<UserInfoResult> value, Throwable e) {
+                super.error(value, e);
             }
         };
         mDisposable.add(baseObserver);
-        UtilRetrofit.getInstance().create(HttpService.class).getUserLogin(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
+        UtilRetrofit.getInstance().create(HttpService.class).login(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
     }
 
     private void loginOther(String type, String nickname, String sex, String uuid, String thumb) {
-        BaseObserver baseObserver = new BaseObserver<UserInfoResult>(mActivity) {
+        Map<String, String> map = new HashMap<>();
+        map.put("type", type);
+        map.put("uuid", uuid);
+        map.put("name", nickname);
+        map.put("sex", sex);
+        map.put("image", thumb);
+        BaseObserver baseObserver = new BaseObserver<BaseResult<UserInfoResult>>(mActivity, BaseObserver.MODEL_SHOW_DIALOG_TOAST) {
 
             @Override
-            public void success(UserInfoResult data) {
+            public void success(BaseResult<UserInfoResult> data) {
                 super.success(data);
-                TokenManager.setInfo(mActivity, data);
-                TokenManager.setUid(mActivity, String.valueOf(data.getUid()));
-                TokenManager.setToken(mActivity, data.getToken());
+                TokenManager.setInfo(data.getData());
+                TokenManager.setUid(mActivity, data.getData().getId());
+                TokenManager.setToken(mActivity, data.getData().getToken());
                 EventBus.getDefault().post(new MessageEventBus(MessageEventBus.LOGIN));
                 showToast("登陆成功");
                 finish();
             }
-
-            @Override
-            public void error() {
-            }
         };
         mDisposable.add(baseObserver);
-        UtilRetrofit.getInstance().create(HttpService.class).openOAuth(type, nickname, sex, uuid, thumb).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
+        UtilRetrofit.getInstance().create(HttpService.class).login(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
     }
 
 

@@ -73,8 +73,6 @@
                     android:layout_toRightOf="@+id/person_touxiang"
                     android:text="立即登录"
                     android:textColor="@color/white"
-                    android:drawablePadding="5dp"
-                    android:drawableRight="@mipmap/no_vip"
                     android:gravity="center_vertical"
                     android:textSize="12sp"/>
 
@@ -86,7 +84,7 @@
                     android:layout_below="@+id/tv_name"
                     android:layout_alignLeft="@+id/tv_name"
                     android:layout_marginTop="10dip"
-                    android:text="立即登录"
+                    android:text="-----"
                     android:textColor="@color/white"
                     android:textSize="12sp"/>
 

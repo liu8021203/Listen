@@ -25,35 +25,35 @@ public class MyRemoteControlEventReceiver extends BroadcastReceiver{
         if(keyEvent != null && keyEvent.getAction() == KeyEvent.ACTION_UP) {
             switch (keyEvent.getKeyCode()) {
                 case KeyEvent.KEYCODE_HEADSETHOOK:
-                    Log.d("aaa", "hook!");
-                    if(AppData.isPlaying) {
-                        Intent intentService = new Intent(context, MusicService.class);
-                        intentService.putExtra("MSG", MusicService.PAUSE_MSG);
-                        context.startService(intentService);
-                        Log.d("aaa", "PLAY_PAUSE!-----暂停");
-                    }else{
-                        MusicDBController dbController = new MusicDBController();
-                        DBListenHistory mHistory = dbController.getBookIdData(String.valueOf(AppData.currPlayBookId));
-                        MusicController musicController = new MusicController(context);
-                        musicController.play(AppData.currPlayBookId, mHistory.getCid(), mHistory.getUrl(), mHistory.getChapter_name(), mHistory.getBookname(), mHistory.getHost(), mHistory.getPic(), null, "asc", 0);
-                        Log.d("aaa", "PLAY_PAUSE!------播放");
-                    }
+//                    Log.d("aaa", "hook!");
+//                    if(AppData.isPlaying) {
+//                        Intent intentService = new Intent(context, MusicService.class);
+//                        intentService.putExtra("MSG", MusicService.PAUSE_MSG);
+//                        context.startService(intentService);
+//                        Log.d("aaa", "PLAY_PAUSE!-----暂停");
+//                    }else{
+//                        MusicDBController dbController = new MusicDBController();
+//                        DBListenHistory mHistory = dbController.getBookIdData(String.valueOf(AppData.currPlayBookId));
+//                        MusicController musicController = new MusicController(context);
+//                        musicController.play(AppData.currPlayBookId, mHistory.getCid(), mHistory.getUrl(), mHistory.getChapter_name(), mHistory.getBookname(), mHistory.getHost(), mHistory.getPic(), null, "asc", 0);
+//                        Log.d("aaa", "PLAY_PAUSE!------播放");
+//                    }
                     break;
 
                 case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE: {
-                    Log.d("aaa", "PLAY_PAUSE!");
-                    if(AppData.isPlaying) {
-                        Intent intentService = new Intent(context, MusicService.class);
-                        intentService.putExtra("MSG", MusicService.PAUSE_MSG);
-                        context.startService(intentService);
-                        Log.d("aaa", "PLAY_PAUSE!-----暂停");
-                    }else{
-                        MusicDBController dbController = new MusicDBController();
-                        DBListenHistory mHistory = dbController.getBookIdData(String.valueOf(AppData.currPlayBookId));
-                        MusicController musicController = new MusicController(context);
-                        musicController.play(AppData.currPlayBookId, mHistory.getCid(), mHistory.getUrl(), mHistory.getChapter_name(), mHistory.getBookname(), mHistory.getHost(), mHistory.getPic(), null, "asc", 0);
-                        Log.d("aaa", "PLAY_PAUSE!------播放");
-                    }
+//                    Log.d("aaa", "PLAY_PAUSE!");
+//                    if(AppData.isPlaying) {
+//                        Intent intentService = new Intent(context, MusicService.class);
+//                        intentService.putExtra("MSG", MusicService.PAUSE_MSG);
+//                        context.startService(intentService);
+//                        Log.d("aaa", "PLAY_PAUSE!-----暂停");
+//                    }else{
+//                        MusicDBController dbController = new MusicDBController();
+//                        DBListenHistory mHistory = dbController.getBookIdData(String.valueOf(AppData.currPlayBookId));
+//                        MusicController musicController = new MusicController(context);
+//                        musicController.play(AppData.currPlayBookId, mHistory.getCid(), mHistory.getUrl(), mHistory.getChapter_name(), mHistory.getBookname(), mHistory.getHost(), mHistory.getPic(), null, "asc", 0);
+//                        Log.d("aaa", "PLAY_PAUSE!------播放");
+//                    }
                 }
                     break;
                 case KeyEvent.KEYCODE_MEDIA_PLAY: {

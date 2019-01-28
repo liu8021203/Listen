@@ -31,8 +31,7 @@ import io.reactivex.schedulers.Schedulers;
  */
 public class SuggestBackActivity extends BaseActivity implements View.OnClickListener {
     private EditText etContent;
-    private EditText etQq;
-    private EditText etEmail;
+    private EditText etContack;
     private TextView tvSumbit;
 
     @Override
@@ -49,10 +48,9 @@ public class SuggestBackActivity extends BaseActivity implements View.OnClickLis
 
     @Override
     protected void initView() {
-        etContent = (EditText) findViewById(R.id.et_content);
-        etQq = (EditText) findViewById(R.id.et_qq);
-        etEmail = (EditText) findViewById(R.id.et_email);
-        tvSumbit = (TextView) findViewById(R.id.tv_sumbit);
+        etContent =  findViewById(R.id.et_content);
+        etContack =  findViewById(R.id.et_contack);
+        tvSumbit =  findViewById(R.id.tv_sumbit);
         tvSumbit.setOnClickListener(this);
     }
 
@@ -81,20 +79,14 @@ public class SuggestBackActivity extends BaseActivity implements View.OnClickLis
 
             case R.id.tv_sumbit:
                 String content = etContent.getText().toString().trim();
-                String qq = etQq.getText().toString().trim();
-                String email = etEmail.getText().toString().trim();
+                String contack = etContack.getText().toString().trim();
                 if (UtilStr.isEmpty(content)) {
                     showToast("请填写您对我们的建议");
                     return;
                 }
                 Map<String, String> map = new HashMap<>();
-                map.put("uid", TokenManager.getUid(mActivity));
-                if (!UtilStr.isEmpty(qq)) {
-                    map.put("qq", qq);
-                }
-                if (!UtilStr.isEmpty(email)) {
-                    map.put("email", email);
-                }
+                map.put("userId", TokenManager.getUid(mActivity));
+                map.put("contack", contack);
                 map.put("content", content);
                 BaseObserver baseObserver = new BaseObserver<BaseResult>(mActivity) {
                     @Override
@@ -104,13 +96,14 @@ public class SuggestBackActivity extends BaseActivity implements View.OnClickLis
                         finish();
                     }
 
+
                     @Override
-                    public void error() {
-                        super.error();
+                    public void error(BaseResult value, Throwable e) {
+                        super.error(value, e);
                     }
                 };
                 mActivity.mDisposable.add(baseObserver);
-                UtilRetrofit.getInstance().create(HttpService.class).addguestbook(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
+                UtilRetrofit.getInstance().create(HttpService.class).feedback(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
                 break;
         }
     }

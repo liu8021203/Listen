@@ -66,7 +66,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="@dimen/dp750_56"
-            android:text="昵    称"
+            android:text="昵   称"
             android:textColor="@color/c666666"
             android:textSize="@dimen/px26" />
 
@@ -144,52 +144,7 @@
         android:background="@color/cebebeb"></View>
 
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:minHeight="43dp"
-        android:orientation="horizontal">
 
-        <TextView
-            android:layout_width="@dimen/dp750_146"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginLeft="@dimen/dp750_56"
-            android:text="个性签名"
-            android:textColor="@color/c666666"
-            android:textSize="@dimen/px26" />
-
-        <View
-            android:layout_width="@dimen/dp750_1"
-            android:layout_height="match_parent"
-            android:layout_gravity="center_vertical"
-            android:layout_marginTop="14dip"
-            android:layout_marginBottom="14dip"
-            android:background="@color/cebebeb"></View>
-
-
-        <EditText
-            android:id="@+id/person_sign_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:paddingTop="5dip"
-            android:paddingBottom="5dip"
-            android:layout_marginLeft="@dimen/dp750_26"
-            android:paddingRight="30dip"
-            android:background="@null"
-            android:hint="请填写个性签名"
-            android:textColor="@color/c666666"
-            android:textSize="@dimen/px26" />
-
-    </LinearLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/dp750_1"
-        android:layout_marginLeft="@dimen/dp750_26"
-        android:layout_marginRight="@dimen/dp750_26"
-        android:background="@color/cebebeb"></View>
 
     <TextView
         android:id="@+id/clear_user_message"

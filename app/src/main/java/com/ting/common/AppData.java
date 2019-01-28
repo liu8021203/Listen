@@ -5,8 +5,10 @@ import android.os.Environment;
 import com.ting.bean.anchor.LiWuResult;
 import com.ting.bean.myself.PersonMessResult;
 import com.ting.bean.play.PlayListVO;
+import com.ting.bean.vo.GiftVO;
 
 import java.lang.ref.SoftReference;
+import java.util.List;
 
 
 /**
@@ -19,13 +21,12 @@ public class AppData {
     public static String uid = null;
     public static PersonMessResult info = null;
     public static SoftReference<PlayListVO> playListVos = null;
-
+    public static String DOWNLOAD_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/QQ/";
     public static String PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/listen/";
     public static String FILE_PATH = PATH + "mp3/";
     public static String PATH_VOLLEY = PATH + "volley/";
     public static final String CACHE_PATH = PATH + "file/";
     public static final int PERMISSION_CODE = 999;
-    public static LiWuResult liWuResult;//礼物的信息
 
     /**
      * 每页请求的数量
@@ -58,6 +59,10 @@ public class AppData {
      * 是否触摸seekbar, false是未触摸， true是触摸
      */
     public static boolean isSeekbarFoucs = false;
+    /**
+     * 当前加载的key
+     */
+    public static String loadingKey = null;
 
     /**
      * 当前播放的key
@@ -66,7 +71,7 @@ public class AppData {
     /**
      * 当前正在播放的书籍id
      */
-    public static int currPlayBookId = -1;
+    public static String currPlayBookId = null;
 
     /** 关闭时间 单位ms 0为关闭 */
     public static int shutDownTimer=0;
@@ -79,4 +84,9 @@ public class AppData {
         }
         return info;
     }
+
+
+
+    //倍速播放         1:  1x,  2:1.25x,  3:1.5x,  4:1.75x,   5: 2x
+    public static int speedType = 1;
 }

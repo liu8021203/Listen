@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.ting.R;
 import com.ting.bean.search.SearchMess;
+import com.ting.bean.vo.HotSearchVO;
 import com.ting.play.BookDetailsActivity;
 import com.ting.search.SearchActivity;
 import com.ting.util.UtilGlide;
@@ -23,7 +24,7 @@ import java.util.List;
  */
 public class SearchResultAdapter extends BaseAdapter {
     private LayoutInflater inflater;
-    private List<SearchMess> result;
+    private List<HotSearchVO> result;
     private SearchActivity activity;
 
     public SearchResultAdapter(SearchActivity searchActivity) {
@@ -31,7 +32,7 @@ public class SearchResultAdapter extends BaseAdapter {
         inflater = inflater.from(activity);
     }
 
-    public void setResult(List<SearchMess> result) {
+    public void setResult(List<HotSearchVO> result) {
         this.result = result;
     }
 
@@ -67,21 +68,21 @@ public class SearchResultAdapter extends BaseAdapter {
         }
 
 
-        UtilGlide.loadImg(activity,result.get(position).getThumb(),viewHolder.search_result_image);
-
-        viewHolder.search_result_name.setText(result.get(position).getTitle());
-        viewHolder.search_result_zang_number.setText("章数:" + result.get(position).getCount() + "章");
-        viewHolder.search_result_item.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                Bundle bundle = new Bundle();
-                bundle.putInt("bookID", result.get(position).getId());
-                activity.intent(BookDetailsActivity.class, bundle);
-
-
-            }
-        });
+//        UtilGlide.loadImg(activity,result.get(position).getThumb(),viewHolder.search_result_image);
+//
+//        viewHolder.search_result_name.setText(result.get(position).getTitle());
+//        viewHolder.search_result_zang_number.setText("章数:" + result.get(position).getCount() + "章");
+//        viewHolder.search_result_item.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//
+//                Bundle bundle = new Bundle();
+//                bundle.putInt("bookID", result.get(position).getId());
+//                activity.intent(BookDetailsActivity.class, bundle);
+//
+//
+//            }
+//        });
         return convertView;
     }
 

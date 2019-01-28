@@ -11,7 +11,10 @@ import com.ting.R;
 import com.ting.bean.anchor.LiWuResult;
 import com.ting.base.BaseActivity;
 import com.ting.common.AppData;
+import com.ting.common.GiftManager;
 import com.ting.play.adapter.GiftAdapter;
+
+import java.util.List;
 
 /**
  * Created by gengjiajia on 15/9/2.
@@ -22,19 +25,14 @@ public class GiftDialog extends Dialog implements View.OnClickListener {
     private ImageView ivClose;
     private RecyclerView mRecyclerView;
     private GiftAdapter mAdapter;
-    private int bookId;
-    private int anchorId;
+    private String hostId;
     public GiftDialog(BaseActivity activity) {
         super(activity, R.style.CustomDialog);
         this.mActivity = activity;
     }
 
-    public void setBookId(int bookId) {
-        this.bookId = bookId;
-    }
-
-    public void setAnchorId(int anchorId) {
-        this.anchorId = anchorId;
+    public void setHostId(String hostId) {
+        this.hostId = hostId;
     }
 
     @Override
@@ -50,20 +48,10 @@ public class GiftDialog extends Dialog implements View.OnClickListener {
         GridLayoutManager manager = new GridLayoutManager(mActivity, 4);
         mRecyclerView.setLayoutManager(manager);
         ivClose.setOnClickListener(this);
-        setLiwuMess(AppData.liWuResult);
-    }
-
-    private void setLiwuMess(LiWuResult result) {
-        if(mAdapter == null) {
-            mAdapter = new GiftAdapter(mActivity, this);
-            mAdapter.setBookId(bookId);
-            mAdapter.setAnchorId(anchorId);
-            mAdapter.setData(result.getData());
-            mRecyclerView.setAdapter(mAdapter);
-        }else{
-            mAdapter.setData(result.getData());
-            mAdapter.notifyDataSetChanged();
-        }
+        mAdapter = new GiftAdapter(mActivity, this);
+        mAdapter.setHostId(hostId);
+        mAdapter.setData(GiftManager.getGifts());
+        mRecyclerView.setAdapter(mAdapter);
     }
 
     @Override

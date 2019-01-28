@@ -19,19 +19,6 @@
             android:ellipsize="end"
             />
 
-        <View
-            android:id="@+id/v_line_bottom"
-            android:layout_width="match_parent"
-            android:layout_height="0.1dip"
-            android:layout_alignParentBottom="true"
-            android:background="#656565"></View>
-
-        <View
-            android:id="@+id/v_line_right"
-            android:layout_width="0.1dip"
-            android:layout_height="match_parent"
-            android:layout_alignParentRight="true"
-            android:background="#656565"></View>
 
     </RelativeLayout>
 </LinearLayout>

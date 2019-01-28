@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.ting.R;
 import com.ting.bean.home.HomeSpecialVO;
-import com.ting.bookcity.HomeSpecialActivity;
+import com.ting.bookcity.TeamBookListActivity;
 import com.ting.play.BookDetailsActivity;
 import com.ting.util.UtilGlide;
 
@@ -21,12 +21,12 @@ import java.util.List;
  */
 
 public class SpecialAdapter extends RecyclerView.Adapter<SpecialAdapter.ItemViewHolder>{
-    private HomeSpecialActivity mActivity;
+    private TeamBookListActivity mActivity;
     private List<HomeSpecialVO> data;
     private LayoutInflater mInflater;
     private ItemOnClickListener mListener;
 
-    public SpecialAdapter(HomeSpecialActivity activity) {
+    public SpecialAdapter(TeamBookListActivity activity) {
         mActivity = activity;
         this.mInflater = LayoutInflater.from(activity);
         this.mListener = new ItemOnClickListener();
@@ -65,7 +65,7 @@ public class SpecialAdapter extends RecyclerView.Adapter<SpecialAdapter.ItemView
 
         public ItemViewHolder(View itemView) {
             super(itemView);
-            ivImg = (ImageView) itemView.findViewById(R.id.iv_book_url);
+            ivImg = (ImageView) itemView.findViewById(R.id.iv_img);
             tvBookName = (TextView) itemView.findViewById(R.id.tv_book_name);
             tvHost = (TextView) itemView.findViewById(R.id.tv_host_name);
         }

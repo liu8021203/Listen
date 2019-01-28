@@ -48,8 +48,6 @@
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
                     android:lines="1"
-                    android:drawablePadding="5dp"
-                    android:drawableRight="@mipmap/vip"
                     android:gravity="center_vertical"
                     android:text="@string/zhanghao"
                     android:textColor="@color/c656565"
@@ -112,6 +110,7 @@
             android:layout_margin="20dp"
             android:textColor="@color/white"
             style="?android:attr/borderlessButtonStyle"
+            android:visibility="gone"
             android:text="成为VIP"/>
 
     </LinearLayout>

@@ -5,12 +5,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ting.R;
 import com.ting.bean.home.SpecialVO;
-import com.ting.bookcity.HomeSpecialActivity;
+import com.ting.bookcity.TeamBookListActivity;
 import com.ting.util.UtilGlide;
 import com.ting.welcome.MainActivity;
 
@@ -53,7 +52,7 @@ public class HomeSpecialAdapter extends RecyclerView.Adapter<HomeSpecialAdapter.
             public void onClick(View v) {
                 Bundle bundle = new Bundle();
                 bundle.putString("id", vo.getId());
-                mActivity.intent(HomeSpecialActivity.class, bundle);
+                mActivity.intent(TeamBookListActivity.class, bundle);
             }
         });
     }

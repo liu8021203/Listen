@@ -205,7 +205,7 @@ public class ApkDownload {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         Uri uri;
         if(Build.VERSION.SDK_INT >= 24){
-            uri = FileProvider.getUriForFile(context,"com.sfbest.mapp.fileprovider", new File(url));
+            uri = FileProvider.getUriForFile(context,"com.ting.fileprovider", new File(url));
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         }else {
             uri = Uri.fromFile(new File(url));

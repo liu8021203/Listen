@@ -7,7 +7,9 @@ import android.support.v7.widget.RecyclerView;
 import com.ting.R;
 import com.ting.base.BaseActivity;
 import com.ting.base.BaseObserver;
+import com.ting.bean.BaseResult;
 import com.ting.bean.myself.MyCardResult;
+import com.ting.bean.vo.CardListVO;
 import com.ting.common.TokenManager;
 import com.ting.common.http.HttpService;
 import com.ting.constant.StaticConstant;
@@ -16,6 +18,7 @@ import com.ting.util.UtilRetrofit;
 import com.ting.view.CustomItemDecoration;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -40,7 +43,7 @@ public class MyCardActivity extends BaseActivity {
     }
     @Override
     protected void initView() {
-        mRecyclerView = (RecyclerView) findViewById(R.id.swipe_target);
+        mRecyclerView = findViewById(R.id.swipe_target);
         LinearLayoutManager manager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(manager);
         CustomItemDecoration decoration = new CustomItemDecoration(1, 0xfff8f8f8);
@@ -52,26 +55,22 @@ public class MyCardActivity extends BaseActivity {
     protected void initData() {
         Map<String, String> map = new HashMap<>();
         map.put("uid", TokenManager.getUid(mActivity));
-        map.put("page", "1");
-        map.put("count", "100");
-        BaseObserver baseObserver = new BaseObserver<MyCardResult>(this){
+        BaseObserver baseObserver = new BaseObserver<BaseResult<List<CardListVO>>>(this, BaseObserver.MODEL_ALL){
             @Override
-            public void success(MyCardResult data) {
+            public void success(BaseResult<List<CardListVO>> data) {
                 super.success(data);
-                if(data.getData() != null) {
-                    showResult(data);
+                List<CardListVO> list = data.getData();
+                if(list != null && !list.isEmpty()) {
+                    adapter = new ListenerCardAdapter((MyCardActivity) mActivity);
+                    adapter.setData(list);
+                    mRecyclerView.setAdapter(adapter);
                 }else{
-                    errorEmpty();
+                    errorEmpty("还没有主播听书卡，快去购买吧。");
                 }
-            }
-
-            @Override
-            public void error() {
-                super.error();
             }
         };
         mDisposable.add(baseObserver);
-        UtilRetrofit.getInstance().create(HttpService.class).getCard(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
+        UtilRetrofit.getInstance().create(HttpService.class).cardList(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
     }
 
     @Override
@@ -84,9 +83,9 @@ public class MyCardActivity extends BaseActivity {
         return true;
     }
 
-    public void showResult(MyCardResult data) {
-        adapter = new ListenerCardAdapter(this);
-        adapter.setResult(data.getData());
-        mRecyclerView.setAdapter(adapter);
+    @Override
+    protected void reload() {
+        super.reload();
+        initData();
     }
 }

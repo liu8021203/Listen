@@ -15,6 +15,7 @@ import com.scwang.smartrefresh.layout.api.RefreshHeader;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.footer.ClassicsFooter;
 import com.scwang.smartrefresh.layout.header.ClassicsHeader;
+import com.tencent.bugly.crashreport.CrashReport;
 import com.ting.R;
 import com.ting.db.DaoMaster;
 import com.ting.db.DaoSession;
@@ -66,9 +67,10 @@ public class BaseApplication extends Application {
         if(shouldInit()) {
             MiPushClient.registerPush(this, "2882303761517189747", "5761718946747");
         }
-        DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, ENCRYPTED ? "cool-db-encrypted" : "cool-db");
+        DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, ENCRYPTED ? "tingshijie-db-encrypted" : "tingshijie-db");
         Database db = ENCRYPTED ? helper.getEncryptedWritableDb("super-secret") : helper.getWritableDb();
         daoSession = new DaoMaster(db).newSession();
+        CrashReport.initCrashReport(getApplicationContext(), "d4e1ad51d9", false);
     }
 
     public DaoSession getDaoSession() {
@@ -80,8 +82,8 @@ public class BaseApplication extends Application {
         UMConfigure.setLogEnabled(true);
         UMConfigure.init(this, "5165707656240b56d6011d7f", "listen", UMConfigure.DEVICE_TYPE_PHONE, "");
 
-        //微信 appid appsecret
-        PlatformConfig.setWeixin("wx65ef305f9d0ebdec", "b26f6c4da76885d534673cbc04a08a48");
+        //微信 appid appsecret   9184e2475abe488cc0eacc87304539e0
+        PlatformConfig.setWeixin("wx65ef305f9d0ebdec", "9184e2475abe488cc0eacc87304539e0");
         //新浪微博 appkey appsecret
         PlatformConfig.setSinaWeibo("631789704", "30a378dc3e2ff7fd51d91a6ef914d170","http://sns.whalecloud.com");
         // QQ和Qzone appid appke
@@ -105,7 +107,7 @@ public class BaseApplication extends Application {
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
-        MultiDex.install(base);
+        MultiDex.install(this);
     }
 
     /**
@@ -121,53 +123,11 @@ public class BaseApplication extends Application {
 
     }
 
-    public void removeActivity(Activity activity) {
-        activityList.remove(activity);
-    }
-
     public void addActivity(Activity activity) {
         activityList.add(activity);
     }
 
-    /**
-     * @Title: finishAllActivity
-     * @Description: 退出应用, 关闭所有activity
-     */
-    public void finishAllActivity() {
-        for (Activity activity : activityList) {
-            if (null != activity) {
-                activity.finish();
-            }
-        }
-    }
 
-    public void finishInitActivity() {
-
-        for (int i = 0; i < activityList.size(); i++) {
-            if (activityList.get(i).getLocalClassName().equals("InitActivity")) {
-                activityList.get(i).finish();
-                activityList.remove(i);
-            }
-        }
-    }
-
-    public void finishActivityGroup() {
-
-        for (int i = 0; i < activityList.size(); i++) {
-            if (activityList.get(i).getLocalClassName().equals("ActivityGroup")) {
-                activityList.get(i).finish();
-                activityList.remove(i);
-            }
-        }
-    }
-
-    public void finishActivity(Activity activity) {
-        if (activity != null) {
-            activityList.remove(activity);
-            activity.finish();
-            activity = null;
-        }
-    }
 
 
 }

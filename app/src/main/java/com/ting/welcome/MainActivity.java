@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.FileProvider;
@@ -19,14 +20,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.ting.R;
-import com.ting.anchor.AnchorFragment;
 import com.ting.base.BaseActivity;
 import com.ting.base.BaseObserver;
-import com.ting.bean.AdResult;
+import com.ting.bean.BaseResult;
 import com.ting.bean.apk.ApkResult;
 import com.ting.bookcity.HomeFragment;
 import com.ting.bookcity.dialog.ExitDialog;
 import com.ting.bookrack.BookRackFragment;
+import com.ting.category.CategoryFragment;
 import com.ting.common.http.HttpService;
 import com.ting.download.receiver.ApkInstallReceiver;
 import com.ting.myself.MineMainFrame;
@@ -63,8 +64,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private BookRackFragment mBookRackFragment;
     //书城
     private HomeFragment mHomeFragment;
-    //记录frame
-    private AnchorFragment mAnchorFragment;
+    //分类
+    private CategoryFragment mCategoryFragment;
     //我的frame
     private MineMainFrame mineMainFrame;
 
@@ -103,7 +104,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         intentFilter.addAction(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
         receiver = new ApkInstallReceiver();
         registerReceiver(receiver, intentFilter);
-        getAdData();
+
+
+
+
     }
 
     @Override
@@ -138,9 +142,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private void checkUpdate() {
         Map<String, String> map = new HashMap<>();
         map.put("version", UtilSystem.getVersionCode(this) + "");
-        BaseObserver baseObserver = new BaseObserver<ApkResult>() {
+        BaseObserver baseObserver = new BaseObserver<BaseResult<ApkResult>>(this, BaseObserver.MODEL_NO) {
             @Override
-            public void success(ApkResult data) {
+            public void success(BaseResult<ApkResult> data) {
                 super.success(data);
                 Intent intent = new Intent(MainActivity.this, ApkDownloadActivity.class);
                 Bundle bundle = new Bundle();
@@ -149,7 +153,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 startActivity(intent);
             }
         };
-        UtilRetrofit.getInstance().create(HttpService.class).app_update(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
+        UtilRetrofit.getInstance().create(HttpService.class).appVersionUpdate(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
     }
 
 
@@ -272,11 +276,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             case 3:
                 book_record_image.setImageResource(R.mipmap.main_anchor_select);
                 book_record_text.setTextColor(0xff3baef2);
-                if (mAnchorFragment == null) {
-                    mAnchorFragment = new AnchorFragment();
-                    transaction.add(R.id.activity_main_frame, mAnchorFragment);
+                if (mCategoryFragment == null) {
+                    mCategoryFragment = new CategoryFragment();
+                    transaction.add(R.id.activity_main_frame, mCategoryFragment);
                 } else {
-                    transaction.show(mAnchorFragment);
+                    transaction.show(mCategoryFragment);
                 }
                 transaction.commitAllowingStateLoss();
                 break;
@@ -327,8 +331,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         if (mHomeFragment != null) {
             transaction.hide(mHomeFragment);
         }
-        if (mAnchorFragment != null) {
-            transaction.hide(mAnchorFragment);
+        if (mCategoryFragment != null) {
+            transaction.hide(mCategoryFragment);
         }
         if (mineMainFrame != null) {
             transaction.hide(mineMainFrame);
@@ -417,9 +421,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     if(mHomeFragment != null){
                         mHomeFragment.stopAnim();
                     }
-                    if(mAnchorFragment != null){
-                        mAnchorFragment.stopAnim();
-                    }
                     break;
 
                 case MainActivity.MAIN_PLAY:
@@ -428,9 +429,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     }
                     if(mHomeFragment != null){
                         mHomeFragment.statAnim();
-                    }
-                    if(mAnchorFragment != null){
-                        mAnchorFragment.startAnim();
                     }
                     break;
             }
@@ -478,32 +476,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         }
     }
 
-    /**
-     * 获取广告数据
-     */
-    private void getAdData() {
-        BaseObserver baseObserver = new BaseObserver<AdResult>() {
-            @Override
-            public void success(AdResult data) {
-                super.success(data);
-                if (data.getData() != null) {
-                    if (data.getData().getStatus().equals("1")) {
-                        UtilSPutil.getInstance(mActivity).setString("ad_url", data.getData().getUrl());
-                        UtilSPutil.getInstance(mActivity).setString("ad_thumb", data.getData().getThumb());
-                    } else {
-                        UtilSPutil.getInstance(mActivity).setString("ad_url", null);
-                        UtilSPutil.getInstance(mActivity).setString("ad_thumb", null);
-                    }
-                }
-            }
 
-            @Override
-            public void error() {
-                super.error();
-            }
-        };
-        UtilRetrofit.getInstance().create(HttpService.class).start_ad().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
-    }
 
 
 }

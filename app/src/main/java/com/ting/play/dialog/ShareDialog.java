@@ -55,11 +55,11 @@ public class ShareDialog extends Dialog implements View.OnClickListener{
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
-//        if(!TextUtils.isEmpty(imageUrl)) {
-//            mImage = new UMImage(activity, imageUrl);
-//        }else{
-//            mImage = new UMImage(activity, R.mipmap.ic_launcher);
-//        }
+    }
+
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     @Override
@@ -91,7 +91,7 @@ public class ShareDialog extends Dialog implements View.OnClickListener{
         dismiss();
         switch (v.getId()) {
             case R.id.share_qq: {
-                UMWeb umWeb = new UMWeb(url + id);
+                UMWeb umWeb = new UMWeb(url);
                 umWeb.setThumb(new UMImage(activity, imageUrl));
                 umWeb.setTitle(bookname);
                 umWeb.setDescription(desc + bookname);
@@ -99,7 +99,7 @@ public class ShareDialog extends Dialog implements View.OnClickListener{
             }
                 break;
             case R.id.share_weibo: {
-                UMWeb umWeb = new UMWeb(url + id);
+                UMWeb umWeb = new UMWeb(url);
                 umWeb.setThumb(new UMImage(activity, imageUrl));
                 umWeb.setTitle(bookname);
                 umWeb.setDescription(desc + bookname);
@@ -107,7 +107,7 @@ public class ShareDialog extends Dialog implements View.OnClickListener{
             }
                 break;
             case R.id.share_weixin: {
-                UMWeb umWeb = new UMWeb(url + id);
+                UMWeb umWeb = new UMWeb(url);
                 umWeb.setThumb(new UMImage(activity, imageUrl));
                 umWeb.setTitle(bookname);
                 umWeb.setDescription(desc + bookname);
@@ -115,7 +115,7 @@ public class ShareDialog extends Dialog implements View.OnClickListener{
             }
                 break;
             case R.id.share_circle: {
-                UMWeb umWeb = new UMWeb(url + id);
+                UMWeb umWeb = new UMWeb(url);
                 umWeb.setThumb(new UMImage(activity,imageUrl));
                 umWeb.setTitle(bookname);
                 umWeb.setDescription(desc + bookname);

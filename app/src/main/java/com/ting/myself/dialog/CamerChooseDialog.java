@@ -61,7 +61,6 @@ public class CamerChooseDialog extends Dialog implements View.OnClickListener {
         switch (v.getId()) {
             case R.id.photo_choose_layout:
                 Intent intent = new Intent(Intent.ACTION_PICK);
-//                intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
                 intent.setData(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 intent.setType("image/*");
                 activity.startActivityForResult(intent, 1);
@@ -69,10 +68,6 @@ public class CamerChooseDialog extends Dialog implements View.OnClickListener {
                 break;
             case R.id.camer_pai_se_layout:
                 Intent intent1 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-//                File dir = new File(AppData.PATH);
-//                if(!dir.exists()){
-//                    dir.mkdirs();
-//                }
                 File storageDir = activity.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
                 File file = null;
                 Uri uri = null;
@@ -92,7 +87,6 @@ public class CamerChooseDialog extends Dialog implements View.OnClickListener {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-//                File file = new File(dir, "touxiang.jpg");
 
                 dismiss();
                 break;

@@ -16,7 +16,7 @@ public class CustomItemDecoration extends RecyclerView.ItemDecoration{
 
     private int mDividerOrientation;
     private int mDividerSize = 1;
-    private int color = 0xFF999999;
+    private int color = 0xFFE0E0E0;
     private Paint mPaint;
 
     public CustomItemDecoration(int orientation) {
@@ -24,7 +24,7 @@ public class CustomItemDecoration extends RecyclerView.ItemDecoration{
 
 
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mPaint.setColor(0xFF999999);
+        mPaint.setColor(0xFFE0E0E0);
         mPaint.setStyle(Paint.Style.FILL);
     }
 

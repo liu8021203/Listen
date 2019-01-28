@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.ting.R;
 import com.ting.anchor.AnchorMainActivity;
 import com.ting.bean.myself.MyCardBean;
+import com.ting.bean.vo.CardListVO;
 import com.ting.myself.MyCardActivity;
 import com.ting.util.UtilDate;
 import com.ting.util.UtilGlide;
@@ -26,13 +27,11 @@ import de.hdodenhof.circleimageview.CircleImageView;
  * 我的作品列表适配器
  */
 public class ListenerCardAdapter extends RecyclerView.Adapter<ListenerCardAdapter.ItemViewHolder> {
-    private LayoutInflater inflater;
     private MyCardActivity myCardActivity;
-    private List<MyCardBean> result;
+    private List<CardListVO> data;
 
     public ListenerCardAdapter(MyCardActivity myCardActivity) {
         this.myCardActivity = myCardActivity;
-        inflater = inflater.from(myCardActivity);
     }
 
 
@@ -40,36 +39,23 @@ public class ListenerCardAdapter extends RecyclerView.Adapter<ListenerCardAdapte
 
     @Override
     public ItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = inflater.inflate(R.layout.item_my_litener_card, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_my_litener_card, parent, false);
         ItemViewHolder holder = new ItemViewHolder(view);
         return holder;
     }
 
     @Override
     public void onBindViewHolder(ItemViewHolder holder, final int position) {
-        final MyCardBean bean = result.get(position);
-        if (!TextUtils.isEmpty(bean.getType())) {
-            if (bean.getType().equals("年")) {
-                holder.litener_card_item.setBackgroundResource(R.mipmap.listen_card_year);
-            } else if (bean.getType().equals("月")) {
-                holder.litener_card_item.setBackgroundResource(R.mipmap.listen_card_mouth);
-            } else if (bean.getType().equals("季")) {
-                holder.litener_card_item.setBackgroundResource(R.mipmap.listen_card_ji);
-            }
-        }
-
-        holder.tv_anchor.setText(bean.getUsername());
-        UtilGlide.loadAnchorImg(myCardActivity, bean.getThumb(), holder.card_image);
-
-        holder.tv_card_qixian.setText("有效期:" + bean.getCreatetime() + "-" + bean.getExpire_time());
-
-
+        final CardListVO bean = data.get(position);
+        holder.tv_anchor.setText("主播听书卡《" + bean.getHostName() + "》");
+        UtilGlide.loadAnchorImg(myCardActivity, bean.getHostImage(), holder.card_image);
+        holder.tv_card_qixian.setText("有效期:" + bean.getStartTime() + "---" + bean.getEndTime());
         holder.litener_card_item.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 Bundle bundle = new Bundle();
-                bundle.putString("anchorId", bean.getZhubo_uid());
+//                bundle.putString("anchorId", bean.getZhubo_uid());
                 myCardActivity.intent(AnchorMainActivity.class, bundle);
 
             }
@@ -80,11 +66,11 @@ public class ListenerCardAdapter extends RecyclerView.Adapter<ListenerCardAdapte
 
     @Override
     public int getItemCount() {
-        return result == null ? 0 : result.size();
+        return data == null ? 0 : data.size();
     }
 
-    public void setResult(List<MyCardBean> result) {
-        this.result = result;
+    public void setData(List<CardListVO> result) {
+        this.data = result;
     }
 
     public class ItemViewHolder extends RecyclerView.ViewHolder{

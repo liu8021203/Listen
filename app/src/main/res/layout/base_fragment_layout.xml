@@ -4,26 +4,29 @@
                 android:layout_height="match_parent">
 
 
-    <FrameLayout
-        android:id="@+id/fl_actionbar"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/actionbarHeight">
-    </FrameLayout>
 
-    <FrameLayout
-        android:id="@+id/fl_error"
+    <ViewStub
+        android:id="@+id/view_stub_actionbar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/fl_actionbar"
-        android:visibility="gone">
-    </FrameLayout>
+        android:layout_height="wrap_content"
+        android:layout="@layout/base_error_fl_layout"/>
+
 
 
     <FrameLayout
         android:id="@+id/fl_content"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/fl_actionbar">
+        android:layout_height="match_parent">
     </FrameLayout>
+
+    <ViewStub
+        android:id="@+id/view_stub_error"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/view_stub_actionbar"
+        android:layout="@layout/base_error_fl_layout"/>
+
+
+
 
 </RelativeLayout>

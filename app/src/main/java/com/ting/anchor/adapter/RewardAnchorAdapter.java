@@ -12,6 +12,7 @@ import com.ting.R;
 import com.ting.anchor.AnchorMainActivity;
 import com.ting.bean.anchor.Reward;
 import com.ting.bean.anchor.RewardMess;
+import com.ting.bean.vo.GiftDetailVO;
 import com.ting.util.UtilGlide;
 
 import java.util.List;
@@ -25,24 +26,17 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class RewardAnchorAdapter extends RecyclerView.Adapter<RewardAnchorAdapter.ItemViewHolder> {
     private AnchorMainActivity mActivity;
     private LayoutInflater inflater;
-    private List<RewardMess> data;
+    private List<GiftDetailVO> data;
 
     public RewardAnchorAdapter(AnchorMainActivity activity) {
         this.mActivity = activity;
         this.inflater = LayoutInflater.from(mActivity);
     }
 
-    public void setData(List<RewardMess> data) {
+    public void setData(List<GiftDetailVO> data) {
         this.data = data;
     }
 
-    public void addData(List<RewardMess> result)
-    {
-        if(this.data != null && result != null)
-        {
-            this.data.addAll(result);
-        }
-    }
 
 
     @Override
@@ -54,15 +48,15 @@ public class RewardAnchorAdapter extends RecyclerView.Adapter<RewardAnchorAdapte
 
     @Override
     public void onBindViewHolder(ItemViewHolder holder, int position) {
-        RewardMess vo = data.get(position);
-        UtilGlide.loadAnchorImg(mActivity, vo.getThumb(), holder.reward_touxiang);
-        if(!TextUtils.isEmpty(vo.getName())) {
-            holder.reward_name.setText(vo.getName());
+        GiftDetailVO vo = data.get(position);
+        UtilGlide.loadAnchorImg(mActivity, vo.getUserImage(), holder.reward_touxiang);
+        if(!TextUtils.isEmpty(vo.getNickname())) {
+            holder.reward_name.setText(vo.getNickname());
         }else{
             holder.reward_name.setText("佚名");
         }
-        holder.reward_paiming.setText("TOP：" + vo.getRankQueue());
-        holder.reward_number.setText(String.valueOf(vo.getNumber()));
+        holder.reward_paiming.setText("TOP：" + (position + 1));
+        holder.reward_number.setText(String.valueOf(vo.getTotalPrice()));
     }
 
     @Override
@@ -83,10 +77,10 @@ public class RewardAnchorAdapter extends RecyclerView.Adapter<RewardAnchorAdapte
 
         public ItemViewHolder(View itemView) {
             super(itemView);
-            reward_touxiang = (CircleImageView) itemView.findViewById(R.id.reward_touxiang);
-            reward_name = (TextView) itemView.findViewById(R.id.reward_name);
-            reward_paiming = (TextView) itemView.findViewById(R.id.reward_paiming);
-            reward_number = (TextView) itemView.findViewById(R.id.reward_number);
+            reward_touxiang =  itemView.findViewById(R.id.reward_touxiang);
+            reward_name =  itemView.findViewById(R.id.reward_name);
+            reward_paiming =  itemView.findViewById(R.id.reward_paiming);
+            reward_number =  itemView.findViewById(R.id.reward_number);
         }
     }
 

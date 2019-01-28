@@ -24,6 +24,8 @@ import com.ting.base.BaseApplication;
 import com.ting.bean.anchor.ListenBookVO;
 import com.ting.bean.play.PlayListVO;
 import com.ting.bean.play.PlayingVO;
+import com.ting.bean.vo.CardVO;
+import com.ting.bean.vo.ChapterListVO;
 import com.ting.common.AppData;
 import com.ting.common.TokenManager;
 import com.ting.db.DBChapter;
@@ -41,8 +43,10 @@ import com.ting.play.dialog.PlayListPayDialog;
 import com.ting.play.service.MusicService;
 import com.ting.play.subview.PlayListSubView;
 import com.ting.base.ListenDialog;
+import com.ting.util.UtilFileManage;
 import com.ting.util.UtilIntent;
 import com.ting.util.UtilListener;
+import com.ting.util.UtilMD5Encryption;
 import com.ting.util.UtilNetStatus;
 import com.ting.util.UtilPermission;
 import com.ting.util.UtilStr;
@@ -61,18 +65,18 @@ import java.util.Map;
 public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.ItemViewHolder> {
 
     private BaseActivity activity;
-    private PlayListSubView playListSubView;
-    private PlayListDialog mDialog;
     private LayoutInflater inflater;
-    private List<PlayingVO> data;//分集详情;
-    private List<ListenBookVO> tingshuka;
+    private List<DBChapter> data;//分集详情;
+    private List<CardVO> cardData;
     private MusicController mMusicController;
     private DownloadController controller;
 
     private DownloadReceiver downloadReceiver;
     private PlayListReceiver mPlayListReceiver;
     private Map<String, DBChapter> downloadMap = new HashMap<String, DBChapter>();
-    private int bookId;
+    private Map<String, DBListenHistory> historyMap = new HashMap<>();
+    private String bookId;
+    private PlayListSubView view;
     private PlayOnClickListener mPlayOnClickListener;
     private DownloadOnClickListener downloadOnClickListener;
     private DownloadStopOnClickListener downloadStopOnClickListener;
@@ -81,27 +85,18 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.ItemVi
     private FisrtDownloadOnClickListener fisrtDownloadOnClickListener;
     private MusicDBController musicDBController;
 
-    private String bookName;
-    private String bookAnchor;
-    private String bookPic;
     private int price;
-    private DBListenHistory mHistory;
 
-    public PlayListAdapter(BaseActivity activity, PlayListDialog dialog, int bookId){
+
+    public PlayListAdapter(BaseActivity activity, String bookId, PlayListSubView view) {
         this.activity = activity;
-        this.mDialog = dialog;
         this.bookId = bookId;
-        init(activity, bookId);
+        this.view = view;
+        init();
     }
 
-    public PlayListAdapter(BaseActivity activity, PlayListSubView baseSubView, int bookId) {
-        this.activity = activity;
-        this.playListSubView = baseSubView;
-        this.bookId = bookId;
-        init(activity, bookId);
-    }
 
-    public void init(BaseActivity activity, int bookId) {
+    public void init() {
         inflater = inflater.from(activity);
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(DownLoadService.BROADCAST_ACTION_START);
@@ -123,53 +118,50 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.ItemVi
         activity.registerReceiver(mPlayListReceiver, intentFilterPlayState);
         controller = new DownloadController();
         mMusicController = new MusicController(activity);
+        musicDBController = new MusicDBController();
         initData();
+        initHistory();
         this.mPlayOnClickListener = new PlayOnClickListener();
         this.downloadOnClickListener = new DownloadOnClickListener();
         this.downloadStopOnClickListener = new DownloadStopOnClickListener();
         this.deleteOnClickListener = new DeleteOnClickListener();
         this.payOnClickListener = new PayOnClickListener();
         this.fisrtDownloadOnClickListener = new FisrtDownloadOnClickListener();
-        musicDBController = new MusicDBController();
-        mHistory = musicDBController.getBookIdData(String.valueOf(bookId));
     }
 
-    public void setBookInfo(String bookName, String bookAnchor, String bookPic, int price){
-        this.bookName = bookName;
-        this.bookAnchor = bookAnchor;
-        this.bookPic = bookPic;
+    public void setPrice(int price) {
         this.price = price;
     }
 
-    public void setData(List<PlayingVO> result) {
+    public void setData(List<DBChapter> result) {
         this.data = result;
     }
 
-    public void setTingshuka(List<ListenBookVO> tingshuka) {
-        this.tingshuka = tingshuka;
+    public void setCardData(List<CardVO> cardData) {
+        this.cardData = cardData;
     }
 
-    public void addFooterData(List<PlayingVO> result) {
+    public void addFooterData(List<DBChapter> result) {
         if (this.data != null && result != null) {
             this.data.addAll(result);
         }
     }
 
-    public void addHeaderData(List<PlayingVO> result) {
+    public void addHeaderData(List<DBChapter> result) {
         if (this.data != null && result != null) {
             this.data.addAll(0, result);
         }
     }
 
-    public List<PlayingVO> getResult() {
+    public List<DBChapter> getResult() {
         return data;
     }
 
     private void initData() {
         List<DBChapter> data = controller.getData();
-        if (data != null && data.size() > 0) {
+        if (data != null && !data.isEmpty()) {
             for (int i = 0; i < data.size(); i++) {
-                downloadMap.put(data.get(i).getBookId() + "" + data.get(i).getChapterId(), data.get(i));
+                downloadMap.put(data.get(i).getChapterId(), data.get(i));
                 if (data.get(i).getState() == 2 || data.get(i).getState() == 1 || data.get(i).getState() == 3) {
                     if (UtilNetStatus.isWifiConnection()) {
                         Intent intent = new Intent(activity, DownLoadService.class);
@@ -178,6 +170,15 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.ItemVi
                         activity.startService(intent);
                     }
                 }
+            }
+        }
+    }
+
+    private void initHistory(){
+        List<DBListenHistory> mHistorys = musicDBController.getBookIdHistory(String.valueOf(bookId));
+        if (mHistorys != null && !mHistorys.isEmpty()) {
+            for (int i = 0; i < mHistorys.size(); i++) {
+                historyMap.put(mHistorys.get(i).getChapterId(), mHistorys.get(i));
             }
         }
     }
@@ -196,9 +197,13 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.ItemVi
 
     @Override
     public void onBindViewHolder(ItemViewHolder holder, int position) {
-        PlayingVO vo = data.get(position);
-        String key = bookId + "-" + vo.getId();
-        holder.mAnimView.setVisibility(View.GONE);
+        DBChapter vo = data.get(position);
+        String key = vo.getChapterId();
+        if(TextUtils.equals(key, AppData.loadingKey)){
+            holder.mAnimView.setVisibility(View.VISIBLE);
+        }else{
+            holder.mAnimView.setVisibility(View.GONE);
+        }
         if (!UtilStr.isEmpty(vo.getUrl())) {
             if (TextUtils.equals(key, AppData.playKey)) {
                 holder.mAnimView.setVisibility(View.VISIBLE);
@@ -220,19 +225,24 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.ItemVi
         }
         holder.play_diversity_name.setText(vo.getTitle());
         holder.item_play.setTag(vo);
+        DBListenHistory mHistory = historyMap.get(vo.getChapterId());
         if (mHistory != null) {
-            if (mHistory.getCid() == vo.getId() && !TextUtils.equals(AppData.playKey, key) && !AppData.isPlaying) {
+            if (mHistory.getDuration() != 0L && mHistory.getTotal() != 0L) {
                 holder.tvRecord.setVisibility(View.VISIBLE);
-                if(mHistory.getTotal() == 0L && mHistory.getDuration() == 0L) {
-                    holder.tvRecord.setText("上次听到100%");
+                int percent = (int) (mHistory.getDuration() * 100 / mHistory.getTotal());
+                if (percent >= 95) {
+                    holder.tvRecord.setText("播放完成");
+                    holder.itemView.setTag(R.id.history, null);
+                } else if(percent > 1){
+                    holder.tvRecord.setText("播放至" + percent + "%");
+                    holder.itemView.setTag(R.id.history, mHistory);
                 }else{
-                    int percent = (int) (mHistory.getDuration() * 100 / mHistory.getTotal());
-                    holder.tvRecord.setText("上次听到" + percent + "%");
+                    holder.tvRecord.setVisibility(View.GONE);
                 }
             }else{
                 holder.tvRecord.setVisibility(View.GONE);
             }
-        }else{
+        } else {
             holder.tvRecord.setVisibility(View.GONE);
         }
         if (!UtilStr.isEmpty(vo.getUrl())) {
@@ -240,7 +250,7 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.ItemVi
         } else {
             holder.item_play.setOnClickListener(payOnClickListener);
         }
-        DBChapter tempVO = downloadMap.get(bookId + "" + vo.getId());
+        DBChapter tempVO = downloadMap.get(vo.getChapterId());
         if (tempVO != null) {
             switch (tempVO.getState()) {
                 case 0: {
@@ -259,8 +269,8 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.ItemVi
                 break;
 
                 case 2: {
-                    if (tempVO.getSize() != null && tempVO.getCompletesize() != null && tempVO.getSize() != 0) {
-                        holder.progressBar.downloadResume(tempVO.getCompletesize() * 100 / tempVO.getSize());
+                    if (tempVO.getSize() != null && tempVO.getCompleteSize() != null && tempVO.getSize() != 0) {
+                        holder.progressBar.downloadResume(tempVO.getCompleteSize() * 100 / tempVO.getSize());
                     } else {
                         holder.progressBar.downloadResume(0f);
                     }
@@ -270,8 +280,8 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.ItemVi
 
                 break;
                 case 3: {
-                    if (tempVO.getSize() != null && tempVO.getCompletesize() != null && tempVO.getSize() != 0) {
-                        holder.progressBar.downloadPause(tempVO.getCompletesize() * 100 / tempVO.getSize());
+                    if (tempVO.getSize() != null && tempVO.getCompleteSize() != null && tempVO.getSize() != 0) {
+                        holder.progressBar.downloadPause(tempVO.getCompleteSize() * 100 / tempVO.getSize());
                     } else {
                         holder.progressBar.downloadPause(0f);
                     }
@@ -286,17 +296,10 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.ItemVi
                     holder.progressBar.setOnClickListener(deleteOnClickListener);
                     break;
             }
-
-
-        } else {
-            if (vo.getDownload() == 1) {
-                holder.progressBar.downloadInit();
-                holder.progressBar.setTag(vo);
-                holder.progressBar.setOnClickListener(fisrtDownloadOnClickListener);
-            } else {
-                holder.progressBar.downloadNo();
-                holder.progressBar.setOnClickListener(null);
-            }
+        }else{
+            holder.progressBar.downloadInit();
+            holder.progressBar.setTag(vo);
+            holder.progressBar.setOnClickListener(fisrtDownloadOnClickListener);
         }
     }
 
@@ -318,6 +321,7 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.ItemVi
         private ImageView ivMark;
         private AnimView mAnimView;
         private TextView tvRecord;
+        private ProgressBar mProgressBar;
 
         public ItemViewHolder(View itemView) {
             super(itemView);
@@ -327,18 +331,19 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.ItemVi
             mAnimView = itemView.findViewById(R.id.anim_view);
             ivMark = itemView.findViewById(R.id.iv_mark);
             tvRecord = itemView.findViewById(R.id.tv_record);
+            mProgressBar = itemView.findViewById(R.id.progressBar);
         }
     }
 
 
     private void updateDownloadMap(DBChapter vo) {
-        String key = vo.getBookId() + "" + vo.getChapterId();
+        String key = vo.getChapterId();
         downloadMap.put(key, vo);
         notifyDataSetChanged();
     }
 
     private void removeDownloadMap(DBChapter vo) {
-        String key = vo.getBookId() + "" + vo.getChapterId();
+        String key = vo.getChapterId();
         downloadMap.remove(key);
         notifyDataSetChanged();
     }
@@ -348,7 +353,7 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.ItemVi
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             Bundle bundle = intent.getBundleExtra("data");
-            DBChapter vo = (DBChapter) bundle.getParcelable("vo");
+            DBChapter vo =  bundle.getParcelable("vo");
             if (vo != null) {
                 switch (action) {
                     case DownLoadService.BROADCAST_ACTION_START:
@@ -396,33 +401,23 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.ItemVi
         @Override
         public void onClick(View v) {
             if (UtilPermission.hasPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                PlayingVO vo = (PlayingVO) v.getTag();
+                DBChapter vo = (DBChapter) v.getTag();
                 //通过判断url是否为空来判断章节是否需要购买
                 if (!UtilStr.isEmpty(vo.getUrl())) {
                     if (!TokenManager.isLogin(activity)) {
-                        activity.showToast("请登录");
+                        activity.intent(LoginMainActivity.class);
+                        activity.showToast("请先登录");
                         return;
                     }
-                    if (TokenManager.getInfo(activity).getIsvip() == 0) {
-                        ListenDialog.makeListenDialog(activity, "提示", "亲，章节下载属于会员功能", true, "取消", true, "成为VIP", new ListenDialog.CallBackListener() {
-                            @Override
-                            public void callback(ListenDialog dialog, int mark) {
-                                dialog.dismiss();
-                                if(mark == ListenDialog.RIGHT){
-                                    UtilIntent.intentDIY(activity, MyDouActivity.class);
-                                }
-                            }
-                        }).show();
-                        return;
-                    }
+
                     Intent intent = new Intent(activity, DownLoadService.class);
+                    intent.putExtra("vo", vo);
                     intent.putExtra("MSG", 1);
-                    intent.putExtra("vo", UtilListener.PlayingVOToBook(vo, bookId, bookName, bookAnchor, bookPic));
                     activity.startService(intent);
                 } else {
                     if (TokenManager.isLogin(activity)) {
                         PlayListPayDialog dialog = new PlayListPayDialog(activity);
-                        dialog.setVo(vo, price);
+//                        dialog.setVo(vo, price);
                         dialog.setListener(new PlayListPayDialog.CallBackListener() {
                             @Override
                             public void singleCallBack() {
@@ -431,12 +426,12 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.ItemVi
 
                             @Override
                             public void allCallBack() {
-                                playListSubView.getData(1, playListSubView.getPages());
+//                                playListSubView.getData(1, playListSubView.getPages());
                             }
 
                             @Override
                             public void listBookCallBack() {
-                                playListSubView.getData(1, playListSubView.getPages());
+//                                playListSubView.getData(1, playListSubView.getPages());
                             }
                         });
                         dialog.show();
@@ -472,12 +467,13 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.ItemVi
         @Override
         public void onClick(View v) {
             final DBChapter vo = (DBChapter) v.getTag();
-            ListenDialog.makeListenDialog(activity, "提示", "是否要删除" + vo.getChapterTitle(), true, "否", true, "是", new ListenDialog.CallBackListener() {
+            ListenDialog.makeListenDialog(activity, "提示", "是否要删除" + vo.getTitle(), true, "否", true, "是", new ListenDialog.CallBackListener() {
                 @Override
                 public void callback(ListenDialog dialog, int mark) {
                     dialog.dismiss();
                     if (mark == ListenDialog.RIGHT) {
                         controller.delete(vo);
+                        UtilFileManage.delete(AppData.FILE_PATH + vo.getBookId() + "/" + UtilMD5Encryption.getMd5Value(vo.getChapterId()) + ".tsj");
                         removeDownloadMap(vo);
                     }
                 }
@@ -491,11 +487,10 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.ItemVi
         @Override
         public void onClick(View v) {
             if (TokenManager.isLogin(activity)) {
-                final PlayingVO vo = (PlayingVO) v.getTag();
+                DBChapter vo = (DBChapter) v.getTag();
                 PlayListPayDialog dialog = new PlayListPayDialog(activity);
                 dialog.setVo(vo, price);
-                dialog.setTingshuka(tingshuka);
-                dialog.setBookId(bookId);
+                dialog.setCardData(cardData);
                 dialog.setListener(new PlayListPayDialog.CallBackListener() {
                     @Override
                     public void singleCallBack() {
@@ -504,24 +499,24 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.ItemVi
 
                     @Override
                     public void allCallBack() {
-                        int page = vo.getPosition() / 50 + 1;
-                        if(playListSubView != null) {
-                            playListSubView.getData(1, page);
+                        int page = (data.get(data.size() - 1).getPosition() - 1) / 50 + 1;
+                        if(view != null) {
+                            view.getData(0, page);
                         }
-                        if(mDialog != null){
-                            mDialog.getData(1, page);
-                        }
+//                        if(mDialog != null){
+//                            mDialog.getData(1, page);
+//                        }
                     }
 
                     @Override
                     public void listBookCallBack() {
-                        int page = vo.getPosition() / 50 + 1;
-                        if(playListSubView != null) {
-                            playListSubView.getData(1, page);
+                        int page = (data.get(data.size() - 1).getPosition() - 1) / 50 + 1;
+                        if(view != null) {
+                            view.getData(0, page);
                         }
-                        if(mDialog != null){
-                            mDialog.getData(1, page);
-                        }
+//                        if(mDialog != null){
+//                            mDialog.getData(1, page);
+//                        }
                     }
                 });
                 dialog.show();
@@ -538,29 +533,24 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.ItemVi
 
         @Override
         public void onClick(View v) {
-            PlayingVO vo = (PlayingVO) v.getTag();
-            String key = bookId + "-" + vo.getId();
+            DBChapter vo = (DBChapter) v.getTag();
+            DBListenHistory history = (DBListenHistory) v.getTag(R.id.history);
+            String key = vo.getChapterId();
             if (TextUtils.equals(key, AppData.playKey)) {
                 if (AppData.isPlaying) {
                     mMusicController.pause();
                 } else {
-                    mHistory = musicDBController.getBookIdData(String.valueOf(bookId));
-                    PlayListVO listVO = new PlayListVO();
-                    listVO.setData(data);
-                    if(mHistory == null || mHistory.getCid() != vo.getId()) {
-                        mMusicController.play(bookId, vo.getId(), vo.getUrl(), vo.getTitle(), bookName, bookAnchor, bookPic, listVO, "asc", 0);
+                    if(history != null) {
+                        mMusicController.seekToPlay(history.getDuration(), vo, data);
                     }else{
-                        mMusicController.play(mHistory.getDuration(), bookId, mHistory.getCid(), mHistory.getUrl(), mHistory.getChapter_name(), mHistory.getBookname(), mHistory.getHost(), mHistory.getPic(), listVO, "asc", 0, 0);
+                        mMusicController.play(vo, data);
                     }
                 }
             } else {
-                mHistory = musicDBController.getBookIdData(String.valueOf(bookId));
-                PlayListVO listVO = new PlayListVO();
-                listVO.setData(data);
-                if(mHistory == null || mHistory.getCid() != vo.getId()) {
-                    mMusicController.play(bookId, vo.getId(), vo.getUrl(), vo.getTitle(), bookName, bookAnchor, bookPic, listVO, "asc", 0);
-                }else {
-                    mMusicController.play(mHistory.getDuration(), bookId, mHistory.getCid(), mHistory.getUrl(), mHistory.getChapter_name(), mHistory.getBookname(), mHistory.getHost(), mHistory.getPic(), listVO, "asc", 0, 0);
+                if(history != null) {
+                    mMusicController.seekToPlay(history.getDuration(), vo, data);
+                }else{
+                    mMusicController.play(vo, data);
                 }
             }
         }
@@ -578,40 +568,39 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.ItemVi
                     notifyDataSetChanged();
                     break;
                 case MusicService.MUSIC_PLAY:
-                    mHistory = musicDBController.getBookIdData(String.valueOf(bookId));
                     notifyDataSetChanged();
-                    if(activity instanceof BookDetailsActivity){
+                    if (activity instanceof BookDetailsActivity) {
                         BookDetailsActivity detailsActivity = (BookDetailsActivity) activity;
                         detailsActivity.startAnim();
                     }
                     break;
                 case MusicService.MUSIC_COMPLETE:
-                    mHistory = musicDBController.getBookIdData(String.valueOf(bookId));
+                    initHistory();
                     notifyDataSetChanged();
-                    if(activity instanceof BookDetailsActivity){
+                    if (activity instanceof BookDetailsActivity) {
                         BookDetailsActivity detailsActivity = (BookDetailsActivity) activity;
                         detailsActivity.stopAnim();
                     }
                     break;
                 case MusicService.MUSIC_PAUSE:
-                    mHistory = musicDBController.getBookIdData(String.valueOf(bookId));
+                    initHistory();
                     notifyDataSetChanged();
-                    if(activity instanceof BookDetailsActivity){
+                    if (activity instanceof BookDetailsActivity) {
                         BookDetailsActivity detailsActivity = (BookDetailsActivity) activity;
                         detailsActivity.stopAnim();
                     }
                     break;
                 case MusicService.MUSIC_ERROR:
-                    mHistory = musicDBController.getBookIdData(String.valueOf(bookId));
+                    initHistory();
                     notifyDataSetChanged();
-                    if(activity instanceof BookDetailsActivity){
+                    if (activity instanceof BookDetailsActivity) {
                         BookDetailsActivity detailsActivity = (BookDetailsActivity) activity;
                         detailsActivity.stopAnim();
                     }
                     break;
                 case MusicService.MUSIC_DATA_UPDATE:
                     PlayListVO vo = intent.getParcelableExtra("data");
-                    data = vo.getData();
+//                    data = vo.getData();
                     notifyDataSetChanged();
                     break;
             }

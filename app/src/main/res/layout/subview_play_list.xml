@@ -22,17 +22,20 @@
             android:textColor="#5e5e5e"
             android:textSize="@dimen/px26"/>
 
+
         <TextView
-            android:id="@+id/paixun"
+            android:id="@+id/tv_batch_chapter_buy"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_centerInParent="true"
-            android:layout_marginLeft="@dimen/dpx36"
+            android:layout_marginRight="@dimen/dpx36"
+            android:layout_toLeftOf="@+id/tiaozhuan"
             android:gravity="center_vertical"
-            android:text="@string/paixu"
+            android:text="批量购买"
+            android:drawableLeft="@mipmap/chapter_buy"
+            android:drawablePadding="4dp"
             android:textColor="#5e5e5e"
-            android:textSize="@dimen/px30"
-            android:visibility="visible"/>
+            android:textSize="@dimen/px30"/>
+
 
         <TextView
             android:id="@+id/tiaozhuan"
@@ -41,7 +44,9 @@
             android:layout_alignParentRight="true"
             android:layout_marginRight="@dimen/dpx36"
             android:gravity="center_vertical"
-            android:text="@string/tiaozhuan"
+            android:drawableLeft="@mipmap/chapter_select"
+            android:drawablePadding="4dp"
+            android:text="选集"
             android:textColor="#5e5e5e"
             android:textSize="@dimen/px30"/>
 
@@ -54,58 +59,56 @@
 
     </RelativeLayout>
 
-    <com.scwang.smartrefresh.layout.SmartRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                                                       android:id="@+id/refreshLayout"
-                                                       android:layout_width="match_parent"
-                                                       android:layout_height="match_parent"
-                                                       android:layout_below="@+id/play_setting"
-                                                       android:background="@color/white">
 
-        <com.scwang.smartrefresh.layout.header.ClassicsHeader
-            android:id="@+id/header"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@id/swipe_target"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clipToPadding="false"/>
-
-        <com.scwang.smartrefresh.layout.footer.ClassicsFooter
-            android:id="@+id/footer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-    </com.scwang.smartrefresh.layout.SmartRefreshLayout>
-
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/offline_recycle_view"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/play_setting"
-        android:background="@color/white"
-        android:visibility="gone"></android.support.v7.widget.RecyclerView>
+        android:background="@color/white">
 
 
-    <GridView
-        android:id="@+id/gridview"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/play_setting"
-        android:background="@color/white"
-        android:listSelector="@null"
-        android:numColumns="3"
-        android:scrollbars="none"
-        android:visibility="gone"></GridView>
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:indeterminateTint="#46bafc"
+            android:visibility="gone"/>
 
-    <View
-        android:id="@+id/view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/gridview"
-        android:visibility="gone"></View>
+        <com.scwang.smartrefresh.layout.SmartRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                                           android:id="@+id/refreshLayout"
+                                                           android:layout_width="match_parent"
+                                                           android:layout_height="match_parent"
+
+            >
+
+            <com.scwang.smartrefresh.layout.header.ClassicsHeader
+                android:id="@+id/header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@id/swipe_target"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"/>
+
+            <com.scwang.smartrefresh.layout.footer.ClassicsFooter
+                android:id="@+id/footer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        </com.scwang.smartrefresh.layout.SmartRefreshLayout>
+
+
+        <include
+            android:id="@+id/network_error_layout"
+            layout="@layout/base_network_error_layout"
+            android:visibility="gone">
+        </include>
+
+
+    </RelativeLayout>
 
 
 </RelativeLayout>

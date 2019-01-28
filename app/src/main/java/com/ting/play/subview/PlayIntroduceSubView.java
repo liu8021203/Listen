@@ -10,6 +10,9 @@ import com.aspsine.swipetoloadlayout.OnLoadMoreListener;
 import com.aspsine.swipetoloadlayout.SwipeToLoadLayout;
 import com.ting.R;
 import com.ting.base.BaseObserver;
+import com.ting.bean.BaseResult;
+import com.ting.bean.BookResult;
+import com.ting.bean.CommentListResult;
 import com.ting.common.AppData;
 import com.ting.common.TokenManager;
 import com.ting.common.http.HttpService;
@@ -40,94 +43,110 @@ public class PlayIntroduceSubView extends LinearLayout implements OnLoadMoreList
     private RecyclerView mCommentRecycle;
     private CommentAdapter adapter;
     private int page = 1;//评论制定的查询页数;
+    private String bookId;
 
-    public PlayIntroduceSubView(BookDetailsActivity activity) {
+    public PlayIntroduceSubView(BookDetailsActivity activity, String bookId) {
         super(activity);
         this.activity = activity;
+        this.bookId = bookId;
         playIntroduceSubView = LayoutInflater.from(activity).inflate(R.layout.subview_play_introduce, this);
         initView();
+        initData();
     }
+
     private void initView() {
-        mCommentRecycle =  playIntroduceSubView.findViewById(R.id.swipe_target);
-        mSwipeToLoadLayout =  playIntroduceSubView.findViewById(R.id.swipeToLoadLayout);
+        mCommentRecycle = playIntroduceSubView.findViewById(R.id.swipe_target);
+        mSwipeToLoadLayout = playIntroduceSubView.findViewById(R.id.swipeToLoadLayout);
         mSwipeToLoadLayout.setOnLoadMoreListener(this);
         LinearLayoutManager manager = new LinearLayoutManager(activity);
         mCommentRecycle.setLayoutManager(manager);
         mCommentRecycle.setAdapter(adapter);
     }
 
-    public void initData(){
-        if(UtilNetStatus.isHasConnection(activity)){
+    public void initData() {
+        if (UtilNetStatus.isHasConnection(activity)) {
             requestNetData(0);
-        }else{
-            mSwipeToLoadLayout.setLoadMoreEnabled(false);
-            String jsonStr = UtilFileManage.readSDData(AppData.CACHE_PATH, UtilMD5Encryption.getMd5Value(String.valueOf(activity.getBookId())));
-            CommentResult data = (CommentResult) UtilGson.fromJson(jsonStr, CommentResult.class);
-            if(data != null){
-                adapter = new CommentAdapter(activity, PlayIntroduceSubView.this);
-                activity.initInfo(data);
-                adapter.setBookId(data.getId());
-                adapter.setResult(data.getComment().getData());
-                adapter.setResult(data);
-                adapter.setCommentoff(data.getCommentoff());
-                mCommentRecycle.setAdapter(adapter);
-            }
         }
     }
 
     /**
      * 请求网络数据
+     *
      * @param type
      */
     public void requestNetData(final int type) {
         Map<String, String> map = new HashMap<>();
-        map.put("page", page + "");
-        map.put("type", "comment");
-        map.put("count", "20");
-        map.put("bookID", activity.getBookId() + "");
-        map.put("sort", "asc");
+        map.put("bookId", bookId);
         if (TokenManager.isLogin(activity)) {
             map.put("uid", TokenManager.getUid(activity));
         }
-        BaseObserver baseObserver = new BaseObserver<CommentResult>(activity, false) {
+        BaseObserver baseObserver = new BaseObserver<BaseResult<BookResult>>(activity, false) {
             @Override
-            public void success(CommentResult data) {
+            public void success(BaseResult<BookResult> data) {
                 super.success(data);
                 mSwipeToLoadLayout.setLoadingMore(false);
-                activity.initInfo(data);
+                BookResult result = data.getData();
+                activity.setBookTitle(result.getBookData().getBookTitle());
+                activity.setCardData(result.getCardData());
                 if (adapter == null) {
-                    //缓存内容
-                    UtilFileManage.writeSDData(AppData.CACHE_PATH, UtilMD5Encryption.getMd5Value(String.valueOf(activity.getBookId())), UtilGson.toJson(data));
-                    adapter = new CommentAdapter(activity, PlayIntroduceSubView.this);
-                    adapter.setBookId(data.getId());
-                    adapter.setResult(data.getComment().getData());
-                    adapter.setResult(data);
-                    adapter.setCommentoff(data.getCommentoff());
+                    adapter = new CommentAdapter(activity);
+                    adapter.setData(result.getCommentData().getCommentList());
+                    adapter.setBookDataVO(result.getBookData());
+                    adapter.setBookId(bookId);
                     mCommentRecycle.setAdapter(adapter);
                 } else {
-                    if(type == 0) {
-                        adapter.setResult(data.getComment().getData());
-                    }else{
-                        adapter.addData(data.getComment().getData());
+                    if (type == 0) {
+                        adapter.setData(result.getCommentData().getCommentList());
+                    } else {
+                        adapter.addData(result.getCommentData().getCommentList());
                     }
                     adapter.notifyDataSetChanged();
                 }
-                isPaging(data.getComment().getLength(), adapter.getItemCount());
+                isPaging(result.getCommentData().getCount(), adapter.getItemCount() - 1);
             }
 
-            @Override
-            public void error() {
-                mSwipeToLoadLayout.setLoadingMore(false);
-                if(type == 1){
-                    page--;
-                }
-            }
+
         };
         activity.mDisposable.add(baseObserver);
-        UtilRetrofit.getInstance().create(HttpService.class).getPlayer(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
+        UtilRetrofit.getInstance().create(HttpService.class).book(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
     }
 
 
+    /**
+     * 加载更多评论数据
+     */
+    private void loadMoreComments() {
+        Map<String, String> map = new HashMap<>();
+        map.put("bookId", bookId);
+        if (TokenManager.isLogin(activity)) {
+            map.put("uid", TokenManager.getUid(activity));
+        }
+        map.put("page", String.valueOf(page));
+        map.put("size", "10");
+        BaseObserver baseObserver = new BaseObserver<BaseResult<CommentListResult>>(activity, BaseObserver.MODEL_SHOW_TOAST) {
+            @Override
+            public void success(BaseResult<CommentListResult> data) {
+                super.success(data);
+                mSwipeToLoadLayout.setLoadingMore(false);
+                CommentListResult result = data.getData();
+                page = result.getPage();
+                if (adapter != null) {
+                    adapter.addData(result.getList());
+                    adapter.notifyDataSetChanged();
+                }
+                isPaging(result.getCount(), adapter.getItemCount() - 1);
+            }
+
+            @Override
+            public void error(BaseResult<CommentListResult> value, Throwable e) {
+                super.error(value, e);
+                mSwipeToLoadLayout.setLoadingMore(false);
+                page--;
+            }
+        };
+        activity.mDisposable.add(baseObserver);
+        UtilRetrofit.getInstance().create(HttpService.class).queryComments(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
+    }
 
 
     /**
@@ -141,20 +160,9 @@ public class PlayIntroduceSubView extends LinearLayout implements OnLoadMoreList
         }
     }
 
-    /**
-     * 发送评论成功
-     * @param result
-     */
-    public void sendMessageSuccess(MessageResult result) {
-        if (adapter != null && result.getCommentData() != null) {
-            adapter.addVO(result.getCommentData());
-            adapter.notifyDataSetChanged();
-        }
-    }
-
     @Override
     public void onLoadMore() {
         page++;
-        requestNetData(1);
+        loadMoreComments();
     }
 }

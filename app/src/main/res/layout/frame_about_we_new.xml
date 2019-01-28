@@ -224,11 +224,23 @@
             android:textColor="@color/c666666"
             android:textSize="@dimen/px24" />
 
+
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp750_20"
             android:text="版权合作:51493492"
+            android:textColor="@color/c666666"
+            android:textSize="@dimen/px24" />
+
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="技术支持WX:18611041664"
+            android:layout_marginTop="@dimen/dp750_20"
             android:textColor="@color/c666666"
             android:textSize="@dimen/px24" />
 
@@ -238,7 +250,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp750_20"
             android:text="客服QQ:769991514"
-            android:textColor="@color/c666666"
+            android:textColor="#1296db"
             android:textSize="@dimen/px24" />
 
     </LinearLayout>

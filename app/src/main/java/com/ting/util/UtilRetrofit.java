@@ -38,7 +38,7 @@ public class UtilRetrofit {
                             readTimeout(READ_TIME_OUT, TimeUnit.SECONDS).
                             writeTimeout(WRITE_TIME_OUT, TimeUnit.SECONDS).build();
 
-                    retrofit = new Retrofit.Builder().baseUrl("http://www.tingshijie.com/").addConverterFactory(GsonConverterFactory.create()).addCallAdapterFactory(RxJava2CallAdapterFactory.create()).build();
+                    retrofit = new Retrofit.Builder().baseUrl("http://xiaochengxu.tingshijie.com/").client(client).addConverterFactory(GsonConverterFactory.create()).addCallAdapterFactory(RxJava2CallAdapterFactory.create()).build();
                 }
             }
         }

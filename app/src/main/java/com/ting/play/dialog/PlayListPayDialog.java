@@ -2,6 +2,8 @@ package com.ting.play.dialog;
 
 import android.app.Dialog;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -13,15 +15,23 @@ import android.widget.RadioButton;
 import com.ting.R;
 import com.ting.base.BaseActivity;
 import com.ting.base.BaseObserver;
+import com.ting.bean.BaseResult;
 import com.ting.bean.anchor.ListenBookVO;
 import com.ting.bean.play.PlayingVO;
+import com.ting.bean.vo.BuyChapterWayVO;
+import com.ting.bean.vo.CardVO;
 import com.ting.common.TokenManager;
 import com.ting.common.http.HttpService;
+import com.ting.db.DBChapter;
 import com.ting.play.BookDetailsActivity;
 import com.ting.bean.play.PayResult;
+import com.ting.play.adapter.BuyChapterWaydapter;
 import com.ting.util.UtilRetrofit;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -30,19 +40,18 @@ import io.reactivex.schedulers.Schedulers;
  * Created by liu on 15/11/5.
  */
 public class PlayListPayDialog extends Dialog implements OnClickListener{
-    private RadioButton radio_single;
-    private RadioButton radio_all;
-    private RadioButton radio_vip;
     private Button btn_cancle;
     private Button btn_buy;
     //type：0为单集购买，1为全集购买，2为购买VIP
     private int type = 0;
     private BaseActivity activity;
-    private PlayingVO vo;
+    private DBChapter vo;
     private int price;
     private CallBackListener listener;
     private int bookId;
-    private List<ListenBookVO> tingshuka;
+    private List<CardVO> cardData;
+    private RecyclerView mRecyclerView;
+    private BuyChapterWaydapter mWaydapter;
 
 
 
@@ -53,13 +62,13 @@ public class PlayListPayDialog extends Dialog implements OnClickListener{
 
 
 
-    public void setVo(PlayingVO vo, int price) {
+    public void setVo(DBChapter vo, int price) {
         this.vo = vo;
         this.price = price;
     }
 
-    public void setTingshuka(List<ListenBookVO> tingshuka) {
-        this.tingshuka = tingshuka;
+    public void setCardData(List<CardVO> cardData) {
+        this.cardData = cardData;
     }
 
     public void setBookId(int bookId) {
@@ -85,49 +94,53 @@ public class PlayListPayDialog extends Dialog implements OnClickListener{
         btn_buy.setOnClickListener(this);
         btn_cancle =  findViewById(R.id.btn_cancle);
         btn_cancle.setOnClickListener(this);
-        radio_single =  findViewById(R.id.radio_single);
-        radio_all =  findViewById(R.id.radio_all);
-        radio_vip =  findViewById(R.id.radio_vip);
-        radio_single.setChecked(true);
-        radio_single.setText("单集打赏" + vo.getPrice() + "听豆");
-        radio_single.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    type = 0;
-                }
-            }
-        });
-        radio_all.setText("全集打赏" + price + "听豆");
-        radio_all.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked)
-                {
-                    type = 1;
-                }
-            }
-        });
-        radio_vip.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked)
-                {
-                    type = 2;
-                }
-            }
-        });
+        mRecyclerView =  findViewById( R.id.recycler_view);
+        LinearLayoutManager manager = new LinearLayoutManager(activity);
+        mRecyclerView.setLayoutManager(manager);
         btn_buy =  findViewById(R.id.btn_ok);
         btn_buy.setOnClickListener(this);
         btn_cancle =  findViewById(R.id.btn_cancle);
         btn_cancle.setOnClickListener(this);
-        if(tingshuka != null && !tingshuka.isEmpty())
-        {
-            radio_vip.setVisibility(View.VISIBLE);
+        List<BuyChapterWayVO> data = new ArrayList<>();
+        if(cardData != null && !cardData.isEmpty()){
+            BuyChapterWayVO vo1 = new BuyChapterWayVO();
+            vo1.setBookId(vo.getBookId());
+            vo1.setCardId(vo.getChapterId());
+            vo1.setType(0);
+            vo1.setDesc("购买单集《" + vo.getTitle() + "》" + vo.getPrice() + "听豆");
+            data.add(vo1);
+            BuyChapterWayVO vo2 = new BuyChapterWayVO();
+            vo2.setBookId(vo.getBookId());
+            vo2.setCardId(vo.getChapterId());
+            vo2.setType(1);
+            vo2.setDesc("购买全集" + vo.getBookPrice() + "听豆");
+            data.add(vo2);
+            for (int i = 0; i < cardData.size(); i++){
+                BuyChapterWayVO cardVO = new BuyChapterWayVO();
+                cardVO.setBookId(vo.getBookId());
+                cardVO.setCardId(vo.getChapterId());
+                cardVO.setType(2);
+                cardVO.setDesc("主播听书卡：" + cardData.get(i).getCardDesc());
+                cardVO.setCardId(cardData.get(i).getId());
+                data.add(cardVO);
+            }
+        }else{
+            BuyChapterWayVO vo1 = new BuyChapterWayVO();
+            vo1.setBookId(vo.getBookId());
+            vo1.setCardId(vo.getChapterId());
+            vo1.setType(0);
+            vo1.setDesc("购买单集《" + vo.getTitle() + "》" + vo.getPrice() + "听豆");
+            data.add(vo1);
+            BuyChapterWayVO vo2 = new BuyChapterWayVO();
+            vo2.setBookId(vo.getBookId());
+            vo2.setCardId(vo.getChapterId());
+            vo2.setType(1);
+            vo2.setDesc("购买全集" + vo.getBookPrice() + "听豆");
+            data.add(vo2);
         }
-        else {
-            radio_vip.setVisibility(View.GONE);
-        }
+        mWaydapter = new BuyChapterWaydapter(activity);
+        mWaydapter.setData(data);
+        mRecyclerView.setAdapter(mWaydapter);
     }
 
     @Override
@@ -138,28 +151,20 @@ public class PlayListPayDialog extends Dialog implements OnClickListener{
                 dismiss();
                 break;
             case R.id.btn_ok:{
-                switch (type)
-                {
-                    case 0:
-                    {
-                        buySingle();
-                    }
-                        break;
-
-                    case 1:
-                    {
-                        buyAll();
-                    }
-                        break;
-
-                    case 2:
-                    {
-                        dismiss();
-                        ListenBookDialog dialog = new ListenBookDialog(activity);
-                        dialog.setData(tingshuka);
-                        dialog.show();
-                    }
-                    break;
+                if(mWaydapter == null){
+                    activity.showToast("请选择购买的服务");
+                    return;
+                }
+                if(mWaydapter.getDefVO() == null){
+                    activity.showToast("请选择购买的服务");
+                    return;
+                }
+                if(mWaydapter.getDefVO().getType() == 0){
+                    buySingle();
+                }else if(mWaydapter.getDefVO().getType() == 1){
+                    buyAll();
+                }else{
+                    buyListCard(mWaydapter.getDefVO());
                 }
             }
                 break;
@@ -181,43 +186,66 @@ public class PlayListPayDialog extends Dialog implements OnClickListener{
      * 购买单集
      */
     private void buySingle(){
-        BaseObserver baseObserver = new BaseObserver<PayResult>(activity){
+        Map<String, String> map = new HashMap<>();
+        map.put("uid", TokenManager.getUid(activity));
+        map.put("bookId", vo.getBookId());
+        map.put("chapterId", vo.getChapterId());
+        BaseObserver baseObserver = new BaseObserver<BaseResult<DBChapter>>(activity, BaseObserver.MODEL_SHOW_DIALOG_TOAST){
             @Override
-            public void success(PayResult data) {
+            public void success(BaseResult<DBChapter> data) {
                 super.success(data);
-                if(data.getBlistinfo() != null) {
-                    vo.setUrl(data.getBlistinfo().getUrl());
+                if(data.getData() != null) {
+                    vo.setUrl(data.getData().getUrl());
                     listener.singleCallBack();
                 }
                 dismiss();
             }
-
-            @Override
-            public void error() {
-            }
         };
         activity.mDisposable.add(baseObserver);
-        UtilRetrofit.getInstance().create(HttpService.class).buyBookSingle(String.valueOf(vo.getId()), TokenManager.getUid(activity), String.valueOf(bookId)).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
+        UtilRetrofit.getInstance().create(HttpService.class).buyChapter(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
     }
 
     /**
      * 购买全集
      */
     private void buyAll(){
-        BaseObserver baseObserver = new BaseObserver<PayResult>(activity){
+        Map<String, String> map = new HashMap<>();
+        map.put("uid", TokenManager.getUid(activity));
+        map.put("bookId", vo.getBookId());
+        BaseObserver baseObserver = new BaseObserver<BaseResult>(activity, BaseObserver.MODEL_SHOW_DIALOG_TOAST){
             @Override
-            public void success(PayResult data) {
+            public void success(BaseResult data) {
                 super.success(data);
-                listener.allCallBack();
+                if(listener != null) {
+                    listener.allCallBack();
+                }
                 dismiss();
             }
 
-            @Override
-            public void error() {
-            }
+
         };
         activity.mDisposable.add(baseObserver);
-        UtilRetrofit.getInstance().create(HttpService.class).buyBookAll(TokenManager.getUid(activity), String.valueOf(bookId)).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
+        UtilRetrofit.getInstance().create(HttpService.class).buyBook(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
+    }
+
+    private void buyListCard(BuyChapterWayVO wayVO){
+        Map<String, String> map = new HashMap<>();
+        map.put("uid", TokenManager.getUid(activity));
+        map.put("cardId", wayVO.getCardId());
+        BaseObserver baseObserver = new BaseObserver<BaseResult>(activity, BaseObserver.MODEL_SHOW_DIALOG_TOAST){
+            @Override
+            public void success(BaseResult data) {
+                super.success(data);
+                if(listener != null) {
+                    listener.listBookCallBack();
+                }
+                dismiss();
+            }
+
+
+        };
+        activity.mDisposable.add(baseObserver);
+        UtilRetrofit.getInstance().create(HttpService.class).buyCard(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
     }
 
 }

@@ -16,6 +16,7 @@ import com.ting.base.BaseActivity;
 import com.ting.base.BaseObserver;
 import com.ting.bean.BaseResult;
 import com.ting.bean.anchor.AnchorVO;
+import com.ting.bean.vo.HostVO;
 import com.ting.common.TokenManager;
 import com.ting.common.http.HttpService;
 import com.ting.login.LoginMainActivity;
@@ -37,10 +38,10 @@ import io.reactivex.schedulers.Schedulers;
 public class AnchorAdapter extends RecyclerView.Adapter<AnchorAdapter.ItemViewHolder> implements StickyRecyclerHeadersAdapter<AnchorAdapter.HeaderViewHolder>{
     private LayoutInflater mInflater;
     private BaseActivity mActivity;
-    private List<AnchorVO> data;
+    private List<HostVO> data;
     private ItemOnClickListener mListener;
     private FocusOnClickListener mFocusOnClickListener;
-    private AnchorVO curVO;
+    private HostVO curVO;
 
 
     public AnchorAdapter(BaseActivity activity) {
@@ -50,7 +51,7 @@ public class AnchorAdapter extends RecyclerView.Adapter<AnchorAdapter.ItemViewHo
         mFocusOnClickListener = new FocusOnClickListener();
     }
 
-    public void setData(List<AnchorVO> data) {
+    public void setData(List<HostVO> data) {
         this.data = data;
     }
 
@@ -78,18 +79,18 @@ public class AnchorAdapter extends RecyclerView.Adapter<AnchorAdapter.ItemViewHo
 
     @Override
     public void onBindHeaderViewHolder(HeaderViewHolder holder, int position) {
-        AnchorVO vo = data.get(position);
+        HostVO vo = data.get(position);
         holder.tvHeader.setText(vo.getFirstStr());
     }
 
     @Override
     public void onBindViewHolder(ItemViewHolder holder, int position) {
-        AnchorVO vo = data.get(position);
-        UtilGlide.loadHeadImg(mActivity, vo.getThumb(), holder.ivImg);
-        holder.tvName.setText(vo.getName());
+        HostVO vo = data.get(position);
+        UtilGlide.loadHeadImg(mActivity, vo.getUserImage(), holder.ivImg);
+        holder.tvName.setText(vo.getNickname());
         holder.itemView.setTag(vo);
         holder.itemView.setOnClickListener(mListener);
-        if(!vo.isFollowed()){
+        if(vo.getFocus() == 1){
             holder.rlFocus.setBackgroundResource(R.drawable.anchor_unfocus_btn);
             holder.tvFocus.setText("关注");
             holder.tvFocus.setTextColor(0xff46bafc);
@@ -136,9 +137,9 @@ public class AnchorAdapter extends RecyclerView.Adapter<AnchorAdapter.ItemViewHo
 
         @Override
         public void onClick(View v) {
-            AnchorVO vo = (AnchorVO) v.getTag();
+            HostVO vo = (HostVO) v.getTag();
             Bundle bundle = new Bundle();
-            bundle.putString("anchorId", String.valueOf(vo.getId()));
+            bundle.putString("anchorId", vo.getId());
             mActivity.intent(AnchorMainActivity.class, bundle);
         }
     }
@@ -146,13 +147,13 @@ public class AnchorAdapter extends RecyclerView.Adapter<AnchorAdapter.ItemViewHo
     private class FocusOnClickListener implements View.OnClickListener{
         @Override
         public void onClick(View v) {
-            AnchorVO vo = (AnchorVO) v.getTag();
+            HostVO vo = (HostVO) v.getTag();
             if(!TokenManager.isLogin(mActivity)){
                 mActivity.intent(LoginMainActivity.class);
                 return;
             }else{
                 curVO = vo;
-                if(vo.isFollowed()){
+                if(vo.getFocus() == 0){
                     cancel();
                 }else{
                     focus();
@@ -165,42 +166,33 @@ public class AnchorAdapter extends RecyclerView.Adapter<AnchorAdapter.ItemViewHo
     private void cancel(){
         Map<String, String> map = new HashMap<>();
         map.put("uid", TokenManager.getUid(mActivity));
-        map.put("bid", String.valueOf(curVO.getId()));
-        map.put("op", "cancel");
-        BaseObserver baseObserver = new BaseObserver<BaseResult>(mActivity) {
+        map.put("hostId", curVO.getId());
+        BaseObserver baseObserver = new BaseObserver<BaseResult>(mActivity, BaseObserver.MODEL_SHOW_DIALOG_TOAST) {
             @Override
             public void success(BaseResult data) {
                 super.success(data);
-                curVO.setFollowed(false);
+                curVO.setFocus(1);
                 notifyDataSetChanged();
             }
 
-            @Override
-            public void error() {
-            }
         };
         mActivity.mDisposable.add(baseObserver);
-        UtilRetrofit.getInstance().create(HttpService.class).setFocus(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
+        UtilRetrofit.getInstance().create(HttpService.class).cancleFocusHost(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
     }
 
     private void focus(){
         Map<String, String> map = new HashMap<>();
         map.put("uid", TokenManager.getUid(mActivity));
-        map.put("bid", String.valueOf(curVO.getId()));
-        map.put("op", "focus");
-        BaseObserver baseObserver = new BaseObserver<BaseResult>(mActivity) {
+        map.put("hostId", curVO.getId());
+        BaseObserver baseObserver = new BaseObserver<BaseResult>(mActivity, BaseObserver.MODEL_SHOW_DIALOG_TOAST) {
             @Override
             public void success(BaseResult data) {
                 super.success(data);
-                curVO.setFollowed(true);
+                curVO.setFocus(0);
                 notifyDataSetChanged();
-            }
-
-            @Override
-            public void error() {
             }
         };
         mActivity.mDisposable.add(baseObserver);
-        UtilRetrofit.getInstance().create(HttpService.class).setFocus(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
+        UtilRetrofit.getInstance().create(HttpService.class).focusHost(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
     }
 }

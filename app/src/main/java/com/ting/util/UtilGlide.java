@@ -15,7 +15,7 @@ import com.ting.bookcity.HotHostActivity;
 public class UtilGlide {
     private static RequestOptions options = new RequestOptions().placeholder(R.drawable.book_def).error(R.drawable.book_def).override(500, 500);
 
-    private static RequestOptions anchorOptions = new RequestOptions().placeholder(R.drawable.default_tou_image).error(R.drawable.default_tou_image);
+    private static RequestOptions anchorOptions = new RequestOptions().placeholder(R.mipmap.mine_head_img).error(R.mipmap.mine_head_img);
 
     private static RequestOptions headOptions = new RequestOptions().placeholder(R.drawable.vector_head).error(R.drawable.vector_head).override(200,200);
     /**

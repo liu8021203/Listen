@@ -57,11 +57,11 @@ public class DeleteDialog extends Dialog implements OnClickListener{
         switch (type)
         {
             case 0:
-                reward_sure_remind.setText("是否要删除" + vo.getChapterTitle());
+                reward_sure_remind.setText("是否要删除" + vo.getTitle());
 
                 break;
             case 1:
-                reward_sure_remind.setText("是否要删除" + vo.getBookName());
+                reward_sure_remind.setText("是否要删除" + vo.getBookTitle());
                 break;
         }
     }

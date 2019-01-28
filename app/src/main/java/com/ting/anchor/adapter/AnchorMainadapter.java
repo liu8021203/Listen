@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class AnchorMainadapter extends PagerAdapter {
     private List<View> anchorSunList;
-    private String[] titles = {"主播作品","打赏排名"};
+    private String[] titles = {"主播作品","打赏榜"};
 
     public AnchorMainadapter(ArrayList<View> list) {
         this.anchorSunList = list;

@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:app="http://schemas.android.com/apk/res-auto"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-    android:orientation="vertical">
-
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
 
 
     <com.aspsine.swipetoloadlayout.SwipeToLoadLayout
@@ -36,7 +35,6 @@
                 </com.liu.learning.library.LoopViewPager>
 
 
-
                 <LinearLayout
                     android:id="@+id/ll_hot"
                     android:layout_width="match_parent"
@@ -46,17 +44,63 @@
 
 
                     <RelativeLayout
+                        android:id="@+id/rl_host"
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/dp750_70"
                         android:background="@color/white">
 
 
+                        <View
+                            android:layout_width="@dimen/dp750_6"
+                            android:layout_height="match_parent"
+                            android:layout_marginBottom="8dip"
+                            android:layout_marginTop="8dip"
+                            android:background="#46bafc"></View>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="10dip"
+                            android:text="热门主播"
+                            android:textColor="#565656"
+                            android:textSize="14sp"/>
+
+
+                        <TextView
+                            android:id="@+id/tv_host_more"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_alignParentRight="true"
+                            android:layout_marginRight="@dimen/dp750_20"
+                            android:drawablePadding="@dimen/dp750_15"
+                            android:drawableRight="@drawable/vector_right"
+                            android:gravity="center_vertical"
+                            android:text="更多"
+                            android:textColor="#8a8a8a"
+                            android:textSize="11sp"/>
+                    </RelativeLayout>
+
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/host_recycler_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"></android.support.v7.widget.RecyclerView>
+
+
+                    <RelativeLayout
+                        android:id="@+id/rl_hot"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/dp750_70"
+                        android:background="@color/white">
+
 
                         <View
                             android:layout_width="@dimen/dp750_6"
                             android:layout_height="match_parent"
-                            android:layout_marginTop="8dip"
                             android:layout_marginBottom="8dip"
+                            android:layout_marginTop="8dip"
                             android:background="#46bafc"></View>
 
                         <TextView
@@ -83,43 +127,18 @@
                             android:textSize="11sp"/>
                     </RelativeLayout>
 
-                    <RelativeLayout
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/hot_recycle_view"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <android.support.v7.widget.RecyclerView
-                            android:id="@+id/hot_recycle_view"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginLeft="@dimen/dp750_26"
-                            android:layout_marginRight="@dimen/dp750_26"></android.support.v7.widget.RecyclerView>
-                    </RelativeLayout>
-
-                    <RelativeLayout
-                        android:id="@+id/rl_hot_exchange"
-                        android:layout_width="match_parent"
-                        android:layout_height="40dip"
-                        android:layout_marginTop="5dip"
-                        android:background="@drawable/home_exchange">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerInParent="true"
-                            android:drawableLeft="@mipmap/huanyihuan"
-                            android:drawablePadding="5dip"
-                            android:gravity="center"
-                            android:text="换一批"
-                            android:textColor="@color/black"/>
-
-                    </RelativeLayout>
+                        android:layout_height="wrap_content"></android.support.v7.widget.RecyclerView>
 
 
                 </LinearLayout>
 
 
-
                 <RelativeLayout
+                    android:id="@+id/rl_special"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/dp750_70"
                     android:layout_marginTop="@dimen/dp750_20"
@@ -127,338 +146,66 @@
                     android:orientation="horizontal">
 
 
-
                     <View
                         android:layout_width="@dimen/dp750_6"
                         android:layout_height="match_parent"
-                        android:layout_marginTop="8dip"
                         android:layout_marginBottom="8dip"
+                        android:layout_marginTop="8dip"
                         android:background="#46bafc"></View>
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dip"
                         android:layout_centerVertical="true"
-                        android:text="作品超市精选"
+                        android:layout_marginLeft="10dip"
+                        android:text="精选作品"
                         android:textColor="#565656"
                         android:textSize="14sp"/>
 
                 </RelativeLayout>
 
                 <android.support.v7.widget.RecyclerView
-                    android:id="@+id/special_recycle_view"
+                    android:id="@+id/special_recycler_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingTop="10dip"
-                    android:paddingBottom="10dip"
                     android:background="@color/white"></android.support.v7.widget.RecyclerView>
 
 
+                <RelativeLayout
+                    android:id="@+id/rl_team"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp750_70"
+                    android:background="@color/white">
 
 
+                    <View
+                        android:layout_width="@dimen/dp750_6"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="8dip"
+                        android:layout_marginTop="8dip"
+                        android:background="#46bafc"></View>
 
 
-                <LinearLayout
-                    android:id="@+id/ll_doushi"
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="10dip"
+                        android:gravity="center_vertical"
+                        android:text="有声合作专区"
+                        android:textColor="#565656"
+                        android:textSize="14sp"/>
+
+
+                </RelativeLayout>
+
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/team_recycler_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/dp750_20"
-                    android:background="@color/white"
-                    android:orientation="vertical"
-                    android:paddingBottom="@dimen/dp750_10">
+                    android:background="@color/white"></android.support.v7.widget.RecyclerView>
 
-
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/dp750_70"
-                        android:background="@color/white">
-
-
-
-                        <View
-                            android:layout_width="@dimen/dp750_6"
-                            android:layout_height="match_parent"
-                            android:layout_marginTop="8dip"
-                            android:layout_marginBottom="8dip"
-                            android:background="#46bafc"></View>
-
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerVertical="true"
-                            android:layout_marginLeft="10dip"
-                            android:gravity="center_vertical"
-                            android:text="都市言情"
-                            android:textColor="#565656"
-                            android:textSize="14sp"/>
-
-
-                        <TextView
-                            android:id="@+id/tv_doushi_more"
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:layout_alignParentRight="true"
-                            android:layout_centerVertical="true"
-                            android:layout_marginRight="@dimen/dp750_20"
-                            android:drawablePadding="@dimen/dp750_15"
-                            android:drawableRight="@drawable/vector_right"
-                            android:gravity="center_vertical"
-                            android:text="更多"
-                            android:textColor="#8a8a8a"
-                            android:textSize="11sp"/>
-                    </RelativeLayout>
-
-
-                    <android.support.v7.widget.RecyclerView
-                        android:id="@+id/doushi_recycle_view"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/dp750_26"
-                        android:layout_marginRight="@dimen/dp750_26"></android.support.v7.widget.RecyclerView>
-
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/ll_xuanhuan"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/dp750_20"
-                    android:background="@color/white"
-                    android:orientation="vertical"
-                    android:paddingBottom="@dimen/dp750_10">
-
-
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/dp750_70"
-                        android:background="@color/white">
-
-                        <View
-                            android:layout_width="@dimen/dp750_6"
-                            android:layout_height="match_parent"
-                            android:layout_marginTop="8dip"
-                            android:layout_marginBottom="8dip"
-                            android:background="#46bafc"></View>
-
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerVertical="true"
-                            android:layout_marginLeft="10dip"
-                            android:text="玄幻穿越"
-                            android:textColor="#565656"
-                            android:textSize="14sp"/>
-
-
-                        <TextView
-                            android:id="@+id/tv_xuanhuan_more"
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:layout_alignParentRight="true"
-                            android:layout_centerVertical="true"
-                            android:layout_marginRight="@dimen/dp750_20"
-                            android:drawablePadding="@dimen/dp750_15"
-                            android:drawableRight="@drawable/vector_right"
-                            android:gravity="center_vertical"
-                            android:text="更多"
-                            android:textColor="#8a8a8a"
-                            android:textSize="11sp"/>
-                    </RelativeLayout>
-
-
-                    <android.support.v7.widget.RecyclerView
-                        android:id="@+id/xuanhuan_recycle_view"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/dp750_26"
-                        android:layout_marginRight="@dimen/dp750_26"></android.support.v7.widget.RecyclerView>
-
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/ll_lingyi"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/dp750_20"
-                    android:background="@color/white"
-                    android:orientation="vertical"
-                    android:paddingBottom="@dimen/dp750_10">
-
-
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/dp750_70"
-                        android:background="@color/white">
-
-
-                        <View
-                            android:layout_width="@dimen/dp750_6"
-                            android:layout_height="match_parent"
-                            android:layout_marginTop="8dip"
-                            android:layout_marginBottom="8dip"
-                            android:background="#46bafc"></View>
-
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerVertical="true"
-                            android:layout_marginLeft="10dip"
-                            android:text="灵异悬疑"
-                            android:textColor="#565656"
-                            android:textSize="14sp"/>
-
-
-                        <TextView
-                            android:id="@+id/tv_lingyi_more"
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:layout_alignParentRight="true"
-                            android:layout_centerVertical="true"
-                            android:layout_marginRight="@dimen/dp750_20"
-                            android:drawablePadding="@dimen/dp750_15"
-                            android:drawableRight="@drawable/vector_right"
-                            android:gravity="center_vertical"
-                            android:text="更多"
-                            android:textColor="#8a8a8a"
-                            android:textSize="11sp"/>
-                    </RelativeLayout>
-
-
-                    <android.support.v7.widget.RecyclerView
-                        android:id="@+id/lingyi_recycle_view"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/dp750_26"
-                        android:layout_marginRight="@dimen/dp750_26"></android.support.v7.widget.RecyclerView>
-
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/ll_guanchang"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/dp750_20"
-                    android:background="@color/white"
-                    android:orientation="vertical"
-                    android:paddingBottom="@dimen/dp750_10">
-
-
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/dp750_70"
-                        android:background="@color/white">
-
-
-                        <View
-                            android:layout_width="@dimen/dp750_6"
-                            android:layout_height="match_parent"
-                            android:layout_marginTop="8dip"
-                            android:layout_marginBottom="8dip"
-                            android:background="#46bafc"></View>
-
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginLeft="10dip"
-                            android:text="官场职场"
-                            android:layout_centerVertical="true"
-                            android:textColor="#565656"
-                            android:textSize="14sp"/>
-
-
-                        <TextView
-                            android:id="@+id/tv_guanchang_more"
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:layout_alignParentRight="true"
-                            android:layout_centerVertical="true"
-                            android:layout_marginRight="@dimen/dp750_20"
-                            android:drawablePadding="@dimen/dp750_15"
-                            android:drawableRight="@drawable/vector_right"
-                            android:gravity="center_vertical"
-                            android:text="更多"
-                            android:textColor="#8a8a8a"
-                            android:textSize="11sp"/>
-                    </RelativeLayout>
-
-
-                    <android.support.v7.widget.RecyclerView
-                        android:id="@+id/guanchang_recycle_view"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/dp750_26"
-                        android:layout_marginRight="@dimen/dp750_26"></android.support.v7.widget.RecyclerView>
-
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/ll_wanben"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/dp750_20"
-                    android:background="@color/white"
-                    android:orientation="vertical"
-                    android:paddingBottom="@dimen/dp750_10">
-
-
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/dp750_70"
-                        android:background="@color/white">
-
-                        <View
-                            android:layout_width="@dimen/dp750_6"
-                            android:layout_height="match_parent"
-                            android:layout_marginTop="8dip"
-                            android:layout_marginBottom="8dip"
-                            android:background="#46bafc"></View>
-
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerVertical="true"
-                            android:layout_marginLeft="10dip"
-                            android:text="最佳完本"
-                            android:textColor="#565656"
-                            android:textSize="14sp"/>
-
-
-                        <TextView
-                            android:id="@+id/tv_wanben_more"
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:layout_alignParentRight="true"
-                            android:layout_centerVertical="true"
-                            android:layout_marginRight="@dimen/dp750_20"
-                            android:drawablePadding="@dimen/dp750_15"
-                            android:drawableRight="@drawable/vector_right"
-                            android:gravity="center_vertical"
-                            android:text="更多"
-                            android:textColor="#8a8a8a"
-                            android:textSize="11sp"
-                            android:visibility="gone"/>
-                    </RelativeLayout>
-
-
-                    <android.support.v7.widget.RecyclerView
-                        android:id="@+id/wanben_recycle_view"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/dp750_26"
-                        android:layout_marginRight="@dimen/dp750_26"></android.support.v7.widget.RecyclerView>
-
-
-                </LinearLayout>
 
             </LinearLayout>
 
@@ -467,8 +214,6 @@
 
 
     </com.aspsine.swipetoloadlayout.SwipeToLoadLayout>
-
-
 
 
 </LinearLayout>

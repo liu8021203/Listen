@@ -4,17 +4,20 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
-import com.aspsine.swipetoloadlayout.OnRefreshListener;
-import com.aspsine.swipetoloadlayout.SwipeToLoadLayout;
 import com.ting.R;
 import com.ting.base.BaseActivity;
 import com.ting.base.BaseObserver;
+import com.ting.bean.BaseResult;
+import com.ting.bean.vo.BookVO;
+import com.ting.category.adapter.CategoryListAdapter;
 import com.ting.common.TokenManager;
 import com.ting.common.http.HttpService;
-import com.ting.record.adapter.CollectionAdapter;
-import com.ting.bean.myself.CollectResult;
 import com.ting.util.UtilRetrofit;
 import com.ting.view.CustomItemDecoration;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -23,10 +26,10 @@ import io.reactivex.schedulers.Schedulers;
  * Created by liu on 2017/8/7.
  */
 
-public class CollectActivity extends BaseActivity implements OnRefreshListener{
+public class CollectActivity extends BaseActivity {
     private RecyclerView mRecyclerView;
-    private SwipeToLoadLayout mSwipeToLoadLayout;
-    private CollectionAdapter collectionAdapter;
+    private CategoryListAdapter mAdapter;
+    private Map<String, String> map = new HashMap<>();
 
 
     @Override
@@ -42,7 +45,7 @@ public class CollectActivity extends BaseActivity implements OnRefreshListener{
 
     @Override
     protected void initData() {
-        getData(true);
+
     }
 
     @Override
@@ -59,10 +62,7 @@ public class CollectActivity extends BaseActivity implements OnRefreshListener{
 
     @Override
     protected void initView() {
-        mRecyclerView = (RecyclerView) findViewById(R.id.swipe_target);
-        mSwipeToLoadLayout = (SwipeToLoadLayout) findViewById(R.id.swipeToLoadLayout);
-        mSwipeToLoadLayout.setLoadMoreEnabled(false);
-        mSwipeToLoadLayout.setOnRefreshListener(this);
+        mRecyclerView =  findViewById(R.id.swipe_target);
         LinearLayoutManager manager = new LinearLayoutManager(mActivity);
         mRecyclerView.setLayoutManager(manager);
         CustomItemDecoration decoration = new CustomItemDecoration(1,0xffebebeb);
@@ -71,40 +71,31 @@ public class CollectActivity extends BaseActivity implements OnRefreshListener{
 
 
 
-
-
-    @Override
-    public void onRefresh() {
-        getData(false);
-    }
-
-    private void getData(boolean b){
-        BaseObserver baseObserver = new BaseObserver<CollectResult>(this, b){
+    private void getData(){
+        map.put("uid", TokenManager.getUid(this));
+        BaseObserver baseObserver = new BaseObserver<BaseResult<List<BookVO>>>(this, BaseObserver.MODEL_ALL){
             @Override
-            public void success(CollectResult data) {
+            public void success(BaseResult<List<BookVO>> data) {
                 super.success(data);
-                mSwipeToLoadLayout.setRefreshing(false);
-                if(data.getData() != null && data.getData().size() > 0){
-                    if(collectionAdapter == null){
-                        collectionAdapter = new CollectionAdapter(mActivity);
-                        collectionAdapter.setData(data.getData());
-                        mRecyclerView.setAdapter(collectionAdapter);
-                    }else{
-                        collectionAdapter.setData(data.getData());
-                        collectionAdapter.notifyDataSetChanged();
-                    }
-                }else{
-                    errorEmpty();
+                List<BookVO> list = data.getData();
+                if(list != null && !list.isEmpty()){
+                    mAdapter = new CategoryListAdapter(mActivity);
+                    mAdapter.setData(data.getData());
+                    mRecyclerView.setAdapter(mAdapter);
+                } else{
+                    errorEmpty("还没有收藏书籍~~");
                 }
             }
 
-            @Override
-            public void error() {
-                super.error();
-                mSwipeToLoadLayout.setRefreshing(false);
-            }
         };
         mDisposable.add(baseObserver);
-        UtilRetrofit.getInstance().create(HttpService.class).getFavorite(TokenManager.getUid(mActivity)).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
+        UtilRetrofit.getInstance().create(HttpService.class).collectList(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getData();
     }
 }

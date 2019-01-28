@@ -1,6 +1,7 @@
 package com.ting.download;
 
 import com.ting.db.DBChapter;
+import com.ting.util.UtilMD5Encryption;
 
 import java.io.File;
 import java.io.InputStream;
@@ -44,12 +45,12 @@ public class DownloadThread extends Thread{
     {
         this.result = result;
         this.listener = listener;
-        this.fileURL = result.getChapterUrl();
+        this.fileURL = result.getUrl();
         if(!fileSaveDir.exists())
         {
             fileSaveDir.mkdirs();
         }
-        this.saveFile = new File(fileSaveDir, result.getBookId() + "" + result.getChapterId() + ".mp3");
+        this.saveFile = new File(fileSaveDir, UtilMD5Encryption.getMd5Value(result.getChapterId()) + ".tsj");
     }
 
     public void setPause()
@@ -65,7 +66,7 @@ public class DownloadThread extends Thread{
         try{
 
             long fileSize = getResourceSize(fileURL);
-            completeSize = result.getCompletesize();
+            completeSize = result.getCompleteSize();
             URL url = new URL(fileURL);
             connection = (HttpURLConnection) url.openConnection();
             connection.setConnectTimeout(10 * 1000);
@@ -92,11 +93,11 @@ public class DownloadThread extends Thread{
                     if((System.currentTimeMillis() - currentTime) >= 3000)
                     {
                         currentTime = System.currentTimeMillis();
-                        result.setCompletesize(completeSize);
+                        result.setCompleteSize(completeSize);
                         listener.onProgress(result);
                     }
                 }
-                result.setCompletesize(completeSize);
+                result.setCompleteSize(completeSize);
                 //isPause是暂停标志字段
                 if(!isPause) {
                     listener.onComplete(result);

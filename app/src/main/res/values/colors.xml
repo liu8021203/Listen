@@ -302,4 +302,8 @@
     <color name="download_progress">#7a7a7a</color>
     <color name="music_seekbar">#2f61c0</color>
     <color name="cA9A9A9">#A9A9A9</color>
+    <color name="lineColor">#e0e0e0</color>
+    <color name="ripple_color">#3a000000</color>
+    <color name="btnPress">#dddddd</color>
+    <color name="price_color">#f74e4f</color>
 </resources>

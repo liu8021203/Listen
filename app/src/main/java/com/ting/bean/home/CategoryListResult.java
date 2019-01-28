@@ -1,23 +1,17 @@
 package com.ting.bean.home;
 
+import com.ting.bean.vo.BookVO;
+
 import java.util.List;
 
 /**
  * Created by liu on 16/7/28.
  */
 public class CategoryListResult {
-    private int lenght;
     private int page;
+    private int size;
     private int count;
-    private List<CategoryListVO> data;
-
-    public int getLenght() {
-        return lenght;
-    }
-
-    public void setLenght(int lenght) {
-        this.lenght = lenght;
-    }
+    private List<BookVO> list;
 
     public int getPage() {
         return page;
@@ -25,6 +19,14 @@ public class CategoryListResult {
 
     public void setPage(int page) {
         this.page = page;
+    }
+
+    public int getSize() {
+        return size;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
     }
 
     public int getCount() {
@@ -35,11 +37,11 @@ public class CategoryListResult {
         this.count = count;
     }
 
-    public List<CategoryListVO> getData() {
-        return data;
+    public List<BookVO> getList() {
+        return list;
     }
 
-    public void setData(List<CategoryListVO> data) {
-        this.data = data;
+    public void setList(List<BookVO> list) {
+        this.list = list;
     }
 }

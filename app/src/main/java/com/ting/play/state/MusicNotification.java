@@ -2,11 +2,14 @@ package com.ting.play.state;
 
 import android.annotation.SuppressLint;
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.View;
@@ -20,7 +23,7 @@ import com.ting.play.PlayActivity;
 import com.ting.R;
 
 public class MusicNotification {
-    private static final String CHANNEL_ID = "com.ting.MUSIC_CHANNEL_ID";
+    private static final String CHANNEL_ID = "com.tingshijie";
     private NotificationManager manager;
     private Notification notification;
     private PendingIntent pendingIntent;
@@ -29,6 +32,7 @@ public class MusicNotification {
     private Context context;
     private NotificationCompat.Builder mBuilder;
     private Intent notificationIntent;
+    private NotificationChannel channel;
     public final static String PAUSE_MSG = "com.listen.notification.pause";
     public final static String PLAY_MSG = "com.listen.notification.play";
     public final static String CLOSE_MSG = "com.listen.notification.close";
@@ -40,13 +44,26 @@ public class MusicNotification {
         this.manager = (NotificationManager) context
                 .getSystemService(Context.NOTIFICATION_SERVICE);
         this.notification = new Notification();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            channel = new NotificationChannel(CHANNEL_ID, "bbb", NotificationManager.IMPORTANCE_LOW);
+            channel.setBypassDnd(true);    //设置绕过免打扰模式
+            channel.canBypassDnd();       //检测是否绕过免打扰模式
+            channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);//设置在锁屏界面上显示这条通知
+            channel.setDescription("description of this notification");
+            channel.setLightColor(Color.GREEN);
+            channel.setName("听世界");
+            channel.setShowBadge(false);
+            channel.setVibrationPattern(null);
+            channel.enableVibration(true);
+            manager.createNotificationChannel(channel);
+        }
         initNotification();
     }
 
 
     @SuppressLint("NewApi")
     private void initNotification() {
-        System.out.println("initNotification执行了");
+        Log.d("aaa", "initNotification执行了");
         smallRemoteViews = new RemoteViews(context.getPackageName(),
                 R.layout.play_music_notification_small);
         //播放intent
@@ -80,7 +97,7 @@ public class MusicNotification {
         notificationIntent.putExtra("NOTIFICATION_MSG", SHOW_PLAY_MSG);
         pendingIntent = PendingIntent.getActivity(context, 120,
                 notificationIntent, 0);
-        mBuilder = new NotificationCompat.Builder(context);
+        mBuilder = new NotificationCompat.Builder(context, CHANNEL_ID);
         mBuilder.setContent(smallRemoteViews);
         mBuilder.setContentIntent(pendingIntent);
         mBuilder.setCategory(Notification.CATEGORY_SERVICE);
@@ -97,7 +114,7 @@ public class MusicNotification {
     }
 
 
-    public void notifyInit(int bookId, String bookName, String cateName, String pic){
+    public void notifyInit(String bookName, String cateName, String pic){
         Log.d("aaa", "notifyInit");
         notification.contentView.setTextViewText(
                 R.id.play_notification_album_name, bookName);

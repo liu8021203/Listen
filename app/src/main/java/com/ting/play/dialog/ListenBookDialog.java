@@ -15,6 +15,7 @@ import com.ting.base.BaseActivity;
 import com.ting.bean.anchor.ListenBookVO;
 import com.ting.base.BaseObserver;
 import com.ting.bean.BaseResult;
+import com.ting.bean.vo.CardVO;
 import com.ting.common.TokenManager;
 import com.ting.common.http.HttpService;
 import com.ting.login.LoginMainActivity;
@@ -22,7 +23,9 @@ import com.ting.play.BookDetailsActivity;
 import com.ting.play.adapter.ListenBookAdapter;
 import com.ting.util.UtilRetrofit;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -32,12 +35,11 @@ import io.reactivex.schedulers.Schedulers;
  * 听书卡
  */
 public class ListenBookDialog extends Dialog implements View.OnClickListener{
-    private TextView tvTitle;
     private RecyclerView mRecyclerView;
     private Button btnCancle;
     private Button btnOk;
     private BaseActivity mActivity;
-    private List<ListenBookVO> data;
+    private List<CardVO> data;
     private ListenBookAdapter adapter;
     private PlayListPayDialog.CallBackListener listener;
 
@@ -46,7 +48,7 @@ public class ListenBookDialog extends Dialog implements View.OnClickListener{
         this.mActivity = context;
     }
 
-    public void setData(List<ListenBookVO> data) {
+    public void setData(List<CardVO> data) {
         this.data = data;
     }
 
@@ -64,7 +66,6 @@ public class ListenBookDialog extends Dialog implements View.OnClickListener{
     }
 
     private void initView() {
-        tvTitle = findViewById( R.id.tv_title );
         mRecyclerView =  findViewById( R.id.recycle_view );
         LinearLayoutManager manager = new LinearLayoutManager(mActivity);
         mRecyclerView.setLayoutManager(manager);
@@ -72,7 +73,6 @@ public class ListenBookDialog extends Dialog implements View.OnClickListener{
         btnOk = findViewById( R.id.btn_ok );
         btnCancle.setOnClickListener( this );
         btnOk.setOnClickListener( this );
-        tvTitle.setText(data.get(0).getTitle());
         adapter = new ListenBookAdapter(mActivity);
         adapter.setData(data);
         mRecyclerView.setAdapter(adapter);
@@ -103,20 +103,25 @@ public class ListenBookDialog extends Dialog implements View.OnClickListener{
                 }
                 if(adapter != null && adapter.getDefId() != -1)
                 {
-                    BaseObserver baseObserver = new BaseObserver<BaseResult>(mActivity){
+                    Map<String, String> map = new HashMap<>();
+                    map.put("uid", TokenManager.getUid(mActivity));
+                    map.put("cardId", String.valueOf(adapter.getDefId()));
+                    BaseObserver baseObserver = new BaseObserver<BaseResult>(mActivity, BaseObserver.MODEL_SHOW_DIALOG_TOAST){
                         @Override
                         public void success(BaseResult data) {
                             super.success(data);
+                            mActivity.showToast("购买成功");
                             dismiss();
-                            listener.listBookCallBack();
                         }
 
+
                         @Override
-                        public void error() {
+                        public void error(BaseResult value, Throwable e) {
+                            super.error(value, e);
                         }
                     };
                     mActivity.mDisposable.add(baseObserver);
-                    UtilRetrofit.getInstance().create(HttpService.class).buy_tingshuka(TokenManager.getUid(mActivity), String.valueOf(adapter.getDefId())).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
+                    UtilRetrofit.getInstance().create(HttpService.class).buyCard(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
                 }
                 break;
         }

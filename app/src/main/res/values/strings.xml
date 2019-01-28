@@ -122,8 +122,8 @@
     <string name="recommend_text">推荐</string>
     <string name="remind">提示</string>
     <string name="please_choose_sex_text">性别选择</string>
-    <string name="me_is_man_fanse">男听迷</string>
-    <string name="me_is_women_fanse">女听迷</string>
+    <string name="me_is_man_fanse">男听友</string>
+    <string name="me_is_women_fanse">女听友</string>
     <string name="sure_save_text">确认保存</string>
     <string name="sure_save_context">确定要保存修改的资料吗？</string>
     <string name="choose_need_moves">选择照片</string>

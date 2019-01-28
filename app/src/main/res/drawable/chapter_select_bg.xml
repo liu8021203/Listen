@@ -1,0 +1,16 @@
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_pressed="false">
+        <shape xmlns:android="http://schemas.android.com/apk/res/android">
+            <solid android:color="@color/white"></solid>
+            <stroke android:color="@color/black" android:width="0.1dip"></stroke>
+            <corners android:radius="3dip"></corners>
+        </shape>
+    </item>
+    <item android:state_pressed="true">
+        <shape xmlns:android="http://schemas.android.com/apk/res/android">
+            <solid android:color="@color/btnPress"></solid>
+            <stroke android:color="@color/black" android:width="0.1dip"></stroke>
+            <corners android:radius="3dip"></corners>
+        </shape>
+    </item>
+</selector>

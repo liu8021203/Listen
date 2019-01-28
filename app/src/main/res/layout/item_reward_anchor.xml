@@ -60,7 +60,7 @@
                 android:layout_height="wrap_content"
 
                 android:text="@string/hejidashang"
-                android:textColor="@color/c676767"
+                android:textColor="#333333"
                 android:textSize="@dimen/px26"/>
 
             <TextView
@@ -78,7 +78,7 @@
 
                 android:layout_marginLeft="2dip"
                 android:text="@string/listen_dou"
-                android:textColor="@color/c676767"
+                android:textColor="#333333"
                 android:textSize="@dimen/px26"/>
 
         </LinearLayout>

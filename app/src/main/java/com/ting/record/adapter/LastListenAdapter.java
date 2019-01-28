@@ -42,21 +42,21 @@ public class LastListenAdapter extends RecyclerView.Adapter<LastListenAdapter.It
     @Override
     public void onBindViewHolder(ItemViewHolder holder, int position) {
         final DBListenHistory vo = data.get(position);
-        UtilGlide.loadImg(mActivity, vo.getPic(), holder.last_listene_image);
-        holder.class_introduce_name.setText(vo.getBookname());
-        holder.class_introduce_anchor.setText("最近收听至" + vo.getChapter_name());
-        holder.class_introduce_zang_number.setText("主播：" + vo.getHost());
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-
-
-            @Override
-            public void onClick(View v) {
-                Bundle bundle = new Bundle();
-                bundle.putInt("bookID", vo.getBookid());
-                bundle.putInt("view", 1);
-                mActivity.intent(BookDetailsActivity.class, bundle);
-            }
-        });
+//        UtilGlide.loadImg(mActivity, vo.getPic(), holder.last_listene_image);
+//        holder.class_introduce_name.setText(vo.getBookname());
+//        holder.class_introduce_anchor.setText("最近收听至" + vo.getChapter_name());
+//        holder.class_introduce_zang_number.setText("主播：" + vo.getHost());
+//        holder.itemView.setOnClickListener(new View.OnClickListener() {
+//
+//
+//            @Override
+//            public void onClick(View v) {
+//                Bundle bundle = new Bundle();
+//                bundle.putInt("bookID", vo.getBookid());
+//                bundle.putInt("view", 1);
+//                mActivity.intent(BookDetailsActivity.class, bundle);
+//            }
+//        });
     }
 
     @Override

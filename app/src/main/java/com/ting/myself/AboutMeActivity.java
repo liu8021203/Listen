@@ -92,6 +92,9 @@ public class AboutMeActivity extends BaseActivity {
                 String url11 = "mqqwpa://im/chat?chat_type=wpa&uin=769991514&version=1";
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url11)));
                 break;
+
+
+
             case R.id.tv_a1: {
                 Bundle bundle = new Bundle();
                 bundle.putString("url", "http://www.tingshijie.com/serviceAgreement.html");

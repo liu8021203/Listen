@@ -14,7 +14,8 @@
         <RelativeLayout
             android:id="@+id/rl_message"
             android:layout_width="match_parent"
-            android:layout_height="40dip">
+            android:layout_height="40dip"
+            android:visibility="gone">
 
             <TextView
                 android:id="@+id/tv_message"
@@ -44,6 +45,7 @@
             android:layout_centerVertical="true"
             android:layout_marginLeft="10dip"
             android:layout_marginRight="10dip"
+            android:visibility="gone"
             android:background="@color/white"></View>
 
 

@@ -103,16 +103,16 @@ public class OfflinePlayListAdapter extends RecyclerView.Adapter<OfflinePlayList
             holder.mAnimView.stop();
         }
         if (mHistory != null) {
-            if (mHistory.getCid() == vo.getChapterId() && !TextUtils.equals(AppData.playKey, key) && !AppData.isPlaying) {
-                holder.tvRecord.setVisibility(View.VISIBLE);
-                holder.tvRecord.setText("上次听到这里");
-            }else{
-                holder.tvRecord.setVisibility(View.GONE);
-            }
+//            if (mHistory.getCid() == vo.getChapterId() && !TextUtils.equals(AppData.playKey, key) && !AppData.isPlaying) {
+//                holder.tvRecord.setVisibility(View.VISIBLE);
+//                holder.tvRecord.setText("上次听到这里");
+//            }else{
+//                holder.tvRecord.setVisibility(View.GONE);
+//            }
         }else{
             holder.tvRecord.setVisibility(View.GONE);
         }
-        holder.play_diversity_name.setText(vo.getChapterTitle());
+        holder.play_diversity_name.setText(vo.getTitle());
         holder.itemView.setTag(vo);
         holder.itemView.setOnClickListener(mItemOnClickListener);
         holder.ivMark.setVisibility(View.GONE);
@@ -157,30 +157,30 @@ public class OfflinePlayListAdapter extends RecyclerView.Adapter<OfflinePlayList
         @Override
         public void onClick(View v) {
             DBChapter vo = (DBChapter) v.getTag();
-            String key = bookId + "-" + vo.getChapterId();
-            if (TextUtils.equals(key, AppData.playKey)) {
-                if (AppData.isPlaying) {
-                    mMusicController.pause();
-                } else {
-                    mHistory = musicDBController.getBookIdData(String.valueOf(bookId));
-                    PlayListVO listVO = new PlayListVO();
-                    listVO.setOfflineData(data);
-                    if(mHistory == null || mHistory.getCid() != vo.getChapterId()) {
-                        mMusicController.play(bookId, vo.getChapterId(), vo.getChapterUrl(), vo.getChapterTitle(), vo.getBookName(), vo.getHost(), vo.getBookUrl(), listVO, "asc", 1);
-                    }else{
-                        mMusicController.play(mHistory.getDuration(), bookId, mHistory.getCid(), mHistory.getUrl(), mHistory.getChapter_name(), mHistory.getBookname(), mHistory.getHost(), mHistory.getPic(), listVO, "asc", 1, 0);
-                    }
-                }
-            } else {
-                mHistory = musicDBController.getBookIdData(String.valueOf(bookId));
-                PlayListVO listVO = new PlayListVO();
-                listVO.setOfflineData(data);
-                if(mHistory == null || mHistory.getCid() != vo.getChapterId()) {
-                    mMusicController.play(bookId, vo.getChapterId(), vo.getChapterUrl(), vo.getChapterTitle(), vo.getBookName(), vo.getHost(), vo.getBookUrl(), listVO, "asc", 1);
-                }else {
-                    mMusicController.play(mHistory.getDuration(), bookId, mHistory.getCid(), mHistory.getUrl(), mHistory.getChapter_name(), mHistory.getBookname(), mHistory.getHost(), mHistory.getPic(), listVO, "asc", 1, 0);
-                }
-            }
+//            String key = bookId + "-" + vo.getChapterId();
+//            if (TextUtils.equals(key, AppData.playKey)) {
+//                if (AppData.isPlaying) {
+//                    mMusicController.pause();
+//                } else {
+//                    mHistory = musicDBController.getBookIdData(String.valueOf(bookId));
+//                    PlayListVO listVO = new PlayListVO();
+//                    listVO.setOfflineData(data);
+//                    if(mHistory == null || mHistory.getCid() != vo.getChapterId()) {
+//                        mMusicController.play(bookId, vo.getChapterId(), vo.getChapterUrl(), vo.getChapterTitle(), vo.getBookName(), vo.getHost(), vo.getBookUrl(), listVO, "asc", 1);
+//                    }else{
+//                        mMusicController.play(mHistory.getDuration(), bookId, mHistory.getCid(), mHistory.getUrl(), mHistory.getChapter_name(), mHistory.getBookname(), mHistory.getHost(), mHistory.getPic(), listVO, "asc", 1, 0);
+//                    }
+//                }
+//            } else {
+//                mHistory = musicDBController.getBookIdData(String.valueOf(bookId));
+//                PlayListVO listVO = new PlayListVO();
+//                listVO.setOfflineData(data);
+//                if(mHistory == null || mHistory.getCid() != vo.getChapterId()) {
+//                    mMusicController.play(bookId, vo.getChapterId(), vo.getChapterUrl(), vo.getChapterTitle(), vo.getBookName(), vo.getHost(), vo.getBookUrl(), listVO, "asc", 1);
+//                }else {
+//                    mMusicController.play(mHistory.getDuration(), bookId, mHistory.getCid(), mHistory.getUrl(), mHistory.getChapter_name(), mHistory.getBookname(), mHistory.getHost(), mHistory.getPic(), listVO, "asc", 1, 0);
+//                }
+//            }
         }
     }
 

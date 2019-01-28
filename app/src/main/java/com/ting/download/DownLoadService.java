@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.ting.db.DBChapter;
@@ -148,7 +149,7 @@ public class DownLoadService extends Service{
      */
     private void downAction(DBChapter result)
     {
-        if(result == null || result.getChapterUrl() == null)
+        if(result == null || result.getUrl() == null)
         {
             return;
         }
@@ -167,7 +168,7 @@ public class DownLoadService extends Service{
      */
     private void stopAction(DBChapter result)
     {
-        if(result == null || result.getChapterUrl() == null)
+        if(result == null || result.getUrl() == null)
         {
             return;
         }
@@ -178,7 +179,7 @@ public class DownLoadService extends Service{
     {
         public void onStart(DBChapter result)
         {
-            System.out.println("开始下载");
+            Log.d("aaa", "开始下载");
             result.setState(1);
             controller.insert(result);
             Message message = new Message();
@@ -191,7 +192,7 @@ public class DownLoadService extends Service{
 
         public void onProgress(DBChapter result)
         {
-            System.out.println("下载进行中");
+            Log.d("aaa", "下载进行中");
             result.setState(2);
             controller.update(result);
             Message message = new Message();
@@ -204,7 +205,7 @@ public class DownLoadService extends Service{
 
         public void onComplete(DBChapter result)
         {
-            System.out.println("下载完成");
+            Log.d("aaa", "下载完成");
             result.setState(4);
             controller.update(result);
             Message message = new Message();
@@ -218,7 +219,7 @@ public class DownLoadService extends Service{
 
         public void onError(DBChapter result)
         {
-            System.out.println("下载错误");
+            Log.d("aaa", "下载错误");
             result.setState(0);
             controller.update(result);
             Message message = new Message();
@@ -232,7 +233,7 @@ public class DownLoadService extends Service{
 
         public void onCancle(DBChapter result)
         {
-            System.out.println("下载暂停");
+            Log.d("aaa", "下载暂停");
             result.setState(3);
             controller.update(result);
             Message message = new Message();

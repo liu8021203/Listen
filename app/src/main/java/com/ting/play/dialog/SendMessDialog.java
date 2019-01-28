@@ -14,12 +14,17 @@ import android.widget.RelativeLayout;
 import com.ting.R;
 import com.ting.base.BaseActivity;
 import com.ting.base.BaseObserver;
+import com.ting.bean.BaseResult;
+import com.ting.bean.vo.CommentListVO;
 import com.ting.common.TokenManager;
 import com.ting.common.http.HttpService;
 import com.ting.bean.play.MessageResult;
 import com.ting.play.subview.PlayIntroduceSubView;
 import com.ting.util.UtilRetrofit;
 import com.ting.util.UtilSystem;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -30,15 +35,18 @@ import io.reactivex.schedulers.Schedulers;
  */
 public class SendMessDialog extends Dialog implements View.OnClickListener {
     private BaseActivity mActivity;
-    private PlayIntroduceSubView subView;
     private EditText pinglun_comment;
     private RelativeLayout send_layout;
     private String bookId;
+    private SendMessageCallBackListener mListener;
 
-    public SendMessDialog(BaseActivity activity, PlayIntroduceSubView playIntroduceSubView) {
+    public SendMessDialog(BaseActivity activity) {
         super(activity, R.style.SendMessageDialog);
         this.mActivity = activity;
-        this.subView = playIntroduceSubView;
+    }
+
+    public void setListener(SendMessageCallBackListener listener) {
+        mListener = listener;
     }
 
     public void setBookId(String bookId) {
@@ -57,8 +65,8 @@ public class SendMessDialog extends Dialog implements View.OnClickListener {
     }
 
     private void initView() {
-        pinglun_comment = (EditText) findViewById(R.id.pinglun_comment);
-        send_layout = (RelativeLayout) findViewById(R.id.send_layout);
+        pinglun_comment =  findViewById(R.id.pinglun_comment);
+        send_layout =  findViewById(R.id.send_layout);
         send_layout.setOnClickListener(this);
 
     }
@@ -67,25 +75,34 @@ public class SendMessDialog extends Dialog implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.send_layout:
-                this.dismiss();
                 String context = pinglun_comment.getText().toString().trim();
                 if(TextUtils.isEmpty(context)){
                     mActivity.showToast("请输入内容");
                     return;
                 }
-                BaseObserver baseObserver = new BaseObserver<MessageResult>(mActivity){
+                Map<String, String> map = new HashMap<>();
+                map.put("commentsType", "1");
+                map.put("bookId", bookId);
+                map.put("commentsUserId", TokenManager.getUid(mActivity));
+                map.put("commentsContent", context);
+                BaseObserver baseObserver = new BaseObserver<BaseResult<CommentListVO>>(mActivity, BaseObserver.MODEL_SHOW_DIALOG_TOAST){
                     @Override
-                    public void success(MessageResult data) {
+                    public void success(BaseResult<CommentListVO> data) {
                         super.success(data);
-                        subView.sendMessageSuccess(data);
+                        CommentListVO vo = data.getData();
+                        if(mListener != null){
+                            mListener.callback(vo);
+                        }
+                        dismiss();
                     }
 
                     @Override
-                    public void error() {
+                    public void error(BaseResult<CommentListVO> value, Throwable e) {
+                        super.error(value, e);
                     }
                 };
                 mActivity.mDisposable.add(baseObserver);
-                UtilRetrofit.getInstance().create(HttpService.class).setPostComment(TokenManager.getUid(mActivity), bookId, context).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
+                UtilRetrofit.getInstance().create(HttpService.class).comments(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
                 break;
         }
     }
@@ -109,5 +126,10 @@ public class SendMessDialog extends Dialog implements View.OnClickListener {
     public void show() {
         super.show();
         handler.sendEmptyMessageDelayed(0, 200);
+    }
+
+
+    public interface SendMessageCallBackListener{
+        void callback(CommentListVO vo);
     }
 }

@@ -62,18 +62,20 @@ public class MineMainFrame extends BaseFragment implements View.OnClickListener 
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(MessageEventBus event) {
-        if(event.getType() == 1){
+        if (event.getType() == MessageEventBus.LOGIN) {
             loginState(true);
-            showResult(TokenManager.getInfo(mActivity));
-        }else if(event.getType() == 2){
+            setUserInfo(TokenManager.getUserInfo());
+        } else if (event.getType() == 2) {
             loginState(false);
             person_touxiang.setImageResource(R.mipmap.mine_head_img);
-        }else if(event.getType() == MessageEventBus.BUY_VIP){
-            if(TokenManager.getInfo(mActivity).getIsvip() == 0){
-                tvName.setCompoundDrawablesWithIntrinsicBounds(0, 0,R.mipmap.no_vip, 0);
-            }else{
-                tvName.setCompoundDrawablesWithIntrinsicBounds(0, 0,R.mipmap.vip, 0);
-            }
+        } else if (event.getType() == MessageEventBus.BUY_VIP) {
+//            if(TokenManager.getInfo(mActivity).getIsvip() == 0){
+//                tvName.setCompoundDrawablesWithIntrinsicBounds(0, 0,R.mipmap.no_vip, 0);
+//            }else{
+//                tvName.setCompoundDrawablesWithIntrinsicBounds(0, 0,R.mipmap.vip, 0);
+//            }
+        }else if(event.getType() == MessageEventBus.MODIFY){
+            setUserInfo(TokenManager.getUserInfo());
         }
     }
 
@@ -83,23 +85,23 @@ public class MineMainFrame extends BaseFragment implements View.OnClickListener 
         initView();
         if (TokenManager.isLogin(mActivity)) {
             loginState(true);
-            showResult(TokenManager.getInfo(mActivity));
-        }else{
+        } else {
             loginState(false);
         }
     }
 
     /**
      * 登录状态
-     * @param b  true是登录  false：未登录
+     *
+     * @param b true是登录  false：未登录
      */
-    private void loginState(boolean b){
-        if(b){
+    private void loginState(boolean b) {
+        if (b) {
             tvLogin.setVisibility(View.GONE);
             tvLoginHint.setVisibility(View.GONE);
             tvName.setVisibility(View.VISIBLE);
             tvMoney.setVisibility(View.VISIBLE);
-        }else{
+        } else {
             tvLogin.setVisibility(View.VISIBLE);
             tvLoginHint.setVisibility(View.VISIBLE);
             tvName.setVisibility(View.GONE);
@@ -115,14 +117,14 @@ public class MineMainFrame extends BaseFragment implements View.OnClickListener 
 
     @Override
     protected void initView() {
-        person_touxiang =  flContent.findViewById(R.id.person_touxiang);//头像
-        rlMoney =  flContent.findViewById(R.id.rl_money);
-        rlScard =  flContent.findViewById(R.id.rl_scard);
-        rlCollect =  flContent.findViewById(R.id.rl_collect);
-        rlFocus =  flContent.findViewById(R.id.rl_focus);
-        rlFeed =  flContent.findViewById(R.id.rl_feed);
-        rlSetting =  flContent.findViewById(R.id.rl_setting);
-        rlAbout =  flContent.findViewById(R.id.rl_about);
+        person_touxiang = flContent.findViewById(R.id.person_touxiang);//头像
+        rlMoney = flContent.findViewById(R.id.rl_money);
+        rlScard = flContent.findViewById(R.id.rl_scard);
+        rlCollect = flContent.findViewById(R.id.rl_collect);
+        rlFocus = flContent.findViewById(R.id.rl_focus);
+        rlFeed = flContent.findViewById(R.id.rl_feed);
+        rlSetting = flContent.findViewById(R.id.rl_setting);
+        rlAbout = flContent.findViewById(R.id.rl_about);
         tvLogin = flContent.findViewById(R.id.tv_login);
         tvLoginHint = flContent.findViewById(R.id.tv_login_hint);
         tvName = flContent.findViewById(R.id.tv_name);
@@ -139,29 +141,37 @@ public class MineMainFrame extends BaseFragment implements View.OnClickListener 
 
     @Override
     protected void initData() {
-        if(TokenManager.isLogin(mActivity) && TokenManager.getInfo(mActivity) == null) {
+        if (TokenManager.isLogin(mActivity)) {
             Map<String, String> map = new HashMap<>();
             map.put("uid", TokenManager.getUid(mActivity));
             map.put("token", TokenManager.getToken(mActivity));
-            if (TokenManager.isLogin(mActivity)) {
-                BaseObserver baseObserver = new BaseObserver<UserInfoResult>(this) {
-                    @Override
-                    public void success(UserInfoResult data) {
-                        super.success(data);
-                        showResult(data);
-                        TokenManager.setInfo(mActivity, data);
+            BaseObserver baseObserver = new BaseObserver<BaseResult<UserInfoResult>>(this, BaseObserver.MODEL_ONLY_SHOW_DIALOG) {
+                @Override
+                public void success(BaseResult<UserInfoResult> data) {
+                    super.success(data);
+                    UserInfoResult result = data.getData();
+                    if (result != null) {
+                        setUserInfo(result);
                     }
+                }
 
-                    @Override
-                    public void error() {
-                        super.error();
-                        mActivity.intent(LoginMainActivity.class);
-                    }
-                };
-                mDisposable.add(baseObserver);
-                UtilRetrofit.getInstance().create(HttpService.class).getMyInfo(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
-            }
+
+                @Override
+                public void error(BaseResult<UserInfoResult> value, Throwable e) {
+                    super.error(value, e);
+                    mActivity.intent(LoginMainActivity.class);
+                }
+            };
+            mDisposable.add(baseObserver);
+            UtilRetrofit.getInstance().create(HttpService.class).getUserInfo(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
         }
+    }
+
+    private void setUserInfo(UserInfoResult result) {
+        UtilGlide.loadHeadImg(mActivity, result.getImage(), person_touxiang);
+        tvName.setText(result.getNickname());
+        tvMoney.setText("听豆余额：" + result.getMoney());
+        TokenManager.setInfo(result);
     }
 
     @Override
@@ -199,37 +209,37 @@ public class MineMainFrame extends BaseFragment implements View.OnClickListener 
                 intent(SuggestBackActivity.class);
                 break;
             case R.id.rl_scard:
-                if(TokenManager.isLogin(mActivity)) {
+                if (TokenManager.isLogin(mActivity)) {
                     intent(MyCardActivity.class);
-                }else{
+                } else {
                     intent(LoginMainActivity.class);
                 }
                 break;
             case R.id.rl_focus:
-                if(TokenManager.isLogin(mActivity)) {
+                if (TokenManager.isLogin(mActivity)) {
                     intent(MySeeActivity.class);
-                }else{
+                } else {
                     intent(LoginMainActivity.class);
                 }
                 break;
             case R.id.rl_money:
-                if(TokenManager.isLogin(mActivity)) {
+                if (TokenManager.isLogin(mActivity)) {
                     intent(MyDouActivity.class);
-                }else{
+                } else {
                     intent(LoginMainActivity.class);
                 }
                 break;
             case R.id.rl_setting:
-                if(TokenManager.isLogin(mActivity)) {
+                if (TokenManager.isLogin(mActivity)) {
                     intent(SettingActivity.class);
-                }else{
+                } else {
                     intent(LoginMainActivity.class);
                 }
                 break;
             case R.id.rl_collect:
-                if(TokenManager.isLogin(mActivity)) {
+                if (TokenManager.isLogin(mActivity)) {
                     mActivity.intent(CollectActivity.class);
-                }else{
+                } else {
                     intent(LoginMainActivity.class);
                 }
                 break;
@@ -241,16 +251,4 @@ public class MineMainFrame extends BaseFragment implements View.OnClickListener 
         }
     }
 
-
-
-    private void showResult(UserInfoResult personMessResult) {
-        UtilGlide.loadHeadImg(mActivity, personMessResult.getThumb(), person_touxiang);
-        tvName.setText(personMessResult.getNickname());
-        tvMoney.setText("听豆余额：" + personMessResult.getJifen());
-        if(personMessResult.getIsvip() == 0){
-            tvName.setCompoundDrawablesWithIntrinsicBounds(0, 0,R.mipmap.no_vip, 0);
-        }else{
-            tvName.setCompoundDrawablesWithIntrinsicBounds(0, 0,R.mipmap.vip, 0);
-        }
-    }
 }

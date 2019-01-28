@@ -13,6 +13,8 @@ import com.aspsine.swipetoloadlayout.SwipeToLoadLayout;
 import com.ting.R;
 import com.ting.base.BaseActivity;
 import com.ting.base.BaseObserver;
+import com.ting.bean.BaseResult;
+import com.ting.bean.ExpenseResult;
 import com.ting.bean.myself.DouChildrenBean;
 import com.ting.bean.myself.DouChildrenResult;
 import com.ting.common.TokenManager;
@@ -54,8 +56,8 @@ public class DouDetailsActivity extends BaseActivity implements OnLoadMoreListen
     }
     @Override
     protected void initView() {
-        mRecyclerView = (RecyclerView) findViewById(R.id.swipe_target);
-        mSwipeToLoadLayout = (SwipeToLoadLayout) findViewById(R.id.swipeToLoadLayout);
+        mRecyclerView =  findViewById(R.id.swipe_target);
+        mSwipeToLoadLayout =  findViewById(R.id.swipeToLoadLayout);
         mSwipeToLoadLayout.setOnLoadMoreListener(this);
         LinearLayoutManager manager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(manager);
@@ -65,7 +67,7 @@ public class DouDetailsActivity extends BaseActivity implements OnLoadMoreListen
 
     @Override
     protected void initData() {
-        getData(0);
+        getData(BaseObserver.MODEL_ALL);
     }
 
     @Override
@@ -79,45 +81,47 @@ public class DouDetailsActivity extends BaseActivity implements OnLoadMoreListen
     }
 
 
-    private void getData(final int type){
+    private void getData(final int model){
         map.put("uid", TokenManager.getUid(mActivity));
         map.put("page", String.valueOf(page));
-        map.put("count", "10");
-        BaseObserver baseObserver = new BaseObserver<DouChildrenResult>(this){
+        map.put("size", "10");
+        BaseObserver baseObserver = new BaseObserver<BaseResult<ExpenseResult>>(this, model){
             @Override
-            public void success(DouChildrenResult data) {
+            public void success(BaseResult<ExpenseResult> data) {
                 super.success(data);
                 mSwipeToLoadLayout.setLoadingMore(false);
-                if(type == 0) {
-                    if (adapter == null) {
-                        adapter = new DouDetailsAdapter(DouDetailsActivity.this);
-                        adapter.setData(data.getData());
-                        mRecyclerView.setAdapter(adapter);
+                ExpenseResult result = data.getData();
+                if(result != null) {
+                    if (model == BaseObserver.MODEL_ALL) {
+                        if (adapter == null) {
+                            adapter = new DouDetailsAdapter(DouDetailsActivity.this);
+                            adapter.setData(result.getList());
+                            mRecyclerView.setAdapter(adapter);
+                        } else {
+                            adapter.setData(result.getList());
+                            adapter.notifyDataSetChanged();
+                        }
                     } else {
-                        adapter.setData(data.getData());
+                        adapter.addData(result.getList());
                         adapter.notifyDataSetChanged();
                     }
-                }else{
-                    adapter.addData(data.getData());
-                    adapter.notifyDataSetChanged();
+                    page = result.getPage();
+                    isPagging(result.getCount(), adapter.getItemCount());
                 }
-                page = data.getPage();
-                isPagging(data.getLenght(), adapter.getItemCount());
             }
 
+
             @Override
-            public void error() {
-                if(type == 0) {
-                    super.error();
-                }
-                if(type == 1){
+            public void error(BaseResult<ExpenseResult> value, Throwable e) {
+                super.error(value, e);
+                if(model != BaseObserver.MODEL_ALL){
                     mSwipeToLoadLayout.setLoadingMore(false);
                     page--;
                 }
             }
         };
         mDisposable.add(baseObserver);
-        UtilRetrofit.getInstance().create(HttpService.class).jifen_mingxi(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
+        UtilRetrofit.getInstance().create(HttpService.class).expense(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
     }
 
 
@@ -132,7 +136,7 @@ public class DouDetailsActivity extends BaseActivity implements OnLoadMoreListen
 
     @Override
     public void onLoadMore() {
-        page--;
-        getData(1);
+        page++;
+        getData(BaseObserver.MODEL_SHOW_TOAST);
     }
 }

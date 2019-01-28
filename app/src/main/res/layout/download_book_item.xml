@@ -1,66 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:orientation="vertical">
-
-    <RelativeLayout
-        android:id="@+id/rl_layout"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/dpx190">
-
-        <ImageView
-            android:id="@+id/iv_book_url"
-            android:layout_width="@dimen/dpx124"
-            android:layout_height="@dimen/dpx124"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="@dimen/dpx50"
-            android:scaleType="fitXY"/>
-
-        <ImageView
-            android:id="@+id/iv_book_delete"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:paddingLeft="@dimen/dpx42"
-            android:paddingRight="@dimen/dpx42"
-            android:src="@mipmap/download_delete_gray"/>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                             xmlns:app="http://schemas.android.com/apk/res-auto"
+                                             xmlns:tools="http://schemas.android.com/tools"
+                                             android:layout_width="match_parent"
+                                             android:layout_height="wrap_content">
 
 
-        <TextView
-            android:id="@+id/tv_book_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="15dip"
-            android:layout_toRightOf="@id/iv_book_url"
-            android:layout_toLeftOf="@+id/iv_book_delete"
-            android:layout_alignTop="@+id/iv_book_url"
-            android:layout_marginRight="10dip"
-            android:text=""
-            android:textColor="#757474"
-            android:textSize="@dimen/px33"/>
+    <ImageView
+        android:id="@+id/iv_img"
+        android:layout_width="60dp"
+        android:layout_height="68dp"
+        android:layout_centerVertical="true"
+        android:layout_marginBottom="10dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="10dp"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
 
-        <TextView
-            android:id="@+id/tv_host_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dpx28"
-            android:text=""
-            android:layout_marginLeft="15dip"
-            android:layout_toRightOf="@id/iv_book_url"
-            android:layout_toLeftOf="@+id/iv_book_delete"
-            android:layout_alignBottom="@+id/iv_book_url"
-            android:layout_marginRight="10dip"
-            android:textColor="#757474"
-            android:textSize="@dimen/px26"
-            />
 
-    </RelativeLayout>
+    <TextView
+        android:id="@+id/tv_book_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/iv_img"
+        android:layout_marginEnd="15dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="1dp"
+        android:layout_toLeftOf="@+id/iv_book_delete"
+        android:layout_toRightOf="@id/iv_img"
+        android:gravity="center_vertical"
+        android:text=""
+        android:textColor="#333333"
+        android:textSize="@dimen/px33"
+        app:layout_constraintEnd_toStartOf="@+id/iv_book_delete"
+        app:layout_constraintStart_toEndOf="@+id/iv_img"
+        app:layout_constraintTop_toTopOf="@+id/iv_img"/>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="0.1dip"
-        android:background="@color/transparent"></View>
+    <TextView
+        android:id="@+id/tv_host_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/iv_img"
+        android:layout_marginBottom="1dp"
+        android:layout_marginStart="15dp"
+        android:layout_toLeftOf="@+id/iv_book_delete"
+        android:layout_toRightOf="@id/iv_img"
+        android:text=""
+        android:textColor="#333333"
+        android:textSize="@dimen/px26"
+        app:layout_constraintBottom_toBottomOf="@+id/iv_img"
+        app:layout_constraintStart_toEndOf="@+id/iv_img"/>
 
-</LinearLayout>
+    <ImageView
+        android:id="@+id/iv_book_delete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@mipmap/download_delete"/>
+
+</android.support.constraint.ConstraintLayout>
+

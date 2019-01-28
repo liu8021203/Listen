@@ -12,6 +12,7 @@ import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 
 import com.ting.R;
+import com.ting.util.UtilSystem;
 
 /**
  * Created by liu on 2017/12/27.
@@ -75,7 +76,12 @@ public class BookRackPopupWindow {
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public void show(View view) {
-        mPopupWindow.showAsDropDown(view, 0, 30, Gravity.NO_GRAVITY);
+        int height = 0;
+        int resourceId = view.getContext().getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            height = view.getContext().getResources().getDimensionPixelSize(resourceId);
+        }
+        mPopupWindow.showAtLocation(view, Gravity.CENTER_HORIZONTAL | Gravity.TOP, 0, view.getContext().getResources().getDimensionPixelOffset(R.dimen.actionbarHeight) + height + 20);
     }
 
     public boolean isShowing() {

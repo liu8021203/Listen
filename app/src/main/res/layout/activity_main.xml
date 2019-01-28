@@ -91,7 +91,7 @@
                     android:id="@+id/book_record_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="主播"
+                    android:text="分类"
                     android:layout_marginTop="4dip"
                     android:textColor="#adadad"
                     android:textSize="10sp" />

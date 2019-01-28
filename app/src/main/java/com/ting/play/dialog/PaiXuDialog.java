@@ -61,16 +61,16 @@ public class PaiXuDialog extends Dialog implements View.OnClickListener {
         btnOk.setOnClickListener(this);
         zheng_layout.setOnClickListener(this);
         fan_layout.setOnClickListener(this);
-        if(activity.sort.equals("asc"))
-        {
-            zheng_image.setImageResource(R.mipmap.blue_radio_check);
-            fan_image.setImageResource(R.mipmap.white_radio_check);
-        }
-        else
-        {
-            zheng_image.setImageResource(R.mipmap.white_radio_check);
-            fan_image.setImageResource(R.mipmap.blue_radio_check);
-        }
+//        if(activity.sort.equals("asc"))
+//        {
+//            zheng_image.setImageResource(R.mipmap.blue_radio_check);
+//            fan_image.setImageResource(R.mipmap.white_radio_check);
+//        }
+//        else
+//        {
+//            zheng_image.setImageResource(R.mipmap.white_radio_check);
+//            fan_image.setImageResource(R.mipmap.blue_radio_check);
+//        }
     }
 
 
@@ -91,14 +91,14 @@ public class PaiXuDialog extends Dialog implements View.OnClickListener {
                 dismiss();
                 break;
             case R.id.btn_ok:
-                if(!activity.getSort().equals(message))
-                {
-                    activity.setSort(message);
-                    if(mListener != null){
-                        mListener.callback();
-                    }
-                }
-                dismiss();
+//                if(!activity.getSort().equals(message))
+//                {
+//                    activity.setSort(message);
+//                    if(mListener != null){
+//                        mListener.callback();
+//                    }
+//                }
+//                dismiss();
                 break;
         }
     }

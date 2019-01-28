@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.ting.R;
 import com.ting.base.BaseActivity;
 import com.ting.bean.home.SuperMarketVO;
+import com.ting.bean.vo.BookVO;
 import com.ting.play.BookDetailsActivity;
 import com.ting.util.UtilGlide;
 
@@ -21,18 +22,16 @@ import java.util.List;
  */
 public class HotRankAdapter extends RecyclerView.Adapter<HotRankAdapter.ItemViewholder> {
 
-    private List<SuperMarketVO> data;
+    private List<BookVO> data;
     private BaseActivity activity;
     private ItemOnClickListener listener;
-    private LayoutInflater mInflater;
 
     public HotRankAdapter(BaseActivity activity) {
         this.activity = activity;
         this.listener = new ItemOnClickListener();
-        this.mInflater = LayoutInflater.from(activity);
     }
 
-    public void setData(List<SuperMarketVO> data) {
+    public void setData(List<BookVO> data) {
         this.data = data;
     }
 
@@ -40,16 +39,16 @@ public class HotRankAdapter extends RecyclerView.Adapter<HotRankAdapter.ItemView
 
     @Override
     public ItemViewholder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = mInflater.inflate(R.layout.item_recommend_gridview_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_recommend_item, parent, false);
         ItemViewholder viewholder = new ItemViewholder(view);
         return viewholder;
     }
 
     @Override
     public void onBindViewHolder(ItemViewholder holder, int position) {
-        SuperMarketVO vo = data.get(position);
-        UtilGlide.loadImg(activity, vo.getThumb(), holder.iv_icon);
-        holder.name.setText(data.get(position).getTitle());
+        BookVO vo = data.get(position);
+        UtilGlide.loadImg(activity, vo.getBookImage(), holder.ivImg);
+        holder.tvTitle.setText(data.get(position).getBookTitle());
         holder.itemView.setTag(vo);
         holder.itemView.setOnClickListener(listener);
     }
@@ -66,15 +65,15 @@ public class HotRankAdapter extends RecyclerView.Adapter<HotRankAdapter.ItemView
 
 
     protected class ItemViewholder extends RecyclerView.ViewHolder{
-        private ImageView iv_icon;
-        private TextView name;
+        private ImageView ivImg;
+        private TextView tvTitle;
 
         public ItemViewholder(View itemView) {
             super(itemView);
-            iv_icon = (ImageView) itemView
-                    .findViewById(R.id.iv_recommend_gridview);
-            name = (TextView) itemView
-                    .findViewById(R.id.tv_recommend_gridview);
+            ivImg =  itemView
+                    .findViewById(R.id.iv_img);
+            tvTitle =  itemView
+                    .findViewById(R.id.tv_title);
         }
     }
 
@@ -82,9 +81,10 @@ public class HotRankAdapter extends RecyclerView.Adapter<HotRankAdapter.ItemView
 
         @Override
         public void onClick(View v) {
-            SuperMarketVO vo = (SuperMarketVO) v.getTag();
+            BookVO vo = (BookVO) v.getTag();
             Bundle bundle = new Bundle();
-            bundle.putInt("bookID", vo.getId());
+            bundle.putString("bookId", vo.getId());
+            bundle.putString("bookTitle", vo.getBookTitle());
             activity.intent(BookDetailsActivity.class, bundle);
         }
     }

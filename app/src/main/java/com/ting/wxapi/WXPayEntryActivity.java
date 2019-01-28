@@ -4,6 +4,7 @@ package com.ting.wxapi;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.tencent.mm.opensdk.modelbase.BaseReq;
@@ -20,6 +21,7 @@ public class WXPayEntryActivity extends Activity implements IWXAPIEventHandler {
     private static final String TAG = "MicroMsg.SDKSample.WXPayEntryActivity";
 
     private IWXAPI api;
+    private TextView tvWxError;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -27,6 +29,7 @@ public class WXPayEntryActivity extends Activity implements IWXAPIEventHandler {
         setContentView(R.layout.pay_result);
         api = WXAPIFactory.createWXAPI(this, AppData.WX_APP_ID);
         api.handleIntent(getIntent(), this);
+        tvWxError = findViewById(R.id.tv_wx_error);
     }
 
     @Override
@@ -53,6 +56,7 @@ public class WXPayEntryActivity extends Activity implements IWXAPIEventHandler {
 
             case -1:
                 showTost("支付失败");
+                tvWxError.setText(resp.errStr);
                 finish();
                 break;
 

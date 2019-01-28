@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.ting.R;
 import com.ting.bean.search.SearchBean;
+import com.ting.bean.vo.HotSearchVO;
 import com.ting.play.BookDetailsActivity;
 import com.ting.search.SearchActivity;
 
@@ -21,7 +22,7 @@ import java.util.List;
 public class SearchHotAdapter extends BaseAdapter{
     private LayoutInflater mInflater;
     private SearchActivity activity;
-    private List<SearchBean> data;
+    private List<HotSearchVO> data;
     private ItemOnClickListener listener;
 
     // Constructors
@@ -31,7 +32,7 @@ public class SearchHotAdapter extends BaseAdapter{
         this.listener = new ItemOnClickListener();
     }
 
-    public void setResult(List<SearchBean> data) {
+    public void setResult(List<HotSearchVO> data) {
         this.data = data;
     }
 
@@ -59,21 +60,15 @@ public class SearchHotAdapter extends BaseAdapter{
     private static class ViewHolder {
         public final LinearLayout rootView;
         public final TextView tvName;
-        public final View vLineBottom;
-        public final View vLineRight;
 
-        private ViewHolder(LinearLayout rootView, TextView tvName, View vLineBottom, View vLineRight) {
+        private ViewHolder(LinearLayout rootView, TextView tvName) {
             this.rootView = rootView;
             this.tvName = tvName;
-            this.vLineBottom = vLineBottom;
-            this.vLineRight = vLineRight;
         }
 
         public static ViewHolder create(LinearLayout rootView) {
             TextView tvName = (TextView)rootView.findViewById( R.id.tv_name );
-            View vLineBottom = (View)rootView.findViewById( R.id.v_line_bottom );
-            View vLineRight = (View)rootView.findViewById( R.id.v_line_right );
-            return new ViewHolder( rootView, tvName, vLineBottom, vLineRight );
+            return new ViewHolder( rootView, tvName);
         }
     }
 
@@ -87,10 +82,10 @@ public class SearchHotAdapter extends BaseAdapter{
         } else {
             vh = (ViewHolder)convertView.getTag();
         }
-        SearchBean vo = data.get(position);
+        HotSearchVO vo = data.get(position);
 
         // TODOBind your data to the views here
-        vh.tvName.setText(vo.getTitle());
+        vh.tvName.setText(vo.getName());
         vh.tvName.setTag(vo);
         vh.tvName.setOnClickListener(listener);
         return vh.rootView;

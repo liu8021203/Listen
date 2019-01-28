@@ -6,7 +6,9 @@ import android.os.Build;
 import android.support.v4.content.FileProvider;
 
 import com.ting.bean.play.PlayingVO;
+import com.ting.bean.vo.ChapterListVO;
 import com.ting.db.DBChapter;
+import com.ting.db.DBListenHistory;
 
 import java.io.File;
 
@@ -19,15 +21,29 @@ public class UtilListener {
     public static DBChapter PlayingVOToBook(PlayingVO vo, int bookid, String bookname, String hostname, String imgUrl)
     {
         DBChapter tempVO = new DBChapter();
-        tempVO.setBookId(bookid);
-        tempVO.setChapterId(vo.getId());
-        tempVO.setChapterTitle(vo.getTitle());
-        tempVO.setChapterUrl(vo.getUrl());
-        tempVO.setBookName(bookname);
-        tempVO.setHost(hostname);
-        tempVO.setBookUrl(imgUrl);
+//        tempVO.setBookId(bookid);
+//        tempVO.setChapterId(vo.getId());
+//        tempVO.setChapterTitle(vo.getTitle());
+//        tempVO.setChapterUrl(vo.getUrl());
+//        tempVO.setBookName(bookname);
+//        tempVO.setHost(hostname);
+//        tempVO.setBookUrl(imgUrl);
         tempVO.setPosition(vo.getPosition());
         return tempVO;
+    }
+
+
+    public static DBChapter dBListenHistoryToDBChapter(DBListenHistory history){
+        DBChapter vo = new DBChapter();
+        vo.setBookId(history.getBookId());
+        vo.setBookHost(history.getBookHost());
+        vo.setBookImage(history.getBookImage());
+        vo.setBookTitle(history.getBookTitle());
+        vo.setChapterId(history.getChapterId());
+        vo.setPosition(history.getPosition());
+        vo.setTitle(history.getChapterTitle());
+        vo.setUrl(history.getChapterUrl());
+        return vo;
     }
 
 

@@ -3,7 +3,9 @@ package com.ting.base;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.ting.R;
 import com.ting.bean.BaseResult;
+import com.ting.myself.MyDouActivity;
 
 import java.lang.ref.WeakReference;
 
@@ -16,49 +18,84 @@ import io.reactivex.observers.DisposableObserver;
 public class BaseObserver<T extends BaseResult> extends DisposableObserver<T> {
     private WeakReference<BaseActivity> mActivityWeakReference;
     private WeakReference<BaseFragment> mFragmentWeakReference;
-    //默认显示加载loading
-    private boolean isShow = true;
+    public static final int MODEL_NO = 1;
+    public static final int MODEL_ALL = 2;
+    public static final int MODEL_LAYOUT = 3;
+    public static final int MODEL_SHOW_DIALOG = 4;
+    public static final int MODEL_SHOW_TOAST = 5;
+    public static final int MODEL_SHOW_DIALOG_TOAST = 6;
+    public static final int MODEL_ONLY_SHOW_DIALOG = 7;
+    public static final int MODEL_SHOW_PROGRESSBAR = 8;
 
-    public BaseObserver(BaseActivity activity) {
+    private int model = 1;
+    //默认显示加载loading
+
+    public BaseObserver(BaseActivity activity, int model) {
         mActivityWeakReference = new WeakReference<BaseActivity>(activity);
+        this.model = model;
     }
 
     public BaseObserver(BaseActivity activity, boolean b) {
         mActivityWeakReference = new WeakReference<BaseActivity>(activity);
-        isShow = b;
     }
 
-    public BaseObserver(BaseFragment fragment) {
+    public BaseObserver(BaseFragment fragment, int model) {
         mFragmentWeakReference = new WeakReference<BaseFragment>(fragment);
+        this.model = model;
     }
 
     public BaseObserver(BaseFragment fragment, boolean b) {
         mFragmentWeakReference = new WeakReference<BaseFragment>(fragment);
-        isShow = b;
     }
 
-    public BaseObserver() {
+    public BaseObserver(BaseActivity activity) {
+        mActivityWeakReference = new WeakReference<BaseActivity>(activity);
+        this.model = 2;
     }
+
+
+    public BaseObserver(BaseFragment fragment) {
+        mFragmentWeakReference = new WeakReference<BaseFragment>(fragment);
+        this.model = 2;
+    }
+
+
+    public BaseObserver() {
+        this.model = 1;
+    }
+
 
     @Override
     protected void onStart() {
         super.onStart();
-        if (mActivityWeakReference != null && mActivityWeakReference.get() != null) {
-            if (isShow) {
-                mActivityWeakReference.get().showProgressDialog();
-            }
+        switch (model){
+            case MODEL_SHOW_DIALOG_TOAST:
+            case MODEL_ONLY_SHOW_DIALOG:
+            case MODEL_ALL:
+                if (mActivityWeakReference != null && mActivityWeakReference.get() != null) {
+                    mActivityWeakReference.get().showProgressDialog();
+                }
+                if (mFragmentWeakReference != null && mFragmentWeakReference.get() != null) {
+                    mFragmentWeakReference.get().showProgressDialog();
+                }
+                break;
+
+            case MODEL_SHOW_PROGRESSBAR:
+                if (mActivityWeakReference != null && mActivityWeakReference.get() != null) {
+                    mActivityWeakReference.get().showErrorService(R.layout.base_loading);
+                }
+                if (mFragmentWeakReference != null && mFragmentWeakReference.get() != null) {
+                    mFragmentWeakReference.get().showErrorService(R.layout.base_loading);
+                }
+                break;
         }
-        if (mFragmentWeakReference != null && mFragmentWeakReference.get() != null) {
-            if (isShow) {
-                mFragmentWeakReference.get().showProgressDialog();
-            }
-        }
+
     }
 
     @Override
     public void onNext(T value) {
-        if (value.isStatus()) {
-            if (value != null) {
+        if (value != null) {
+            if (value.getStatus() == 0) {
                 if (mActivityWeakReference != null && mActivityWeakReference.get() != null) {
                     mActivityWeakReference.get().showDataLayout();
                 }
@@ -67,43 +104,74 @@ public class BaseObserver<T extends BaseResult> extends DisposableObserver<T> {
                 }
                 success(value);
             } else {
-                error();
+                if (!TextUtils.isEmpty(value.getMessage())) {
+                    if (mActivityWeakReference != null && mActivityWeakReference.get() != null) {
+                        if(model != BaseObserver.MODEL_NO) {
+                            mActivityWeakReference.get().showToast(value.getMessage());
+                        }
+                    }
+                    if (mFragmentWeakReference != null && mFragmentWeakReference.get() != null) {
+                        if(model != BaseObserver.MODEL_NO) {
+                            mFragmentWeakReference.get().showToast(value.getMessage());
+                        }
+                    }
+                }
+
+                if(value.getStatus() == 111){
+                    if (mActivityWeakReference != null && mActivityWeakReference.get() != null) {
+                        mActivityWeakReference.get().intent(MyDouActivity.class);
+                    }
+                    if (mFragmentWeakReference != null && mFragmentWeakReference.get() != null) {
+                        mFragmentWeakReference.get().intent(MyDouActivity.class);
+                    }
+                }
+
+                error(value, null);
             }
         } else {
-            if (!TextUtils.isEmpty(value.getMessage())) {
-                if (mActivityWeakReference != null && mActivityWeakReference.get() != null) {
-                    mActivityWeakReference.get().showToast(value.getMessage());
-                }
-                if (mFragmentWeakReference != null && mFragmentWeakReference.get() != null) {
-                    mFragmentWeakReference.get().showToast(value.getMessage());
-                }
-            }
-            error();
+            error(null, null);
         }
     }
 
     public void success(T data) {
     }
 
-    public void error() {
-        if (mActivityWeakReference != null && mActivityWeakReference.get() != null) {
-            mActivityWeakReference.get().errorService();
+    public void error(T value, Throwable e) {
+        switch (model){
+            case MODEL_ALL:
+            case MODEL_LAYOUT:
+                if (mActivityWeakReference != null && mActivityWeakReference.get() != null) {
+                    mActivityWeakReference.get().showErrorService();
+                }
+
+                if (mFragmentWeakReference != null && mFragmentWeakReference.get() != null) {
+                    mFragmentWeakReference.get().showErrorService();
+                }
+                break;
         }
 
-        if (mFragmentWeakReference != null && mFragmentWeakReference.get() != null) {
-            mFragmentWeakReference.get().errorService();
-        }
+    }
+
+    public void error(){
+
     }
 
     @Override
     public void onError(Throwable e) {
         if (mActivityWeakReference != null && mActivityWeakReference.get() != null) {
+            if(model != BaseObserver.MODEL_NO){
+                mActivityWeakReference.get().showToast("网络异常");
+            }
             mActivityWeakReference.get().removeProgressDialog();
         }
         if (mFragmentWeakReference != null && mFragmentWeakReference.get() != null) {
             mFragmentWeakReference.get().removeProgressDialog();
+            if(model != BaseObserver.MODEL_NO) {
+                mFragmentWeakReference.get().showToast("网络异常");
+            }
         }
-        error();
+
+        error(null, e);
     }
 
     @Override

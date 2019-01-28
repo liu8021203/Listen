@@ -141,7 +141,7 @@ public class HotHostActivity extends BaseActivity implements View.OnClickListene
      */
     public void seeAnchor(Data vo, String type) {
         this.vo = vo;
-        map.put("uid", String.valueOf(StaticConstant.userInfoResult.getUid()));
+//        map.put("uid", String.valueOf(StaticConstant.userInfoResult.getUid()));
         map.put("bid", vo.getId());
         map.put("op", "focus");
 //        hotAnchorController.SeeCancleAnchor(map, "focus");
@@ -154,7 +154,7 @@ public class HotHostActivity extends BaseActivity implements View.OnClickListene
      */
     public void CancleAnchor(Data vo, String type) {
         this.vo = vo;
-        map.put("uid", String.valueOf(StaticConstant.userInfoResult.getUid()));
+//        map.put("uid", String.valueOf(StaticConstant.userInfoResult.getUid()));
         map.put("bid", vo.getId());
         map.put("op", "cancel");
 //        hotAnchorController.SeeCancleAnchor(map, "cancel");

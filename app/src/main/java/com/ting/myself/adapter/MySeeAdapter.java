@@ -11,13 +11,23 @@ import android.widget.TextView;
 
 import com.ting.R;
 import com.ting.anchor.AnchorMainActivity;
+import com.ting.base.BaseObserver;
+import com.ting.bean.BaseResult;
 import com.ting.bean.myself.MySeeInfo;
+import com.ting.bean.vo.HostVO;
+import com.ting.common.TokenManager;
+import com.ting.common.http.HttpService;
 import com.ting.myself.MySeeActivity;
 import com.ting.util.UtilGlide;
+import com.ting.util.UtilRetrofit;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 
 /**
@@ -27,11 +37,15 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class MySeeAdapter extends RecyclerView.Adapter<MySeeAdapter.ItemViewHolder> {
     private LayoutInflater inflater;
     private MySeeActivity mActivity;
-    private List<MySeeInfo> result;
+    private List<HostVO> result;
+    private ItemOnClickListener mListener;
+    private CancleFocusOnClickListener mFocusOnClickListener;
 
     public MySeeAdapter(MySeeActivity mActivity) {
         this.mActivity = mActivity;
         inflater = inflater.from(mActivity);
+        mListener = new ItemOnClickListener();
+        mFocusOnClickListener = new CancleFocusOnClickListener();
     }
 
     public void remove(MySeeInfo info){
@@ -43,7 +57,7 @@ public class MySeeAdapter extends RecyclerView.Adapter<MySeeAdapter.ItemViewHold
 
     @Override
     public ItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = inflater.inflate(R.layout.item_my_see_new, parent, false);
+        View view = inflater.inflate(R.layout.recycle_anchor_item, parent, false);
         ItemViewHolder holder = new ItemViewHolder(view);
         return holder;
     }
@@ -51,32 +65,15 @@ public class MySeeAdapter extends RecyclerView.Adapter<MySeeAdapter.ItemViewHold
 
     @Override
     public void onBindViewHolder(ItemViewHolder holder, int position) {
-        final MySeeInfo info = result.get(position);
-        UtilGlide.loadAnchorImg(mActivity, info.getThumb(), holder.my_see_image);
+        HostVO info = result.get(position);
+        UtilGlide.loadAnchorImg(mActivity, info.getUserImage(), holder.ivImg);
 
 
-        holder.my_see_name.setText(info.getName());
-        holder.my_see_item.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Bundle bundle = new Bundle();
-                bundle.putString("anchorId", String.valueOf(info.getId()));
-                mActivity.intent(AnchorMainActivity.class, bundle);
-            }
-        });
-
-        holder.iv_cancle_fouce.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mActivity.cancleFouces(info);
-            }
-        });
-        holder.tv_anchor_rank.setText(info.getRankname());
-        if(result.get(position).getLastupdate()!=null){
-            holder.anchor_last_update.setText("最近更新:  "+result.get(position).getLastupdate().getTitle());
-        }else{
-            holder.anchor_last_update.setText("");
-        }
+        holder.tvName.setText(info.getNickname());
+        holder.itemView.setTag(info);
+        holder.itemView.setOnClickListener(mListener);
+        holder.rlFocus.setTag(info);
+        holder.rlFocus.setOnClickListener(mFocusOnClickListener);
     }
 
 
@@ -86,33 +83,61 @@ public class MySeeAdapter extends RecyclerView.Adapter<MySeeAdapter.ItemViewHold
     }
 
 
-    public void setResult(List<MySeeInfo> result) {
+    public void setResult(List<HostVO> result) {
         this.result = result;
     }
 
-    public void addResult(List<MySeeInfo> result){
-        if(this.result != null && result != null){
-            this.result.addAll(result);
-        }
-    }
 
     protected class ItemViewHolder extends RecyclerView.ViewHolder{
-        private CircleImageView my_see_image;//头像
-        private TextView my_see_name;//名字
-        private RelativeLayout my_see_item;//我的
-        private TextView iv_cancle_fouce;//取消关注
-        private TextView tv_anchor_rank;//三星主播
-        private TextView anchor_last_update;//最近收听
+        private CircleImageView ivImg;//头像
+        private TextView tvName;//名字
+        private RelativeLayout rlFocus;//我的
+        private TextView tvFocus;  //关注
 
         public ItemViewHolder(View itemView) {
             super(itemView);
-            my_see_item = (RelativeLayout) itemView.findViewById(R.id.my_see_item);
-            my_see_image = (CircleImageView) itemView.findViewById(R.id.my_see_image);
-            my_see_name = (TextView) itemView.findViewById(R.id.my_see_name);
-            iv_cancle_fouce = (TextView) itemView.findViewById(R.id.iv_cancle_fouce);
-            tv_anchor_rank = (TextView) itemView.findViewById(R.id.tv_anchor_rank);
-            anchor_last_update = (TextView) itemView.findViewById(R.id.anchor_last_update);
-            tv_anchor_rank = (TextView) itemView.findViewById(R.id.tv_anchor_rank);
+            ivImg =  itemView.findViewById(R.id.iv_img);
+            tvName =  itemView.findViewById(R.id.tv_name);
+            rlFocus =  itemView.findViewById(R.id.rl_focus);
+            tvFocus =  itemView.findViewById(R.id.tv_focus);
+        }
+    }
+
+    private class ItemOnClickListener implements View.OnClickListener{
+
+        @Override
+        public void onClick(View v) {
+            HostVO vo = (HostVO) v.getTag();
+            Bundle bundle = new Bundle();
+            bundle.putString("anchorId", vo.getId());
+            mActivity.intent(AnchorMainActivity.class, bundle);
+        }
+    }
+
+
+    private class CancleFocusOnClickListener implements View.OnClickListener{
+
+        @Override
+        public void onClick(View v) {
+            final HostVO vo = (HostVO) v.getTag();
+            Map<String, String> map = new HashMap<>();
+            map.put("uid", TokenManager.getUid(mActivity));
+            map.put("hostId", vo.getId());
+            BaseObserver baseObserver = new BaseObserver<BaseResult>(mActivity, BaseObserver.MODEL_SHOW_DIALOG_TOAST) {
+                @Override
+                public void success(BaseResult data) {
+                    super.success(data);
+                    result.remove(vo);
+                    notifyDataSetChanged();
+                    mActivity.updateNum(result.size());
+                    if(result.isEmpty()){
+                        mActivity.showEmpty();
+                    }
+                }
+
+            };
+            mActivity.mDisposable.add(baseObserver);
+            UtilRetrofit.getInstance().create(HttpService.class).cancleFocusHost(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
         }
     }
 }

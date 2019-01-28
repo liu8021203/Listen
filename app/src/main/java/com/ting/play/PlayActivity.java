@@ -16,10 +16,13 @@ import android.widget.TextView;
 import com.ting.R;
 import com.ting.base.BaseActivity;
 import com.ting.base.BaseObserver;
+import com.ting.bean.BaseResult;
+import com.ting.bean.ChapterResult;
 import com.ting.bean.play.CommentResult;
 import com.ting.bean.play.PlayListVO;
 import com.ting.bean.play.PlayResult;
 import com.ting.bean.play.PlayingVO;
+import com.ting.bean.vo.ChapterListVO;
 import com.ting.common.AppData;
 import com.ting.common.TokenManager;
 import com.ting.common.http.HttpService;
@@ -31,12 +34,14 @@ import com.ting.play.controller.MusicDBController;
 import com.ting.play.dialog.OffLinePlayListDialog;
 import com.ting.play.dialog.PlayListDialog;
 import com.ting.play.dialog.ShareDialog;
+import com.ting.play.dialog.SpeedDialog;
 import com.ting.play.dialog.TimeSettingDialog;
 import com.ting.play.receiver.PlayerReceiver;
 import com.ting.play.service.MusicService;
 import com.ting.util.UtilDate;
 import com.ting.util.UtilGlide;
 import com.ting.util.UtilIntent;
+import com.ting.util.UtilListener;
 import com.ting.util.UtilNetStatus;
 import com.ting.util.UtilRetrofit;
 import com.umeng.analytics.MobclickAgent;
@@ -67,30 +72,30 @@ public class PlayActivity extends BaseActivity {
     private MusicDBController mDBController;
     private TextView tvShare;
     private PlayerReceiver mPlayerReceiver;
-
+    private TextView tvSpeed;
     private SeekBar music_seekbar;
     private TextView tv_current_time;
     private TextView tv_total_time;
     private ProgressBar music_progress;
-    private PlayListVO listVO;
     //在线数据
-    private List<PlayingVO> playData;
-    //离线数据
-    private List<DBChapter> offlinePlayData;
+    private List<DBChapter> data;
     private ObjectAnimator animator;
+    //章节总数
+    private int total;
     //书籍ID
-    private int bookId;
+    private String bookId;
     //是否播放
     private boolean isPlay = false;
-    private int position;
     //书籍名称
-    private String bookName;
+    private String bookTitle;
     //书籍封面
-    private String bookPic;
+    private String bookImage;
     //书籍主播
-    private String bookAnchor;
+    private String bookHost;
     //书籍价格
     private int price;
+
+    private int position = -1;
 
 
     @Override
@@ -133,7 +138,7 @@ public class PlayActivity extends BaseActivity {
         ivPlay.setOnClickListener(this);
         program_number = flContent.findViewById(R.id.program_number);//播放集数
         play_name = flContent.findViewById(R.id.play_name);//播放小说名
-
+        play_name.setOnClickListener(this);
         tvTiming = flContent.findViewById(R.id.tv_timing);//时间定时器
         tvTiming.setOnClickListener(this);
         tv_current_time = flContent.findViewById(R.id.tv_current_time);
@@ -155,6 +160,29 @@ public class PlayActivity extends BaseActivity {
         animator.setDuration(5000);
         ivList = flContent.findViewById(R.id.iv_list);
         ivList.setOnClickListener(this);
+        tvSpeed = findViewById(R.id.tv_speed);
+        tvSpeed.setOnClickListener(this);
+
+        switch (AppData.speedType) {
+            case 1:
+                tvSpeed.setText("1X倍速");
+                break;
+
+            case 2:
+                tvSpeed.setText("1.25X倍速");
+                break;
+
+            case 3:
+                tvSpeed.setText("1.5X倍速");
+                break;
+            case 4:
+                tvSpeed.setText("1.75X倍速");
+                break;
+
+            case 5:
+                tvSpeed.setText("2X倍速");
+                break;
+        }
     }
 
     @Override
@@ -168,23 +196,29 @@ public class PlayActivity extends BaseActivity {
             MusicDBController mMusicController = new MusicDBController();
             DBListenHistory mHistory = mMusicController.getBookIdData(String.valueOf(bookId));
             if (mHistory != null) {
-                position = mHistory.getPosition();
-            }
-            if (position == -1) {
-                getChapterData(1);
-            } else {
-                int page = position / 50 + 1;
+                int position = mHistory.getPosition();
+                int page = (position - 1) / 50 + 1;
                 getChapterData(page);
+            } else {
+                getChapterData(1);
             }
         } else {
             playImage.setImageResource(R.drawable.book_def);
             DownloadController controller = new DownloadController();
-            offlinePlayData = controller.queryData(bookId + "", 4 + "");
-            if (offlinePlayData != null && !offlinePlayData.isEmpty()) {
-                play_name.setText(offlinePlayData.get(0).getBookName() + "(" + offlinePlayData.get(0).getHost() + ")");
-                program_number.setText(offlinePlayData.get(0).getChapterTitle());
+            data = controller.queryData(bookId + "", 4 + "");
+            if (data != null && !data.isEmpty()) {
+                bookTitle = data.get(0).getBookTitle();
+                bookImage = data.get(0).getBookImage();
+                bookHost = data.get(0).getBookHost();
+                play_name.setText(data.get(0).getBookTitle() + "(" + data.get(0).getBookHost() + ")");
+                program_number.setText(data.get(0).getTitle());
+                total = data.size();
                 if (isPlay) {
-                    play();
+                    play(true);
+                }else{
+                    if (!AppData.isPlaying) {
+                        play(true);
+                    }
                 }
             } else {
                 program_number.setText("暂无播放章节");
@@ -197,11 +231,9 @@ public class PlayActivity extends BaseActivity {
     @Override
     protected void getIntentData() {
         Bundle bundle = getIntent().getExtras();
-        bookId = bundle.getInt("bookID", -1);
+        bookId = bundle.getString("bookId");
+        position = bundle.getInt("position", -1);
         isPlay = bundle.getBoolean("play", false);
-        if (bookId == -1) {
-            bookId = AppData.currPlayBookId;
-        }
     }
 
     @Override
@@ -215,50 +247,43 @@ public class PlayActivity extends BaseActivity {
      */
     private void getChapterData(int page) {
         Map<String, String> map = new HashMap<>();
-        map.put("page", page + "");
-        map.put("count", "50");
-        map.put("bookID", String.valueOf(bookId));
-        map.put("sort", "asc");
-        map.put("type", "works");
+        map.put("page", String.valueOf(page));
+        map.put("size", "50");
+        map.put("bookId", bookId);
         if (TokenManager.isLogin(this)) {
             map.put("uid", TokenManager.getUid(this));
         }
-        BaseObserver baseObserver = new BaseObserver<PlayResult>() {
+        BaseObserver baseObserver = new BaseObserver<BaseResult<ChapterResult>>(mActivity, BaseObserver.MODEL_NO) {
             @Override
-            public void success(PlayResult data) {
+            public void success(BaseResult<ChapterResult> data) {
                 super.success(data);
-                int page = data.getData().getPage();
-                int count = data.getData().getCount();
-                if (data.getData() != null && data.getData().getData() != null) {
-                    for (int i = 0; i < data.getData().getData().size(); i++) {
-                        int position = (page - 1) * count + i;
-                        data.getData().getData().get(i).setPosition(position);
-                    }
-                    playData = data.getData().getData();
-
-                }
-                bookName = data.getTitle();
-                bookPic = data.getThumb();
-                bookAnchor = data.getBroadercaster();
-                price = data.getPrice();
-                UtilGlide.loadImg(mActivity, bookPic, playImage);
+                ChapterResult result = data.getData();
+                total = result.getCount();
+                PlayActivity.this.data = result.getList();
+                bookTitle = result.getList().get(0).getBookTitle();
+                bookImage = result.getList().get(0).getBookImage();
+                bookHost = result.getList().get(0).getBookHost();
+                UtilGlide.loadImg(mActivity, result.getList().get(0).getBookImage(), playImage);
+                play_name.setText(result.getList().get(0).getBookTitle() + "(" + result.getList().get(0).getBookHost() + ")");
                 if (isPlay) {
-                    play();
+                    play(true);
+                } else {
+                    if (!AppData.isPlaying) {
+                        play(true);
+                    }
                 }
+            }
+
+
+            @Override
+            public void error(BaseResult<ChapterResult> value, Throwable e) {
+                super.error(value, e);
             }
         };
         mDisposable.add(baseObserver);
-        UtilRetrofit.getInstance().create(HttpService.class).getPlayerList(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
+        UtilRetrofit.getInstance().create(HttpService.class).chapter(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
     }
 
-
-    /**
-     * 在线进入设置数据
-     */
-    public void setDate(CommentResult result) {
-//        play_name.setText(result.getTitle() + "(" + result.getBroadercaster() + ")");
-//        UtilGlide.loadImg(activity, result.getThumb(), play_image);
-    }
 
     @Override
     public void onClick(View v) {
@@ -275,7 +300,7 @@ public class PlayActivity extends BaseActivity {
             }
             break;
             case R.id.iv_play:
-                play();
+                play(!AppData.isPlaying);
                 break;
             case R.id.tv_timing:
                 if (AppData.isPlaying) {
@@ -304,15 +329,14 @@ public class PlayActivity extends BaseActivity {
                 break;
 
             case R.id.tv_share:
-                ShareDialog shareDialog = new ShareDialog(mActivity);
-                shareDialog.setImageUrl(bookPic);
-                shareDialog.setBookname(bookName);
-                if (!TextUtils.isEmpty(AppData.playKey)) {
-                    String[] strings = AppData.playKey.split("-");
-                    shareDialog.setId(strings[1]);
-                } else {
-                    shareDialog.setId(playData.get(0).getId() + "");
+                if (data == null || data.isEmpty()) {
+                    showToast("数据加载中，请稍后");
+                    return;
                 }
+                ShareDialog shareDialog = new ShareDialog(mActivity);
+                shareDialog.setImageUrl(bookImage);
+                shareDialog.setBookname(bookTitle);
+                shareDialog.setUrl(data.get(0).getUrl());
                 shareDialog.show();
                 break;
 
@@ -320,77 +344,103 @@ public class PlayActivity extends BaseActivity {
                 UtilIntent.finishDIYBottomToTop(mActivity);
                 break;
 
-            case R.id.iv_list:
-                if (UtilNetStatus.isHasConnection(mActivity)) {
-                    PlayListDialog dialog = new PlayListDialog(mActivity);
-                    dialog.setData(bookId, bookName, bookAnchor, bookPic, price);
-                    dialog.show();
-                } else {
-                    OffLinePlayListDialog dialog = new OffLinePlayListDialog(mActivity);
-                    dialog.setBookId(bookId);
-                    dialog.setData(offlinePlayData);
-                    dialog.show();
-                }
+            case R.id.iv_list: {
+                PlayListDialog dialog = new PlayListDialog(mActivity);
+                dialog.setData(total, data);
+                dialog.show();
+            }
+            break;
+
+            case R.id.tv_speed:
+                SpeedDialog dialog = new SpeedDialog(mActivity);
+                dialog.setListener(new SpeedDialog.SpeedCallBackListener() {
+                    @Override
+                    public void speed(float speed) {
+                        switch (AppData.speedType) {
+                            case 1:
+                                tvSpeed.setText("1X倍速");
+                                break;
+
+                            case 2:
+                                tvSpeed.setText("1.25X倍速");
+                                break;
+
+                            case 3:
+                                tvSpeed.setText("1.5X倍速");
+                                break;
+                            case 4:
+                                tvSpeed.setText("1.75X倍速");
+                                break;
+
+                            case 5:
+                                tvSpeed.setText("2X倍速");
+                                break;
+                        }
+                        musicController.speed(speed);
+                    }
+                });
+                dialog.show();
+                break;
+
+            case R.id.play_name:
+                Bundle bundle = new Bundle();
+                bundle.putString("bookId", bookId);
+                mActivity.intent(BookDetailsActivity.class, bundle);
                 break;
             default:
                 break;
         }
     }
 
-    public void play() {
+    public void play(boolean b) {
         if (!UtilNetStatus.isWifiConnection() && UtilNetStatus.isHasConnection(this)) {
             showToast("非wifi下请注意流量");
         }
-        if (playData == null && offlinePlayData == null) {
+        if (data == null || data.isEmpty()) {
             showToast("请稍等，数据在加载中");
             return;
         }
-        if (AppData.playKey != null) {
-            if (!AppData.isPlaying) {
-                DBListenHistory mHistory = mDBController.getBookIdData(String.valueOf(bookId));
-                musicController.play(bookId, mHistory.getCid(), mHistory.getUrl(), mHistory.getChapter_name(), mHistory.getBookname(), mHistory.getHost(), mHistory.getPic(), null, "asc", 0);
+        if (b) {
+            if (position == -1) {
+                DBListenHistory mHistory = mDBController.getBookIdData(bookId);
+                if (mHistory != null) {
+                    if (isRecordExist(mHistory)) {
+                        musicController.seekToPlay(mHistory.getDuration(), UtilListener.dBListenHistoryToDBChapter(mHistory), data);
+                    } else {
+                        musicController.play(data.get(0), data);
+                    }
+                } else {
+                    musicController.play(data.get(0), data);
+                }
             } else {
-                musicController.pause();
+                DBListenHistory history = mDBController.getBookIdAndPositionData(bookId, String.valueOf(position));
+                if (history != null) {
+                    if (history.getDuration() != 0L && history.getTotal() != 0L) {
+                        int percent = (int) (history.getDuration() * 100 / history.getTotal());
+                        if (percent >= 95) {
+                            int index = getIndex(position);
+                            musicController.play(data.get(index), data);
+                        } else if (percent > 1) {
+                            musicController.play(UtilListener.dBListenHistoryToDBChapter(history), data);
+                        } else {
+                            int index = getIndex(position);
+                            musicController.play(data.get(index), data);
+                        }
+                    } else {
+                        int index = getIndex(position);
+                        musicController.play(data.get(index), data);
+                    }
+                } else {
+                    int index = getIndex(position);
+                    if (index != -1) {
+                        musicController.play(data.get(index), data);
+                    } else {
+                        musicController.play(data.get(0), data);
+                    }
+                }
             }
         } else {
-            DBListenHistory mHistory = mDBController.getBookIdData(String.valueOf(bookId));
-            //在线播放
-            if (playData != null && !playData.isEmpty()) {
-                if (mHistory != null) {
-                    if (listVO == null) {
-                        listVO = new PlayListVO();
-                    }
-                    listVO.setData(playData);
-                    musicController.play(mHistory.getDuration(), bookId, mHistory.getCid(), mHistory.getUrl(), mHistory.getChapter_name(), mHistory.getBookname(), mHistory.getHost(), mHistory.getPic(), listVO, "asc", 0, 0);
-                } else {
-                    if (playData != null && !playData.isEmpty()) {
-                        PlayingVO vo = playData.get(0);
-                        if (listVO == null) {
-                            listVO = new PlayListVO();
-                        }
-                        listVO.setData(playData);
-                        musicController.play(bookId, vo.getId(), vo.getUrl(), vo.getTitle(), bookName, bookAnchor, bookPic, listVO, "asc", 0);
-                    } else {
-                        showToast("暂无章节");
-                        return;
-                    }
-                }
-            }
-            //离线播放
-            else {
-                PlayListVO listVO = new PlayListVO();
-                listVO.setOfflineData(offlinePlayData);
-                if (mHistory != null && isRecordExist(mHistory)) {
-                    musicController.play(mHistory.getDuration(), bookId, mHistory.getCid(), mHistory.getUrl(), mHistory.getChapter_name(), mHistory.getBookname(), mHistory.getHost(), mHistory.getPic(), listVO, "asc", 1, 0);
-                } else {
-                    if (offlinePlayData != null && !offlinePlayData.isEmpty()) {
-                        DBChapter vo = offlinePlayData.get(0);
-                        if (vo != null) {
-                            musicController.play(bookId, vo.getChapterId(), vo.getChapterUrl(), vo.getChapterTitle(), vo.getBookName(), vo.getHost(), vo.getBookUrl(), listVO, "asc", 1);
-                        }
-                    }
-                }
-            }
+            musicController.pause();
         }
     }
 
@@ -403,8 +453,8 @@ public class PlayActivity extends BaseActivity {
      */
     private boolean isRecordExist(DBListenHistory history) {
         boolean b = false;
-        for (int i = 0; i < offlinePlayData.size(); i++) {
-            if (offlinePlayData.get(i).getChapterId() == history.getCid()) {
+        for (int i = 0; i < data.size(); i++) {
+            if (TextUtils.equals(data.get(i).getChapterId(), history.getChapterId())) {
                 b = true;
                 break;
             }
@@ -413,20 +463,28 @@ public class PlayActivity extends BaseActivity {
     }
 
 
+    private int getIndex(int position) {
+        for (int i = 0; i < data.size(); i++) {
+            if (data.get(i).getPosition() == position) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+
     /**
      * 播放初始化
      *
      * @param duration
      */
-    public void initPlay(long duration, int bookid, int cid, String cateTitle) {
+    public void initPlay(long duration, String chapterTitle) {
         music_seekbar.setMax((int) duration);
         tv_total_time.setText(UtilDate.transformToTimeStr((int) duration));
-        program_number.setText(cateTitle);
+        program_number.setText(chapterTitle);
         music_progress.setVisibility(View.GONE);
         ivPlay.setVisibility(View.VISIBLE);
         ivPlay.setImageResource(R.drawable.vector_play);
-        AppData.playKey = bookid + "-" + cid;
-        AppData.currPlayBookId = bookid;
         animator.cancel();
         animator.start();
     }
@@ -437,7 +495,7 @@ public class PlayActivity extends BaseActivity {
      *
      * @param time
      */
-    public void updateTime(long time, long totalTime, String chapterTitle, String bookName) {
+    public void updateTime(long time, long totalTime, String chapterTitle, String bookTitle) {
         if (time != -1) {
             if (ivPlay != null) {
                 ivPlay.setImageResource(R.drawable.vector_play);
@@ -456,7 +514,7 @@ public class PlayActivity extends BaseActivity {
                 program_number.setText(chapterTitle);
             }
             if (play_name != null) {
-                play_name.setText(bookName);
+                play_name.setText(bookTitle);
             }
             if (!animator.isStarted()) {
                 animator.start();
@@ -467,7 +525,7 @@ public class PlayActivity extends BaseActivity {
     /**
      * 通知暂停
      */
-    public void pauseNotify(int bookid) {
+    public void pauseNotify() {
         ivPlay.setImageResource(R.drawable.vector_pause);
         animator.cancel();
     }
@@ -475,7 +533,7 @@ public class PlayActivity extends BaseActivity {
     /**
      * 加载MP3
      */
-    public void loadingMusic(int bookid) {
+    public void loadingMusic() {
         music_progress.setVisibility(View.VISIBLE);
         ivPlay.setVisibility(View.GONE);
     }
@@ -483,7 +541,7 @@ public class PlayActivity extends BaseActivity {
     /**
      * 错误通知
      */
-    public void error(int bookid) {
+    public void error() {
         music_progress.setVisibility(View.GONE);
         ivPlay.setVisibility(View.VISIBLE);
         ivPlay.setImageResource(R.drawable.vector_pause);
@@ -497,7 +555,7 @@ public class PlayActivity extends BaseActivity {
     /**
      * 播放完成
      */
-    public void playComplete(int bookid) {
+    public void playComplete() {
         music_seekbar.setProgress(0);
         music_progress.setVisibility(View.GONE);
         ivPlay.setVisibility(View.VISIBLE);
@@ -510,7 +568,7 @@ public class PlayActivity extends BaseActivity {
     /**
      * 开始缓存
      */
-    public void buffStart(int bookid) {
+    public void buffStart() {
         music_progress.setVisibility(View.VISIBLE);
         ivPlay.setVisibility(View.GONE);
     }
@@ -518,7 +576,7 @@ public class PlayActivity extends BaseActivity {
     /**
      * 完成缓存
      */
-    public void buffEnd(int bookid) {
+    public void buffEnd() {
         music_progress.setVisibility(View.GONE);
         ivPlay.setVisibility(View.VISIBLE);
     }

@@ -72,16 +72,6 @@
                     />
 
 
-                <TextView
-                    android:id="@+id/tv_share"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_toRightOf="@+id/tv_collect"
-                    android:drawableLeft="@mipmap/bookdetails_share"
-                    android:layout_marginLeft="10dip"
-                    android:drawablePadding="4dip"
-                    android:gravity="center_vertical"
-                    android:text="分享"/>
 
 
             </RelativeLayout>
@@ -134,7 +124,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right"
-            android:padding="20dip"
+            android:padding="10dip"
             android:src="@drawable/vector_introduce_down"
             />
 
