@@ -158,7 +158,7 @@
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
                         android:layout_marginLeft="10dip"
-                        android:text="精选作品"
+                        android:text="最新发布"
                         android:textColor="#565656"
                         android:textSize="14sp"/>
 

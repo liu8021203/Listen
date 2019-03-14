@@ -596,4 +596,12 @@ public interface HttpService {
      */
     @GET("listen/api/test")
     Observable<BaseResult> test(@QueryMap Map<String, String> map);
+
+
+    /**
+     * 浏览书籍
+     * @return
+     */
+    @POST("listen/api/browseBook")
+    Observable<BaseResult> browseBook(@QueryMap Map<String, String> map);
 }

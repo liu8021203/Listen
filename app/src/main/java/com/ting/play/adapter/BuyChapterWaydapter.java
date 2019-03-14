@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ting.R;
@@ -33,6 +34,7 @@ public class BuyChapterWaydapter extends RecyclerView.Adapter<BuyChapterWaydapte
 
     public void setData(List<BuyChapterWayVO> data) {
         this.data = data;
+        defVO = data.get(0);
     }
 
 
@@ -52,9 +54,11 @@ public class BuyChapterWaydapter extends RecyclerView.Adapter<BuyChapterWaydapte
         if(vo == defVO)
         {
             holder.tvDesc.setTextColor(0xff1296db);
+            holder.ivMark.setVisibility(View.VISIBLE);
         }
         else {
             holder.tvDesc.setTextColor(0xff000000);
+            holder.ivMark.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -72,10 +76,11 @@ public class BuyChapterWaydapter extends RecyclerView.Adapter<BuyChapterWaydapte
     protected class ItemViewHolder extends RecyclerView.ViewHolder
     {
         TextView tvDesc;
-
+        ImageView ivMark;
         public ItemViewHolder(View itemView) {
             super(itemView);
             tvDesc =  itemView.findViewById(R.id.tv_desc);
+            ivMark = itemView.findViewById(R.id.iv_mark);
         }
     }
 

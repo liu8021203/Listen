@@ -50,12 +50,12 @@ public class ListenerCardAdapter extends RecyclerView.Adapter<ListenerCardAdapte
         holder.tv_anchor.setText("主播听书卡《" + bean.getHostName() + "》");
         UtilGlide.loadAnchorImg(myCardActivity, bean.getHostImage(), holder.card_image);
         holder.tv_card_qixian.setText("有效期:" + bean.getStartTime() + "---" + bean.getEndTime());
-        holder.litener_card_item.setOnClickListener(new View.OnClickListener() {
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 Bundle bundle = new Bundle();
-//                bundle.putString("anchorId", bean.getZhubo_uid());
+                bundle.putString("anchorId", bean.getHostId());
                 myCardActivity.intent(AnchorMainActivity.class, bundle);
 
             }

@@ -87,13 +87,22 @@
     </LinearLayout>
 
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:layout_gravity="center_horizontal"
+        android:textColor="#333333"
+        android:text="客服QQ/微信：51493492"/>
+
+
 
     <TextView
         android:id="@+id/tv_sumbit"
         android:layout_width="@dimen/dp750_334"
         android:layout_height="@dimen/dp750_84"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="@dimen/dp750_120"
+        android:layout_marginTop="30dp"
         android:background="@drawable/login_background"
         android:gravity="center"
         android:text="提交反馈"

@@ -882,8 +882,7 @@ public class MusicService extends Service {
                             play();
                         }
                     } else {
-                        int position = (data.get(index).getPosition() - 1) / 50 + 2;
-                        int page = position / 50 + 2;
+                        int page = (data.get(index).getPosition() - 1) / 50 + 2;
                         loadData(page);
                     }
                 }

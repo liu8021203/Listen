@@ -22,6 +22,7 @@ import com.ting.bean.anchor.ListenBookVO;
 import com.ting.base.BaseActivity;
 import com.ting.base.BaseObserver;
 import com.ting.bean.BaseResult;
+import com.ting.bean.apk.ApkResult;
 import com.ting.bean.play.PlayingVO;
 import com.ting.bean.vo.CardVO;
 import com.ting.common.AppData;
@@ -45,7 +46,9 @@ import com.ting.util.UtilIntent;
 import com.ting.util.UtilNetStatus;
 import com.ting.util.UtilPermission;
 import com.ting.util.UtilRetrofit;
+import com.ting.util.UtilSystem;
 import com.ting.view.MusicAnimView;
+import com.ting.welcome.ApkDownloadActivity;
 import com.ting.welcome.MainActivity;
 import com.umeng.analytics.MobclickAgent;
 
@@ -133,10 +136,22 @@ public class BookDetailsActivity extends BaseActivity implements View.OnClickLis
     protected void initData() {
 
         /****************统计*******************/
-        Map<String, String> map = new HashMap<>();
-        map.put("id", String.valueOf(bookId));
-        MobclickAgent.onEvent(this, "BOOK_ID", map);
+//        Map<String, String> map = new HashMap<>();
+//        map.put("id", String.valueOf(bookId));
+//        MobclickAgent.onEvent(this, "BOOK_ID", map);
         /****************统计******************/
+
+
+        Map<String, String> map = new HashMap<>();
+        map.put("bookId", String.valueOf(bookId));
+        BaseObserver baseObserver = new BaseObserver<BaseResult>(this, BaseObserver.MODEL_NO) {
+            @Override
+            public void success(BaseResult data) {
+                super.success(data);
+
+            }
+        };
+        UtilRetrofit.getInstance().create(HttpService.class).browseBook(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
     }
 
     @Override

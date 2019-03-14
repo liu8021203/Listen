@@ -34,6 +34,7 @@ public class ListenBookAdapter extends RecyclerView.Adapter<ListenBookAdapter.It
 
     public void setData(List<CardVO> data) {
         this.data = data;
+        defId = Integer.valueOf(data.get(0).getId());
     }
 
 
@@ -53,9 +54,11 @@ public class ListenBookAdapter extends RecyclerView.Adapter<ListenBookAdapter.It
         if(defId == Integer.parseInt(vo.getId()))
         {
             holder.tvDesc.setTextColor(0xff1296db);
+            holder.ivMark.setVisibility(View.VISIBLE);
         }
         else {
             holder.tvDesc.setTextColor(0xff000000);
+            holder.ivMark.setVisibility(View.GONE);
         }
     }
 
@@ -73,10 +76,11 @@ public class ListenBookAdapter extends RecyclerView.Adapter<ListenBookAdapter.It
     protected class ItemViewHolder extends RecyclerView.ViewHolder
     {
         TextView tvDesc;
-
+        ImageView ivMark;
         public ItemViewHolder(View itemView) {
             super(itemView);
             tvDesc =  itemView.findViewById(R.id.tv_desc);
+            ivMark = itemView.findViewById(R.id.iv_mark);
         }
     }
 
