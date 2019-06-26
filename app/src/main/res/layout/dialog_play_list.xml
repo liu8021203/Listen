@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
-              android:layout_height="match_parent">
+              android:layout_height="match_parent"
+              xmlns:wheel="http://schemas.android.com/apk/res-auto">
 
 
     <LinearLayout
@@ -9,7 +10,7 @@
         android:layout_height="500dip"
         android:background="@color/white"
         android:orientation="vertical">
-        
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="50dip">
@@ -18,61 +19,108 @@
                 android:id="@+id/tv_chapter_num"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#666666"
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="10dip"
+                android:textColor="#666666"
                 android:textSize="14sp"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#666666"
-                android:textSize="14sp"
                 android:layout_centerInParent="true"
-                android:text="章节列表"/>
+                android:text="章节列表"
+                android:textColor="#666666"
+                android:textSize="14sp"/>
 
             <ImageView
                 android:id="@+id/iv_close"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:layout_alignParentRight="true"
                 android:paddingLeft="10dip"
                 android:paddingRight="10dip"
-                android:layout_alignParentRight="true"
                 android:src="@mipmap/play_list_dialog_close"/>
 
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="0.1dip"
-                android:background="@color/line_grey"
-                android:layout_alignParentBottom="true"></View>
+                android:layout_alignParentBottom="true"
+                android:background="@color/line_grey"></View>
         </RelativeLayout>
 
-        <com.scwang.smartrefresh.layout.SmartRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                                                           android:id="@+id/refreshLayout"
-                                                           android:layout_width="match_parent"
-                                                           android:layout_height="match_parent"
-                                                           android:layout_below="@+id/play_setting"
-                                                           android:background="@color/white">
 
-            <com.scwang.smartrefresh.layout.header.ClassicsHeader
-                android:id="@+id/header"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/play_setting">
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@id/recycle_view"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:clipToPadding="false"/>
 
-            <com.scwang.smartrefresh.layout.footer.ClassicsFooter
-                android:id="@+id/footer"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
 
-        </com.scwang.smartrefresh.layout.SmartRefreshLayout>
 
+            <com.scwang.smartrefresh.layout.SmartRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                                               android:id="@+id/refreshLayout"
+                                                               android:layout_width="match_parent"
+                                                               android:layout_height="match_parent"
+                                                               android:layout_below="@+id/play_setting"
+                                                               android:background="@color/white">
+
+                <com.scwang.smartrefresh.layout.header.ClassicsHeader
+                    android:id="@+id/header"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@id/recycle_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:clipToPadding="false"/>
+
+                <com.scwang.smartrefresh.layout.footer.ClassicsFooter
+                    android:id="@+id/footer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+            </com.scwang.smartrefresh.layout.SmartRefreshLayout>
+
+
+
+            <LinearLayout
+                android:id="@+id/ll_loading"
+                android:layout_width="100dip"
+                android:layout_height="100dip"
+                android:layout_gravity="center"
+                android:background="@drawable/dialog_load_bg"
+                android:visibility="gone"
+                android:orientation="vertical">
+
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:orientation="vertical">
+
+                    <com.pnikosis.materialishprogress.ProgressWheel
+                        android:id="@+id/progress_wheel"
+                        android:layout_width="60dip"
+                        android:layout_height="60dip"
+                        android:layout_gravity="center_horizontal"
+                        wheel:matProg_barColor="#ffffff"
+                        wheel:matProg_progressIndeterminate="true" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dip"
+                        android:text="努力加载中"
+                        android:textColor="@color/white" />
+
+
+                </LinearLayout>
+
+            </LinearLayout>
+        </FrameLayout>
 
     </LinearLayout>
 </LinearLayout>

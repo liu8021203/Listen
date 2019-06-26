@@ -3,6 +3,7 @@ package com.ting.common.http;
 import com.ting.bean.AdResult;
 import com.ting.bean.AppSearchResult;
 import com.ting.bean.AppWxPayResult;
+import com.ting.bean.BookListResult;
 import com.ting.bean.BookResult;
 import com.ting.bean.ChapterResult;
 import com.ting.bean.CommentListResult;
@@ -434,6 +435,9 @@ public interface HttpService {
     @POST("listen/api/buyBook")
     Observable<BaseResult> buyBook(@QueryMap Map<String, String> map);
 
+    @GET("listen/api/buyBookList")
+    Observable<BaseResult<BookListResult>> buyBookList(@QueryMap Map<String, String> map);
+
     @POST("listen/api/batchBuyChapter")
     Observable<BaseResult> batchBuyChapter(@QueryMap Map<String, String> map);
 
@@ -604,4 +608,11 @@ public interface HttpService {
      */
     @POST("listen/api/browseBook")
     Observable<BaseResult> browseBook(@QueryMap Map<String, String> map);
+
+    /**
+     * 获取章节信息
+     * @return
+     */
+    @GET("listen/api/getChapterUrl")
+    Observable<BaseResult<DBChapter>> getChapterUrl(@QueryMap Map<String, String> map);
 }

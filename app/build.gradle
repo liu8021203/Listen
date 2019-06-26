@@ -2,15 +2,14 @@ apply plugin: 'com.android.application'
 apply plugin: 'org.greenrobot.greendao' // apply plugin
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion '27.0.3'
+    compileSdkVersion 28
 
     defaultConfig {
         applicationId "com.ting"
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 111
-        versionName "4.2.1"
+        versionCode 112
+        versionName "4.2.2"
         /**
          * 3.0添加，
          * 项目中使用了productFlavors分包，需要添加flavorDimensions，作用是基于多个标准构建多个版本
@@ -144,7 +143,7 @@ dependencies {
     implementation 'com.scwang.smartrefresh:SmartRefreshLayout:1.0.3'
     compile 'com.android.support:multidex:1.0.3'
     implementation 'com.android.support:support-v4:27.1.1'
-    implementation 'com.android.support:design:27.1.1'
+    implementation 'com.android.support:design:28.0.0'
     implementation 'com.android.support:recyclerview-v7:27.1.1'
     implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation files('libs/open_sdk_r5990_lite.jar')
@@ -160,6 +159,7 @@ dependencies {
     implementation files('libs/alipaySdk-20180601.jar')
     compile 'com.hyman:flowlayout-lib:1.1.2'
     compile 'com.tencent.bugly:crashreport:latest.release'
+    implementation 'com.android.support:support-v13:27.1.1'
 }
 
 android {

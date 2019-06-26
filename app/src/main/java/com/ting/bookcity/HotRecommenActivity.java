@@ -11,8 +11,6 @@ import com.ting.base.BaseActivity;
 import com.ting.base.BaseObserver;
 import com.ting.bean.BaseResult;
 import com.ting.bean.home.CategoryListResult;
-import com.ting.bookcity.adapter.FineRecomListAdapter;
-import com.ting.bean.home.FineRecommendResult;
 import com.ting.category.adapter.CategoryListAdapter;
 import com.ting.common.http.HttpService;
 import com.ting.util.UtilRetrofit;
@@ -56,7 +54,7 @@ public class HotRecommenActivity extends BaseActivity {
             @Override
             public void onLoadMore() {
                 page++;
-                requestData(BaseObserver.MODEL_SHOW_TOAST, page);
+                requestData(BaseObserver.MODEL_ONLY_SHOW_TOAST, page);
             }
         });
     }
@@ -98,7 +96,7 @@ public class HotRecommenActivity extends BaseActivity {
                         }
                         isPaging(result.getCount(), mAdapter.getItemCount());
                     } else {
-                        errorEmpty("木有相关热门书籍~");
+                        showErrorEmpty("木有相关热门书籍~");
                     }
                 } else {
                     mSwipeToLoadLayout.setLoadingMore(false);

@@ -42,6 +42,8 @@ public class MineMainFrame extends BaseFragment implements View.OnClickListener 
     private RelativeLayout rlFeed;
     private RelativeLayout rlSetting;
     private RelativeLayout rlAbout;
+    private RelativeLayout rlBuy;
+    private RelativeLayout rlMoneyDetails;
     private CircleImageView person_touxiang;
     private TextView tvLogin;
     private TextView tvLoginHint;
@@ -137,6 +139,10 @@ public class MineMainFrame extends BaseFragment implements View.OnClickListener 
         rlSetting.setOnClickListener(this);
         rlAbout.setOnClickListener(this);
         tvLogin.setOnClickListener(this);
+        rlBuy = flContent.findViewById(R.id.rl_buy);
+        rlBuy.setOnClickListener(this);
+        rlMoneyDetails = flContent.findViewById(R.id.rl_money_details);
+        rlMoneyDetails.setOnClickListener(this);
     }
 
     @Override
@@ -245,6 +251,22 @@ public class MineMainFrame extends BaseFragment implements View.OnClickListener 
                 break;
             case R.id.tv_login:
                 mActivity.intent(LoginMainActivity.class);
+                break;
+
+            case R.id.rl_buy:
+                if (TokenManager.isLogin(mActivity)) {
+                    mActivity.intent(BuyBookActivity.class);
+                } else {
+                    intent(LoginMainActivity.class);
+                }
+                break;
+
+            case R.id.rl_money_details:
+                if (TokenManager.isLogin(mActivity)) {
+                    intent(DouDetailsActivity.class);
+                } else {
+                    intent(LoginMainActivity.class);
+                }
                 break;
             default:
                 break;

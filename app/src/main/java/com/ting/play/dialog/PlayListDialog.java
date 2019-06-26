@@ -11,6 +11,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
@@ -25,10 +26,12 @@ import com.ting.base.BaseObserver;
 import com.ting.bean.BaseResult;
 import com.ting.bean.ChapterResult;
 import com.ting.bean.play.PlayResult;
+import com.ting.common.AppData;
 import com.ting.common.TokenManager;
 import com.ting.common.http.HttpService;
 import com.ting.db.DBChapter;
 import com.ting.db.DBListenHistory;
+import com.ting.download.DownloadController;
 import com.ting.play.PlayActivity;
 import com.ting.play.adapter.PlayListAdapter;
 import com.ting.play.controller.MusicDBController;
@@ -55,14 +58,10 @@ public class PlayListDialog extends Dialog {
     private PlayListAdapter mAdapter;
     private PlayActivity mActivity;
     private String bookId;
-    private String bookName;
-    private String bookHost;
-    private String bookPic;
-    private int price;
+    private int page;
     private int nextPage;
     private int previousPage;
-    private int total;
-    private List<DBChapter> data;
+    private LinearLayout llLoading;
 
     public PlayListDialog(@NonNull Context context) {
         super(context, R.style.PlayListDialog);
@@ -83,7 +82,7 @@ public class PlayListDialog extends Dialog {
         Log.d("aaa", "PlayListDialog初始化");
         mSmartRefreshLayout = findViewById(R.id.refreshLayout);
         tvChapterNum = findViewById(R.id.tv_chapter_num);
-        tvChapterNum.setText("共" + total + "集");
+
         ivClose = findViewById(R.id.iv_close);
         ivClose.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -112,7 +111,7 @@ public class PlayListDialog extends Dialog {
         header.setDrawableMarginRight(20);//设置图片和箭头和文字的间距（dp单位）
         header.setProgressResource(R.mipmap.header_loadding);//设置图片资源
         header.setSpinnerStyle(SpinnerStyle.Translate);//设置状态（不支持：MatchLayout
-        if(UtilNetStatus.isHasConnection(mActivity)) {
+        if (UtilNetStatus.isHasConnection(mActivity)) {
             mSmartRefreshLayout.setOnRefreshListener(new OnRefreshListener() {
                 @Override
                 public void onRefresh(RefreshLayout refreshlayout) {
@@ -127,7 +126,7 @@ public class PlayListDialog extends Dialog {
                     getData(2, nextPage);
                 }
             });
-        }else{
+        } else {
             mSmartRefreshLayout.setEnableRefresh(false);
             mSmartRefreshLayout.setEnableLoadmore(false);
         }
@@ -135,77 +134,105 @@ public class PlayListDialog extends Dialog {
         mRecyclerView = findViewById(R.id.recycle_view);
         LinearLayoutManager manager = new LinearLayoutManager(mActivity);
         mRecyclerView.setLayoutManager(manager);
-        mAdapter = new PlayListAdapter(mActivity, data.get(0).getBookId(), null);
-        mAdapter.setData(data);
-        mRecyclerView.setAdapter(mAdapter);
-        nextPage = (data.get(data.size() - 1).getPosition() - 1) / 50 + 1;
-        previousPage = (data.get(0).getPosition() - 1) / 50 + 1;
-        isLoadHeader();
-        isLoadFooter(total, nextPage * 50);
+        llLoading = findViewById(R.id.ll_loading);
     }
 
-    public void setData(int total, List<DBChapter> data) {
-        this.data = data;
-        this.total = total;
-        bookId = data.get(0).getBookId();
+    public void setData(String bookId) {
+        this.bookId = bookId;
+
     }
 
     public void getData(final int type, final int page) {
-        Map<String, String> map = new HashMap<>();
-        map.put("page", String.valueOf(page));
-        map.put("size", "50");
-        map.put("bookId", bookId);
-        if (TokenManager.isLogin(mActivity)) {
-            map.put("uid", TokenManager.getUid(mActivity));
-        }
-        BaseObserver baseObserver = new BaseObserver<BaseResult<ChapterResult>>() {
-            @Override
-            public void success(BaseResult<ChapterResult> data) {
-                super.success(data);
-                ChapterResult result = data.getData();
-                if (result != null && result.getList() != null && !result.getList().isEmpty()) {
-                    tvChapterNum.setText("共" + result.getCount() + "集");
-                    int page = result.getPageNo();
-                    int count = result.getPageSize();
-                    switch (type) {
-                        case 1:
-                            mSmartRefreshLayout.finishRefresh(0);
-                            mAdapter.addHeaderData(result.getList());
-                            mAdapter.notifyDataSetChanged();
-                            mRecyclerView.scrollBy(0, UtilPixelTransfrom.dip2px(mActivity, 48) * 49 + UtilPixelTransfrom.dip2px(mActivity, 48) / 2);
-                            isLoadHeader();
-                            break;
-                        case 2:
-                            mSmartRefreshLayout.finishLoadmore(0);
-                            mAdapter.addFooterData(result.getList());
-                            mAdapter.notifyDataSetChanged();
-                            isLoadFooter(result.getCount(), page * count);
-                            break;
+        if (UtilNetStatus.isHasConnection(mActivity)) {
+            Map<String, String> map = new HashMap<>();
+            map.put("page", String.valueOf(page));
+            map.put("size", "50");
+            map.put("bookId", bookId);
+            if (TokenManager.isLogin(mActivity)) {
+                map.put("uid", TokenManager.getUid(mActivity));
+            }
+            BaseObserver baseObserver = new BaseObserver<BaseResult<ChapterResult>>() {
+                @Override
+                public void success(BaseResult<ChapterResult> data) {
+                    super.success(data);
+                    ChapterResult result = data.getData();
+                    if (result != null && result.getList() != null && !result.getList().isEmpty()) {
+                        tvChapterNum.setText("共" + result.getCount() + "集");
+                        int page = result.getPageNo();
+                        int count = result.getPageSize();
+                        switch (type) {
+
+                            case 0:
+                                llLoading.setVisibility(View.GONE);
+                                mSmartRefreshLayout.setVisibility(View.VISIBLE);
+                                mAdapter = new PlayListAdapter(mActivity, bookId, null);
+                                mAdapter.setData(result.getList());
+                                mRecyclerView.setAdapter(mAdapter);
+                                nextPage = page;
+                                previousPage = page;
+                                tvChapterNum.setText("共" + result.getCount() + "集");
+                                isLoadHeader();
+                                isLoadFooter(result.getCount(), nextPage * 50);
+
+                                break;
+                            case 1:
+                                mSmartRefreshLayout.finishRefresh(0);
+                                mAdapter.addHeaderData(result.getList());
+                                mAdapter.notifyDataSetChanged();
+                                mRecyclerView.scrollBy(0, UtilPixelTransfrom.dip2px(mActivity, 48) * 49 + UtilPixelTransfrom.dip2px(mActivity, 48) / 2);
+                                isLoadHeader();
+                                break;
+                            case 2:
+                                mSmartRefreshLayout.finishLoadmore(0);
+                                mAdapter.addFooterData(result.getList());
+                                mAdapter.notifyDataSetChanged();
+                                isLoadFooter(result.getCount(), page * count);
+                                break;
+                        }
                     }
                 }
-            }
 
-            @Override
-            public void error(BaseResult<ChapterResult> value, Throwable e) {
-                super.error(value, e);
-                mSmartRefreshLayout.finishLoadmore(0);
-                mSmartRefreshLayout.finishRefresh(0);
-                if (type == 1) {
-                    PlayListDialog.this.previousPage--;
+                @Override
+                public void error(BaseResult<ChapterResult> value, Throwable e) {
+                    super.error(value, e);
+                    mSmartRefreshLayout.finishLoadmore(0);
+                    mSmartRefreshLayout.finishRefresh(0);
+                    if (type == 1) {
+                        PlayListDialog.this.previousPage--;
+                    }
+                    if (type == 2) {
+                        PlayListDialog.this.nextPage--;
+                    }
                 }
-                if (type == 2) {
-                    PlayListDialog.this.nextPage--;
-                }
-            }
-        };
-        mActivity.mDisposable.add(baseObserver);
-        UtilRetrofit.getInstance().create(HttpService.class).chapter(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
+            };
+            mActivity.mDisposable.add(baseObserver);
+            UtilRetrofit.getInstance().create(HttpService.class).chapter(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
+        } else {
+            DownloadController controller = new DownloadController();
+            List<DBChapter> data = controller.queryData(bookId, "4");
+            llLoading.setVisibility(View.GONE);
+            mSmartRefreshLayout.setVisibility(View.VISIBLE);
+            mAdapter = new PlayListAdapter(mActivity, bookId, null);
+            mAdapter.setData(data);
+            mRecyclerView.setAdapter(mAdapter);
+            nextPage = page;
+            previousPage = page;
+            tvChapterNum.setText("共" + data.size() + "集");
+        }
     }
 
 
     @Override
     public void show() {
         super.show();
+        llLoading.setVisibility(View.VISIBLE);
+        mSmartRefreshLayout.setVisibility(View.GONE);
+        List<DBListenHistory> data = MusicDBController.getListenHistoryByBookId(bookId);
+        int page = 1;
+        if (data != null && !data.isEmpty()) {
+            page = (data.get(0).getPosition() - 1) / 50 + 1;
+        }
+        getData(0, page);
     }
 
     private void isLoadFooter(int total, int currTotal) {
@@ -225,11 +252,16 @@ public class PlayListDialog extends Dialog {
         }
     }
 
-    @Override
-    public void dismiss() {
-        super.dismiss();
-        if(mAdapter != null){
+
+    public void unRegister() {
+        if (mAdapter != null) {
             mAdapter.unregister();
+        }
+    }
+
+    public void notifyPlayStateChange() {
+        if (mAdapter != null) {
+            mAdapter.notifyDataSetChanged();
         }
     }
 }

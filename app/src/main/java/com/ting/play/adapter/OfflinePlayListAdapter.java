@@ -62,11 +62,11 @@ public class OfflinePlayListAdapter extends RecyclerView.Adapter<OfflinePlayList
         mHistory = musicDBController.getBookIdData(String.valueOf(bookId));
 
         IntentFilter intentFilterPlayState = new IntentFilter();
-        intentFilterPlayState.addAction(MusicService.MUSIC_LOADING);
-        intentFilterPlayState.addAction(MusicService.MUSIC_PLAY);
-        intentFilterPlayState.addAction(MusicService.MUSIC_PAUSE);
-        intentFilterPlayState.addAction(MusicService.MUSIC_COMPLETE);
-        intentFilterPlayState.addAction(MusicService.MUSIC_ERROR);
+//        intentFilterPlayState.addAction(MusicService.MUSIC_LOADING);
+//        intentFilterPlayState.addAction(MusicService.MUSIC_PLAY);
+//        intentFilterPlayState.addAction(MusicService.MUSIC_PAUSE);
+//        intentFilterPlayState.addAction(MusicService.MUSIC_COMPLETE);
+//        intentFilterPlayState.addAction(MusicService.MUSIC_ERROR);
         mPlayListReceiver = new PlayListReceiver();
         activity.registerReceiver(mPlayListReceiver, intentFilterPlayState);
     }
@@ -214,39 +214,39 @@ public class OfflinePlayListAdapter extends RecyclerView.Adapter<OfflinePlayList
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             Log.d("aaa", "action=====offlinePlayListAdapter=======" + action);
-            switch (action) {
-                case MusicService.MUSIC_LOADING:
-                    notifyDataSetChanged();
-                    break;
-                case MusicService.MUSIC_PLAY:
-                    notifyDataSetChanged();
-                    if(activity instanceof BookDetailsActivity){
-                        BookDetailsActivity detailsActivity = (BookDetailsActivity) activity;
-                        detailsActivity.startAnim();
-                    }
-                    break;
-                case MusicService.MUSIC_COMPLETE:
-                    notifyDataSetChanged();
-                    if(activity instanceof BookDetailsActivity){
-                        BookDetailsActivity detailsActivity = (BookDetailsActivity) activity;
-                        detailsActivity.stopAnim();
-                    }
-                    break;
-                case MusicService.MUSIC_PAUSE:
-                    notifyDataSetChanged();
-                    if(activity instanceof BookDetailsActivity){
-                        BookDetailsActivity detailsActivity = (BookDetailsActivity) activity;
-                        detailsActivity.stopAnim();
-                    }
-                    break;
-                case MusicService.MUSIC_ERROR:
-                    notifyDataSetChanged();
-                    if(activity instanceof BookDetailsActivity){
-                        BookDetailsActivity detailsActivity = (BookDetailsActivity) activity;
-                        detailsActivity.stopAnim();
-                    }
-                    break;
-            }
+//            switch (action) {
+//                case MusicService.MUSIC_LOADING:
+//                    notifyDataSetChanged();
+//                    break;
+//                case MusicService.MUSIC_PLAY:
+//                    notifyDataSetChanged();
+//                    if(activity instanceof BookDetailsActivity){
+//                        BookDetailsActivity detailsActivity = (BookDetailsActivity) activity;
+//                        detailsActivity.startAnim();
+//                    }
+//                    break;
+//                case MusicService.MUSIC_COMPLETE:
+//                    notifyDataSetChanged();
+//                    if(activity instanceof BookDetailsActivity){
+//                        BookDetailsActivity detailsActivity = (BookDetailsActivity) activity;
+//                        detailsActivity.stopAnim();
+//                    }
+//                    break;
+//                case MusicService.MUSIC_PAUSE:
+//                    notifyDataSetChanged();
+//                    if(activity instanceof BookDetailsActivity){
+//                        BookDetailsActivity detailsActivity = (BookDetailsActivity) activity;
+//                        detailsActivity.stopAnim();
+//                    }
+//                    break;
+//                case MusicService.MUSIC_ERROR:
+//                    notifyDataSetChanged();
+//                    if(activity instanceof BookDetailsActivity){
+//                        BookDetailsActivity detailsActivity = (BookDetailsActivity) activity;
+//                        detailsActivity.stopAnim();
+//                    }
+//                    break;
+//            }
         }
     }
 

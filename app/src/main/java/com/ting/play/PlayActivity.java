@@ -2,8 +2,17 @@ package com.ting.play;
 
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
+import android.content.ComponentName;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Parcelable;
+import android.os.RemoteException;
+import android.os.SystemClock;
+import android.support.v4.media.MediaBrowserCompat;
+import android.support.v4.media.MediaMetadataCompat;
+import android.support.v4.media.session.MediaControllerCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -16,22 +25,16 @@ import android.widget.TextView;
 import com.ting.R;
 import com.ting.base.BaseActivity;
 import com.ting.base.BaseObserver;
+import com.ting.base.PlayerBaseActivity;
 import com.ting.bean.BaseResult;
 import com.ting.bean.ChapterResult;
-import com.ting.bean.play.CommentResult;
-import com.ting.bean.play.PlayListVO;
-import com.ting.bean.play.PlayResult;
-import com.ting.bean.play.PlayingVO;
-import com.ting.bean.vo.ChapterListVO;
 import com.ting.common.AppData;
 import com.ting.common.TokenManager;
 import com.ting.common.http.HttpService;
 import com.ting.db.DBChapter;
 import com.ting.db.DBListenHistory;
 import com.ting.download.DownloadController;
-import com.ting.play.controller.MusicController;
 import com.ting.play.controller.MusicDBController;
-import com.ting.play.dialog.OffLinePlayListDialog;
 import com.ting.play.dialog.PlayListDialog;
 import com.ting.play.dialog.ShareDialog;
 import com.ting.play.dialog.SpeedDialog;
@@ -46,9 +49,14 @@ import com.ting.util.UtilNetStatus;
 import com.ting.util.UtilRetrofit;
 import com.umeng.analytics.MobclickAgent;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -58,7 +66,10 @@ import io.reactivex.schedulers.Schedulers;
  * Created by liu on 2017/12/9.
  */
 
-public class PlayActivity extends BaseActivity {
+public class PlayActivity extends PlayerBaseActivity {
+    private static final long PROGRESS_UPDATE_INTERNAL = 1000;
+    private static final long PROGRESS_UPDATE_INITIAL_INTERVAL = 100;
+
     private ImageView ivClose;
     private ImageView ivPrevious;
     private ImageView ivNext;
@@ -68,10 +79,8 @@ public class PlayActivity extends BaseActivity {
     private CircleImageView playImage;
     private TextView play_name;
     private TextView program_number;
-    private MusicController musicController;
-    private MusicDBController mDBController;
-    private TextView tvShare;
     private PlayerReceiver mPlayerReceiver;
+    private TextView tvShare;
     private TextView tvSpeed;
     private SeekBar music_seekbar;
     private TextView tv_current_time;
@@ -80,22 +89,41 @@ public class PlayActivity extends BaseActivity {
     //在线数据
     private List<DBChapter> data;
     private ObjectAnimator animator;
-    //章节总数
-    private int total;
     //书籍ID
     private String bookId;
-    //是否播放
-    private boolean isPlay = false;
-    //书籍名称
-    private String bookTitle;
-    //书籍封面
-    private String bookImage;
-    //书籍主播
-    private String bookHost;
-    //书籍价格
-    private int price;
 
-    private int position = -1;
+
+    private PlayListDialog mDialog;
+
+    private int position = 1;
+
+    private final Runnable mUpdateProgressTask = new Runnable() {
+        @Override
+        public void run() {
+            updateProgress();
+        }
+    };
+
+    private final ScheduledExecutorService mExecutorService =
+            Executors.newSingleThreadScheduledExecutor();
+    private ScheduledFuture<?> mScheduleFuture;
+    private final Handler mHandler = new Handler();
+
+    private ScheduledFuture<?> mTimerScheduleFuture;
+    private final Runnable mUpdateTimerTask = new Runnable() {
+        @Override
+        public void run() {
+            updateTimer();
+        }
+    };
+
+    //是否进来播放
+    private boolean isPlay = false;
+    //播放数据列表
+    private List<DBChapter> playQueue = null;
+    private int timer = -1;
+
+    private int page = 1;
 
 
     @Override
@@ -104,6 +132,7 @@ public class PlayActivity extends BaseActivity {
         setContentView(R.layout.activity_play);
     }
 
+
     @Override
     protected String setTitle() {
         return null;
@@ -111,23 +140,6 @@ public class PlayActivity extends BaseActivity {
 
     @Override
     protected void initView() {
-        musicController = new MusicController(this);
-        mDBController = new MusicDBController();
-        //注册一个广播
-        mPlayerReceiver = new PlayerReceiver(this);
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(MusicService.MUSIC_LOADING);
-        filter.addAction(MusicService.MUSIC_PLAY);
-        filter.addAction(MusicService.MUSIC_PAUSE);
-        filter.addAction(MusicService.MUSIC_PROGRESS);
-        filter.addAction(MusicService.MUSIC_COMPLETE);
-        filter.addAction(MusicService.MUSIC_ERROR);
-        filter.addAction(MusicService.MUSIC_BUFFER_START);
-        filter.addAction(MusicService.MUSIC_BUFFER_END);
-        filter.addAction(MusicService.MUSIC_DESTORY);
-        filter.addAction(MusicService.TIMER_PROGRESS);
-        filter.addAction(MusicService.TIMER_COMPLETE);
-        registerReceiver(mPlayerReceiver, filter);
         ivClose = flContent.findViewById(R.id.iv_close);
         ivClose.setOnClickListener(this);
         ivPrevious = flContent.findViewById(R.id.iv_previous);
@@ -148,10 +160,6 @@ public class PlayActivity extends BaseActivity {
         music_progress = flContent.findViewById(R.id.music_progress);
         tvShare = flContent.findViewById(R.id.tv_share);
         tvShare.setOnClickListener(this);
-        if (AppData.ifTimeSetting) {
-            tvTiming.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.vector_time_ding, 0, 0);
-        }
-
         playImage = flContent.findViewById(R.id.play_image);
         animator = ObjectAnimator.ofFloat(playImage, "rotation", 0.0f, 360.0f);
         animator.setRepeatCount(-1);
@@ -162,27 +170,6 @@ public class PlayActivity extends BaseActivity {
         ivList.setOnClickListener(this);
         tvSpeed = findViewById(R.id.tv_speed);
         tvSpeed.setOnClickListener(this);
-
-        switch (AppData.speedType) {
-            case 1:
-                tvSpeed.setText("1X倍速");
-                break;
-
-            case 2:
-                tvSpeed.setText("1.25X倍速");
-                break;
-
-            case 3:
-                tvSpeed.setText("1.5X倍速");
-                break;
-            case 4:
-                tvSpeed.setText("1.75X倍速");
-                break;
-
-            case 5:
-                tvSpeed.setText("2X倍速");
-                break;
-        }
     }
 
     @Override
@@ -192,84 +179,103 @@ public class PlayActivity extends BaseActivity {
         map.put("id", String.valueOf(bookId));
         MobclickAgent.onEvent(this, "BOOK_ID", map);
         /****************统计******************/
+    }
+
+
+    private void loadingPlayData() {
         if (UtilNetStatus.isHasConnection(this)) {
-            MusicDBController mMusicController = new MusicDBController();
-            DBListenHistory mHistory = mMusicController.getBookIdData(String.valueOf(bookId));
+            DBListenHistory mHistory = MusicDBController.getLastDBListenHistoryByBookId(bookId);
             if (mHistory != null) {
                 int position = mHistory.getPosition();
-                int page = (position - 1) / 50 + 1;
-                getChapterData(page);
+                page = (position - 1) / 50 + 1;
+                getData();
             } else {
-                getChapterData(1);
+                page = 1;
+                getData();
             }
         } else {
-            playImage.setImageResource(R.drawable.book_def);
-            DownloadController controller = new DownloadController();
-            data = controller.queryData(bookId + "", 4 + "");
-            if (data != null && !data.isEmpty()) {
-                bookTitle = data.get(0).getBookTitle();
-                bookImage = data.get(0).getBookImage();
-                bookHost = data.get(0).getBookHost();
-                play_name.setText(data.get(0).getBookTitle() + "(" + data.get(0).getBookHost() + ")");
-                program_number.setText(data.get(0).getTitle());
-                total = data.size();
+            playQueue = DownloadController.queryDataAsc(bookId, "4");
+            if (playQueue != null && !playQueue.isEmpty()) {
+                DBChapter chapter = playQueue.get(0);
                 if (isPlay) {
-                    play(true);
-                }else{
-                    if (!AppData.isPlaying) {
-                        play(true);
+                    DBListenHistory history = MusicDBController.getLastDBListenHistoryByBookId(bookId);
+                    Bundle bundle = new Bundle();
+                    if (history != null) {
+                        int currentIndex = -1;
+                        for (int i = 0; i < playQueue.size(); i++) {
+                            if (TextUtils.equals(history.getChapterId(), playQueue.get(i).getChapterId())) {
+                                currentIndex = i;
+                                break;
+                            }
+                        }
+                        if (currentIndex == -1) {
+                            bundle.putParcelable("vo", chapter);
+                        } else {
+                            bundle.putParcelable("vo", UtilListener.dBListenHistoryToDBChapter(history));
+                        }
+                    } else {
+                        bundle.putParcelable("vo", chapter);
                     }
+                    bundle.putParcelableArrayList("data", (ArrayList<? extends Parcelable>) playQueue);
+                    MediaControllerCompat.getMediaController(PlayActivity.this).getTransportControls().playFromSearch("aaa", bundle);
                 }
             } else {
-                program_number.setText("暂无播放章节");
-                return;
+//                showEmptyErrorLayout("没有相关播放内容", R.mipmap.empty_player);
             }
         }
-
-    }
-
-    @Override
-    protected void getIntentData() {
-        Bundle bundle = getIntent().getExtras();
-        bookId = bundle.getString("bookId");
-        position = bundle.getInt("position", -1);
-        isPlay = bundle.getBoolean("play", false);
-    }
-
-    @Override
-    protected boolean showActionBar() {
-        return false;
     }
 
 
-    /**
-     * 获取章节数据
-     */
-    private void getChapterData(int page) {
+    private void getData() {
         Map<String, String> map = new HashMap<>();
+        map.put("bookId", bookId);
         map.put("page", String.valueOf(page));
         map.put("size", "50");
-        map.put("bookId", bookId);
-        if (TokenManager.isLogin(this)) {
-            map.put("uid", TokenManager.getUid(this));
+        if (TokenManager.isLogin(mActivity)) {
+            map.put("uid", TokenManager.getUid(mActivity));
         }
-        BaseObserver baseObserver = new BaseObserver<BaseResult<ChapterResult>>(mActivity, BaseObserver.MODEL_NO) {
+        BaseObserver observer = new BaseObserver<BaseResult<ChapterResult>>(mActivity, BaseObserver.MODEL_ALL) {
             @Override
             public void success(BaseResult<ChapterResult> data) {
                 super.success(data);
-                ChapterResult result = data.getData();
-                total = result.getCount();
-                PlayActivity.this.data = result.getList();
-                bookTitle = result.getList().get(0).getBookTitle();
-                bookImage = result.getList().get(0).getBookImage();
-                bookHost = result.getList().get(0).getBookHost();
-                UtilGlide.loadImg(mActivity, result.getList().get(0).getBookImage(), playImage);
-                play_name.setText(result.getList().get(0).getBookTitle() + "(" + result.getList().get(0).getBookHost() + ")");
-                if (isPlay) {
-                    play(true);
-                } else {
-                    if (!AppData.isPlaying) {
-                        play(true);
+                if (data != null && data.getData() != null && data.getData().getList() != null && !data.getData().getList().isEmpty()) {
+                    playQueue = data.getData().getList();
+                    DBChapter chapter = data.getData().getList().get(0);
+                    UtilGlide.loadImg(mActivity, chapter.getBookImage(), playImage);
+                    if (isPlay) {
+                        DBListenHistory history = MusicDBController.getLastDBListenHistoryByBookId(bookId);
+                        Bundle bundle = new Bundle();
+                        if (history != null) {
+                            int currentIndex = 0;
+                            for (int i = 0; i < data.getData().getList().size(); i++) {
+                                if (TextUtils.equals(history.getChapterId(), data.getData().getList().get(i).getChapterId())) {
+                                    currentIndex = i;
+                                    break;
+                                }
+                            }
+                            if (history.getTotal() != 0 && history.getDuration() * 100 / history.getTotal() < 95) {
+                                bundle.putParcelable("vo", UtilListener.dBListenHistoryToDBChapter(history));
+                            } else {
+                                if (currentIndex < data.getData().getList().size() - 1) {
+                                    DBChapter dbChapter = data.getData().getList().get(currentIndex + 1);
+                                    if (TextUtils.isEmpty(dbChapter.getUrl())) {
+                                        program_number.setText(dbChapter.getTitle());
+                                        showToast("此章节收费");
+                                        return;
+                                    } else {
+                                        bundle.putParcelable("vo", dbChapter);
+                                    }
+                                } else {
+                                    page++;
+                                    getData();
+                                }
+                            }
+                            bundle.putParcelable("vo", UtilListener.dBListenHistoryToDBChapter(history));
+                        } else {
+                            bundle.putParcelable("vo", chapter);
+                        }
+                        bundle.putParcelableArrayList("data", (ArrayList<? extends Parcelable>) data.getData().getList());
+                        MediaControllerCompat.getMediaController(PlayActivity.this).getTransportControls().playFromSearch("aaa", bundle);
                     }
                 }
             }
@@ -280,8 +286,24 @@ public class PlayActivity extends BaseActivity {
                 super.error(value, e);
             }
         };
-        mDisposable.add(baseObserver);
-        UtilRetrofit.getInstance().create(HttpService.class).chapter(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
+        mActivity.mDisposable.add(observer);
+        UtilRetrofit.getInstance().create(HttpService.class).chapter(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(observer);
+    }
+
+
+    @Override
+    protected void getIntentData() {
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null) {
+            bookId = bundle.getString("bookId");
+            isPlay = bundle.getBoolean("isPlay", false);
+        }
+
+    }
+
+    @Override
+    protected boolean showActionBar() {
+        return false;
     }
 
 
@@ -291,52 +313,90 @@ public class PlayActivity extends BaseActivity {
         switch (v.getId()) {
             //上一章
             case R.id.iv_previous: {
-                musicController.previous();
+                MediaControllerCompat.getMediaController(PlayActivity.this).getTransportControls().skipToPrevious();
             }
             break;
             //下一章
             case R.id.iv_next: {
-                musicController.next();
+                MediaControllerCompat.getMediaController(PlayActivity.this).getTransportControls().skipToNext();
             }
             break;
             case R.id.iv_play:
-                play(!AppData.isPlaying);
-                break;
-            case R.id.tv_timing:
-                if (AppData.isPlaying) {
-                    TimeSettingDialog dialog = new TimeSettingDialog(this);
-                    dialog.setListener(new TimeSettingDialog.SettingTimingCallBackListener() {
-                        @Override
-                        public void callback(int timing) {
-                            if (timing == 0) {
-                                AppData.shutDownTimer = 0;
-                                AppData.ifTimeSetting = false;
-                                showToast("取消定时设置");
-                                tvTiming.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.vector_time, 0, 0);
-                                tvTiming.setText("--:--");
-                                musicController.timeStop();
-                            } else {
-                                AppData.ifTimeSetting = true;
-                                tvTiming.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.vector_time_ding, 0, 0);
-                                musicController.timeStart(AppData.shutDownTimer);
+                if (getPlaybackStateCompat() != null && getPlaybackStateCompat().getState() == PlaybackStateCompat.STATE_PLAYING) {
+                    MediaControllerCompat.getMediaController(PlayActivity.this).getTransportControls().pause();
+                } else if (getPlaybackStateCompat() != null && getPlaybackStateCompat().getState() == PlaybackStateCompat.STATE_PAUSED) {
+                    MediaControllerCompat.getMediaController(PlayActivity.this).getTransportControls().play();
+                } else {
+                    DBListenHistory history = MusicDBController.getLastDBListenHistoryByBookId(bookId);
+                    Bundle bundle = new Bundle();
+                    if (history != null) {
+                        int currentIndex = 0;
+                        for (int i = 0; i < playQueue.size(); i++) {
+                            if (TextUtils.equals(history.getChapterId(), playQueue.get(i).getChapterId())) {
+                                currentIndex = i;
+                                break;
                             }
                         }
-                    });
-                    dialog.show();
-                } else {
-                    showToast("请先收听您喜爱的书籍");
+                        if (history.getTotal() != 0 && history.getDuration() * 100 / history.getTotal() < 95) {
+                            bundle.putParcelable("vo", UtilListener.dBListenHistoryToDBChapter(history));
+                        } else {
+                            if (currentIndex < playQueue.size() - 1) {
+                                DBChapter dbChapter = playQueue.get(currentIndex + 1);
+                                if (TextUtils.isEmpty(dbChapter.getUrl())) {
+                                    showToast("此章节收费");
+                                    return;
+                                } else {
+                                    bundle.putParcelable("vo", dbChapter);
+                                }
+                            } else {
+                                page++;
+                                getData();
+                            }
+                        }
+                        bundle.putParcelable("vo", UtilListener.dBListenHistoryToDBChapter(history));
+                    } else {
+                        bundle.putParcelable("vo", playQueue.get(0));
+                    }
+                    bundle.putParcelableArrayList("data", (ArrayList<? extends Parcelable>) playQueue);
+                    MediaControllerCompat.getMediaController(PlayActivity.this).getTransportControls().playFromSearch("aaa", bundle);
                 }
                 break;
+            case R.id.tv_timing: {
+                if (getPlaybackStateCompat() == null) {
+                    showToast("请先收听书籍");
+                    return;
+                }
+                if (getPlaybackStateCompat().getState() == PlaybackStateCompat.STATE_STOPPED) {
+                    showToast("请先收听书籍");
+                    return;
+                }
+                TimeSettingDialog dialog = new TimeSettingDialog(this);
+                dialog.setListener(new TimeSettingDialog.SettingTimingCallBackListener() {
+                    @Override
+                    public void callback(int timing) {
+                        if (timing == -1) {
+                            MediaControllerCompat.getMediaController(PlayActivity.this).getTransportControls().sendCustomAction(MusicService.MUSIC_TIMER_STOP, null);
+                        } else {
+                            Log.d("aaa", "timer------" + timing);
+                            Bundle bundle = new Bundle();
+                            bundle.putInt("timer", timing);
+                            MediaControllerCompat.getMediaController(PlayActivity.this).getTransportControls().sendCustomAction(MusicService.MUSIC_TIMER_START, bundle);
+                        }
+                    }
+                });
+                dialog.show();
+            }
+            break;
 
             case R.id.tv_share:
-                if (data == null || data.isEmpty()) {
+                if (playQueue == null || playQueue.isEmpty()) {
                     showToast("数据加载中，请稍后");
                     return;
                 }
                 ShareDialog shareDialog = new ShareDialog(mActivity);
-                shareDialog.setImageUrl(bookImage);
-                shareDialog.setBookname(bookTitle);
-                shareDialog.setUrl(data.get(0).getUrl());
+                shareDialog.setImageUrl(playQueue.get(0).getBookImage());
+                shareDialog.setBookname(playQueue.get(0).getBookTitle());
+                shareDialog.setUrl("http://www.tingshijie.com/Weixin2/bookshow/id/" + bookId);
                 shareDialog.show();
                 break;
 
@@ -345,9 +405,9 @@ public class PlayActivity extends BaseActivity {
                 break;
 
             case R.id.iv_list: {
-                PlayListDialog dialog = new PlayListDialog(mActivity);
-                dialog.setData(total, data);
-                dialog.show();
+                PlayListDialog mDialog = new PlayListDialog(mActivity);
+                mDialog.setData(bookId);
+                mDialog.show();
             }
             break;
 
@@ -376,7 +436,9 @@ public class PlayActivity extends BaseActivity {
                                 tvSpeed.setText("2X倍速");
                                 break;
                         }
-                        musicController.speed(speed);
+                        Bundle bundle = new Bundle();
+                        bundle.putFloat("speed", speed);
+                        MediaControllerCompat.getMediaController(PlayActivity.this).getTransportControls().sendCustomAction(MusicService.MUSIC_SPEED, bundle);
                     }
                 });
                 dialog.show();
@@ -396,209 +458,17 @@ public class PlayActivity extends BaseActivity {
         if (!UtilNetStatus.isWifiConnection() && UtilNetStatus.isHasConnection(this)) {
             showToast("非wifi下请注意流量");
         }
-        if (data == null || data.isEmpty()) {
-            showToast("请稍等，数据在加载中");
-            return;
-        }
         if (b) {
-            if (position == -1) {
-                DBListenHistory mHistory = mDBController.getBookIdData(bookId);
-                if (mHistory != null) {
-                    if (isRecordExist(mHistory)) {
-                        musicController.seekToPlay(mHistory.getDuration(), UtilListener.dBListenHistoryToDBChapter(mHistory), data);
-                    } else {
-                        musicController.play(data.get(0), data);
-                    }
-                } else {
-                    musicController.play(data.get(0), data);
-                }
-            } else {
-                DBListenHistory history = mDBController.getBookIdAndPositionData(bookId, String.valueOf(position));
-                if (history != null) {
-                    if (history.getDuration() != 0L && history.getTotal() != 0L) {
-                        int percent = (int) (history.getDuration() * 100 / history.getTotal());
-                        if (percent >= 95) {
-                            int index = getIndex(position);
-                            musicController.play(data.get(index), data);
-                        } else if (percent > 1) {
-                            musicController.play(UtilListener.dBListenHistoryToDBChapter(history), data);
-                        } else {
-                            int index = getIndex(position);
-                            musicController.play(data.get(index), data);
-                        }
-                    } else {
-                        int index = getIndex(position);
-                        musicController.play(data.get(index), data);
-                    }
-                } else {
-                    int index = getIndex(position);
-                    if (index != -1) {
-                        musicController.play(data.get(index), data);
-                    } else {
-                        musicController.play(data.get(0), data);
-                    }
-                }
-            }
+            Bundle bundle = new Bundle();
+            bundle.putString("bookId", bookId);
+            bundle.putInt("position", position);
+            MediaControllerCompat.getMediaController(PlayActivity.this).getTransportControls().playFromSearch("aaa", bundle);
         } else {
-            musicController.pause();
+            MediaControllerCompat.getMediaController(PlayActivity.this).getTransportControls().pause();
         }
     }
 
-
-    /**
-     * 判断记录数据是否在数据集中
-     *
-     * @param history
-     * @return
-     */
-    private boolean isRecordExist(DBListenHistory history) {
-        boolean b = false;
-        for (int i = 0; i < data.size(); i++) {
-            if (TextUtils.equals(data.get(i).getChapterId(), history.getChapterId())) {
-                b = true;
-                break;
-            }
-        }
-        return b;
-    }
-
-
-    private int getIndex(int position) {
-        for (int i = 0; i < data.size(); i++) {
-            if (data.get(i).getPosition() == position) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-
-    /**
-     * 播放初始化
-     *
-     * @param duration
-     */
-    public void initPlay(long duration, String chapterTitle) {
-        music_seekbar.setMax((int) duration);
-        tv_total_time.setText(UtilDate.transformToTimeStr((int) duration));
-        program_number.setText(chapterTitle);
-        music_progress.setVisibility(View.GONE);
-        ivPlay.setVisibility(View.VISIBLE);
-        ivPlay.setImageResource(R.drawable.vector_play);
-        animator.cancel();
-        animator.start();
-    }
-
-
-    /**
-     * 时间更新
-     *
-     * @param time
-     */
-    public void updateTime(long time, long totalTime, String chapterTitle, String bookTitle) {
-        if (time != -1) {
-            if (ivPlay != null) {
-                ivPlay.setImageResource(R.drawable.vector_play);
-            }
-            if (tv_current_time != null) {
-                tv_current_time.setText(UtilDate.transformToTimeStr((int) time));
-            }
-            if (music_seekbar != null) {
-                music_seekbar.setMax((int) totalTime);
-                music_seekbar.setProgress((int) time);
-            }
-            if (tv_total_time != null) {
-                tv_total_time.setText(UtilDate.transformToTimeStr((int) totalTime));
-            }
-            if (program_number != null) {
-                program_number.setText(chapterTitle);
-            }
-            if (play_name != null) {
-                play_name.setText(bookTitle);
-            }
-            if (!animator.isStarted()) {
-                animator.start();
-            }
-        }
-    }
-
-    /**
-     * 通知暂停
-     */
-    public void pauseNotify() {
-        ivPlay.setImageResource(R.drawable.vector_pause);
-        animator.cancel();
-    }
-
-    /**
-     * 加载MP3
-     */
-    public void loadingMusic() {
-        music_progress.setVisibility(View.VISIBLE);
-        ivPlay.setVisibility(View.GONE);
-    }
-
-    /**
-     * 错误通知
-     */
-    public void error() {
-        music_progress.setVisibility(View.GONE);
-        ivPlay.setVisibility(View.VISIBLE);
-        ivPlay.setImageResource(R.drawable.vector_pause);
-        music_seekbar.setProgress(0);
-        tv_current_time.setText("00:00");
-        tv_total_time.setText("00:00");
-        animator.cancel();
-    }
-
-
-    /**
-     * 播放完成
-     */
-    public void playComplete() {
-        music_seekbar.setProgress(0);
-        music_progress.setVisibility(View.GONE);
-        ivPlay.setVisibility(View.VISIBLE);
-        ivPlay.setImageResource(R.drawable.vector_pause);
-        tv_current_time.setText("00:00");
-        tv_total_time.setText("00:00");
-        animator.cancel();
-    }
-
-    /**
-     * 开始缓存
-     */
-    public void buffStart() {
-        music_progress.setVisibility(View.VISIBLE);
-        ivPlay.setVisibility(View.GONE);
-    }
-
-    /**
-     * 完成缓存
-     */
-    public void buffEnd() {
-        music_progress.setVisibility(View.GONE);
-        ivPlay.setVisibility(View.VISIBLE);
-    }
-
-    public void destory() {
-        onBackPressed();
-    }
-
-    //定时完成
-    public void timerComplete() {
-        music_seekbar.setProgress(0);
-        music_progress.setVisibility(View.GONE);
-        ivPlay.setVisibility(View.VISIBLE);
-        ivPlay.setImageResource(R.drawable.vector_pause);
-        tv_current_time.setText("00:00");
-        tv_total_time.setText("00:00");
-        animator.cancel();
-        tvTiming.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.vector_time, 0, 0);
-        tvTiming.setText("--:--");
-    }
-
-    public void timerProgress(int time) {
+    private void timerProgress(int time) {
         Log.d("aaa", "timerProgress========" + time);
         if (time > 60 * 60) {
             int hours = time / 60 / 60;
@@ -633,8 +503,8 @@ public class PlayActivity extends BaseActivity {
 
         @Override
         public void onStopTrackingTouch(SeekBar seekBar) {
-            int currentTime = music_seekbar.getProgress();
-            musicController.seekTo((long) currentTime);
+            MediaControllerCompat.getMediaController(PlayActivity.this).getTransportControls().seekTo(seekBar.getProgress());
+            scheduleSeekbarUpdate();
         }
 
     }
@@ -642,11 +512,267 @@ public class PlayActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unregisterReceiver(mPlayerReceiver);
+        if (mDialog != null) {
+            mDialog.unRegister();
+        }
     }
 
     @Override
     public void onBackPressed() {
         UtilIntent.finishDIYBottomToTop(mActivity);
+    }
+
+
+    private void updateProgress() {
+        if (getPlaybackStateCompat() == null) {
+            return;
+        }
+        long currentPosition = getPlaybackStateCompat().getPosition();
+        if (getPlaybackStateCompat().getState() == PlaybackStateCompat.STATE_PLAYING) {
+            // Calculate the elapsed time between the last position update and now and unless
+            // paused, we can assume (delta * speed) + current position is approximately the
+            // latest position. This ensure that we do not repeatedly call the getPlaybackState()
+            // on MediaControllerCompat.
+            long timeDelta = SystemClock.elapsedRealtime() -
+                    getPlaybackStateCompat().getLastPositionUpdateTime();
+            currentPosition += (int) timeDelta * getPlaybackStateCompat().getPlaybackSpeed();
+        }
+        music_seekbar.setProgress((int) currentPosition);
+    }
+
+
+    private void stopSeekbarUpdate() {
+        if (mScheduleFuture != null) {
+            mScheduleFuture.cancel(false);
+        }
+    }
+
+
+    private void scheduleSeekbarUpdate() {
+        stopSeekbarUpdate();
+        if (!mExecutorService.isShutdown()) {
+            mScheduleFuture = mExecutorService.scheduleAtFixedRate(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            mHandler.post(mUpdateProgressTask);
+                        }
+                    }, PROGRESS_UPDATE_INITIAL_INTERVAL,
+                    PROGRESS_UPDATE_INTERNAL, TimeUnit.MILLISECONDS);
+        }
+    }
+
+    private void stopTimerUpdate() {
+        if (mTimerScheduleFuture != null) {
+            mTimerScheduleFuture.cancel(false);
+        }
+    }
+
+    private void scheduleTimerUpdate() {
+        stopTimerUpdate();
+        if (!mExecutorService.isShutdown()) {
+            mTimerScheduleFuture = mExecutorService.scheduleAtFixedRate(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            timer--;
+
+                            mHandler.post(mUpdateTimerTask);
+                        }
+                    }, PROGRESS_UPDATE_INITIAL_INTERVAL,
+                    PROGRESS_UPDATE_INTERNAL, TimeUnit.MILLISECONDS);
+        }
+    }
+
+    private void updateTimer() {
+        if (timer > 0) {
+            timerProgress(timer);
+        } else {
+            tvTiming.setText("定时");
+        }
+    }
+
+
+    @Override
+    protected void notifyServiceConnected() {
+        super.notifyServiceConnected();
+
+        if (getPlaybackStateCompat() != null) {
+            Bundle bundle = getPlaybackStateCompat().getExtras();
+            if (bundle != null) {
+                String currentPlayBookId = bundle.getString("bookId", "-1");
+                if (TextUtils.isEmpty(bookId)) {
+                    bookId = currentPlayBookId;
+                }
+                if (!TextUtils.equals(currentPlayBookId, bookId)) {
+                    loadingPlayData();
+                } else {
+                    String bookImage = bundle.getString("bookImage");
+                    String bookTitle = bundle.getString("bookTitle");
+                    String chapterTitle = bundle.getString("chapterTitle");
+                    float speed = getPlaybackStateCompat().getPlaybackSpeed();
+                    switch (String.valueOf(speed)) {
+                        case "1.0":
+                            tvSpeed.setText("X1倍速");
+                            AppData.speedType = 1;
+                            break;
+                        case "1.25":
+                            tvSpeed.setText("X1.25倍速");
+                            AppData.speedType = 2;
+                            break;
+                        case "1.5":
+                            tvSpeed.setText("X1.5倍速");
+                            AppData.speedType = 3;
+                            break;
+                        case "1.75":
+                            tvSpeed.setText("X1.75倍速");
+                            AppData.speedType = 4;
+                            break;
+                        case "2.0":
+                            tvSpeed.setText("X2倍速");
+                            AppData.speedType = 5;
+                            break;
+                    }
+                    play_name.setText(bookTitle);
+                    program_number.setText(chapterTitle);
+                    UtilGlide.loadImg(mActivity, bookImage, playImage);
+                    timer = bundle.getInt("timer");
+                    if (timer <= 0) {
+                        tvTiming.setText("定时");
+                    } else {
+                        updateTimer();
+                        scheduleTimerUpdate();
+                    }
+                    long duration = bundle.getLong("totalTime");
+                    if (duration > 0) {
+                        tv_total_time.setText(UtilDate.format(duration, "mm:ss"));
+                        music_seekbar.setMax((int) duration);
+                    }
+                    if (getPlaybackStateCompat().getState() == PlaybackStateCompat.STATE_PLAYING) {
+
+                        playQueue = bundle.getParcelableArrayList("playQueue");
+                        updateProgress();
+                        if (getPlaybackStateCompat().getState() == PlaybackStateCompat.STATE_PLAYING) {
+                            animator.start();
+                            ivPlay.setImageResource(R.drawable.vector_play);
+                            scheduleSeekbarUpdate();
+                        }
+                    } else if (getPlaybackStateCompat().getState() == PlaybackStateCompat.STATE_PAUSED) {
+                        playQueue = bundle.getParcelableArrayList("playQueue");
+                        notifyPause();
+                        updateProgress();
+                    } else if (getPlaybackStateCompat().getState() == PlaybackStateCompat.STATE_STOPPED) {
+                        loadingPlayData();
+                    } else if (getPlaybackStateCompat().getState() == PlaybackStateCompat.STATE_ERROR) {
+                        loadingPlayData();
+                    }
+                }
+            } else {
+                loadingPlayData();
+            }
+        } else {
+            if (animator.isRunning()) {
+                notifyStop();
+            }
+            loadingPlayData();
+        }
+    }
+
+
+    @Override
+    protected void notifyRewinding(String bookId, String bookTitle, String chapterTitle, String bookImage) {
+        super.notifyRewinding(bookId, bookTitle, chapterTitle, bookImage);
+        music_progress.setVisibility(View.VISIBLE);
+        ivPlay.setVisibility(View.GONE);
+        music_seekbar.setProgress(0);
+        tv_current_time.setText("--:--");
+        tv_total_time.setText("--:--");
+        stopSeekbarUpdate();
+        this.bookId = bookId;
+        play_name.setText(bookTitle);
+        program_number.setText(chapterTitle);
+    }
+
+    @Override
+    protected void notifyLoading() {
+        super.notifyLoading();
+        music_progress.setVisibility(View.VISIBLE);
+        ivPlay.setVisibility(View.GONE);
+        stopSeekbarUpdate();
+    }
+
+
+    @Override
+    protected void notifyPlay(String bookId, String bookTitle, String chapterTitle, String bookImage, long duration) {
+        super.notifyPlay(bookId, bookTitle, chapterTitle, bookImage, duration);
+        Log.d("aaa", "通知播放");
+        isPlay = false;
+        this.bookId = bookId;
+        if (!animator.isRunning()) {
+            if (animator.isStarted()) {
+                animator.resume();
+            } else {
+                animator.start();
+            }
+        } else {
+            if (animator.isStarted()) {
+                animator.resume();
+            } else {
+                animator.start();
+            }
+        }
+        play_name.setText(bookTitle);
+        program_number.setText(chapterTitle);
+        tv_total_time.setText(UtilDate.format(duration, "mm:ss"));
+        ivPlay.setVisibility(View.VISIBLE);
+        ivPlay.setImageResource(R.drawable.vector_play);
+
+        long currentPosition = getPlaybackStateCompat().getPosition();
+        if (currentPosition == 0) {
+            tv_current_time.setText("00:00");
+        }
+        music_seekbar.setMax((int) duration);
+        Log.d("aaa", "duration----------" + duration);
+        scheduleSeekbarUpdate();
+    }
+
+    @Override
+    protected void notifyPause() {
+        super.notifyPause();
+        animator.pause();
+        ivPlay.setImageResource(R.drawable.vector_pause);
+        stopSeekbarUpdate();
+    }
+
+    @Override
+    protected void notifyStop() {
+        super.notifyStop();
+        animator.end();
+        ivPlay.setImageResource(R.drawable.vector_pause);
+        music_seekbar.setProgress(0);
+        tv_current_time.setText("--:--");
+        tv_total_time.setText("--:--");
+        stopSeekbarUpdate();
+        timer = -1;
+        tvTiming.setText("定时");
+        stopTimerUpdate();
+    }
+
+
+    @Override
+    protected void notifyTimer(int time) {
+        super.notifyTimer(time);
+        Log.d("aaa", "timerProgress========" + time);
+        this.timer = time;
+        updateTimer();
+        scheduleTimerUpdate();
+    }
+
+    @Override
+    protected void notifyTimerStop() {
+        super.notifyTimerStop();
+        stopTimerUpdate();
+        timer = -1;
+        tvTiming.setText("定时");
     }
 }

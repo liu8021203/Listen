@@ -83,7 +83,7 @@ public class CollectActivity extends BaseActivity {
                     mAdapter.setData(data.getData());
                     mRecyclerView.setAdapter(mAdapter);
                 } else{
-                    errorEmpty("还没有收藏书籍~~");
+                    showErrorEmpty("还没有收藏书籍~~");
                 }
             }
 

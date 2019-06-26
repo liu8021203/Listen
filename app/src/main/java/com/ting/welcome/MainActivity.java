@@ -2,6 +2,7 @@ package com.ting.welcome;
 
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -10,9 +11,15 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.RemoteException;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.FileProvider;
+import android.support.v4.media.MediaBrowserCompat;
+import android.support.v4.media.MediaMetadataCompat;
+import android.support.v4.media.session.MediaControllerCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -22,6 +29,7 @@ import android.widget.TextView;
 import com.ting.R;
 import com.ting.base.BaseActivity;
 import com.ting.base.BaseObserver;
+import com.ting.base.PlayerBaseActivity;
 import com.ting.bean.BaseResult;
 import com.ting.bean.apk.ApkResult;
 import com.ting.bookcity.HomeFragment;
@@ -29,10 +37,15 @@ import com.ting.bookcity.dialog.ExitDialog;
 import com.ting.bookrack.BookRackFragment;
 import com.ting.category.CategoryFragment;
 import com.ting.common.http.HttpService;
+import com.ting.db.DBListenHistory;
 import com.ting.download.receiver.ApkInstallReceiver;
 import com.ting.myself.MineMainFrame;
+import com.ting.play.PlayActivity;
+import com.ting.play.controller.MusicDBController;
 import com.ting.play.service.MusicService;
 import com.ting.search.SearchActivity;
+import com.ting.util.UtilDate;
+import com.ting.util.UtilGlide;
 import com.ting.util.UtilNetStatus;
 import com.ting.util.UtilRetrofit;
 import com.ting.util.UtilSPutil;
@@ -45,7 +58,7 @@ import java.util.Map;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
-public class MainActivity extends BaseActivity implements View.OnClickListener {
+public class MainActivity extends PlayerBaseActivity implements View.OnClickListener {
     private FragmentManager manager;
     private LinearLayout book_city_frame;
     private LinearLayout book_record_frame;
@@ -69,11 +82,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     //我的frame
     private MineMainFrame mineMainFrame;
 
-    private NotificationReceiver notificationReceiver;
-    //播放状态
-    public static final String MAIN_PLAY = "com.listen.main.play";
-    //暂停状态
-    public static final String MAIN_PAUSE = "com.listen.main.pause";
+
 
     private ApkInstallReceiver receiver;
 
@@ -87,11 +96,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
            /*获取Intent中的Bundle对象*/
         setTabSelection(0);
         // 通知状态
-        notificationReceiver = new NotificationReceiver();
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(MAIN_PLAY);
-        filter.addAction(MAIN_PAUSE);
-        registerReceiver(notificationReceiver, filter);
         checkUpdate();
         if (!UtilNetStatus.isWifiConnection() && UtilNetStatus.isHasConnection(this)) {
             showToast("非wifi下请注意流量");
@@ -104,11 +108,79 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         intentFilter.addAction(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
         receiver = new ApkInstallReceiver();
         registerReceiver(receiver, intentFilter);
+    }
 
 
+    @Override
+    protected void notifyPlay(String bookId, String bookTitle, String chapterTitle, String bookImage, long duration) {
+        super.notifyPlay(bookId, bookTitle, chapterTitle, bookImage, duration);
+        if(mBookRackFragment != null){
+            mBookRackFragment.startAnim();
+        }
+        if(mHomeFragment != null){
+            mHomeFragment.statAnim();
+        }
+    }
 
+    @Override
+    protected void notifyPause() {
+        super.notifyPause();
+        if(mBookRackFragment != null){
+            mBookRackFragment.stopAnim();
+        }
+        if(mHomeFragment != null){
+            mHomeFragment.stopAnim();
+        }
+    }
+
+    @Override
+    protected void notifyStop() {
+        super.notifyStop();
+        if(mBookRackFragment != null){
+            mBookRackFragment.stopAnim();
+        }
+        if(mHomeFragment != null){
+            mHomeFragment.stopAnim();
+        }
+    }
+
+
+    @Override
+    protected void notifyServiceConnected() {
+        super.notifyServiceConnected();
+        if (getPlaybackStateCompat() != null && (getPlaybackStateCompat().getState() == PlaybackStateCompat.STATE_PLAYING)) {
+            if(mBookRackFragment != null){
+                mBookRackFragment.startAnim();
+            }
+            if(mHomeFragment != null){
+                mHomeFragment.statAnim();
+            }
+        } else if (getPlaybackStateCompat() != null && getPlaybackStateCompat().getState() == PlaybackStateCompat.STATE_PAUSED) {
+            if(mBookRackFragment != null){
+                mBookRackFragment.stopAnim();
+            }
+            if(mHomeFragment != null){
+                mHomeFragment.stopAnim();
+            }
+        } else if (getPlaybackStateCompat() != null && getPlaybackStateCompat().getState() == PlaybackStateCompat.STATE_STOPPED) {
+            if(mBookRackFragment != null){
+                mBookRackFragment.stopAnim();
+            }
+            if(mHomeFragment != null){
+                mHomeFragment.stopAnim();
+            }
+        } else {
+            if(mBookRackFragment != null){
+                mBookRackFragment.stopAnim();
+            }
+            if(mHomeFragment != null){
+                mHomeFragment.stopAnim();
+            }
+        }
 
     }
+
+
 
     @Override
     protected String setTitle() {
@@ -357,11 +429,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
      * @Description: 退出APP
      */
     public void exitApp() {
-        if (MusicService.notification != null) {
-            MusicService.notification.notifyCancel();
-        }
-        Intent intent = new Intent(MainActivity.this, MusicService.class);
-        stopService(intent);
+        MediaControllerCompat.getMediaController(MainActivity.this).getTransportControls().stop();
         finish();
     }
 
@@ -397,43 +465,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (notificationReceiver != null) {
-            this.unregisterReceiver(notificationReceiver);
-        }
         if (receiver != null) {
             this.unregisterReceiver(receiver);
         }
     }
 
-    /*
-     * 接受notification发来的广播控制播放器
-     */
-    public class NotificationReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            Log.d("aaa", "main------" + action);
-            switch (action){
-                case MainActivity.MAIN_PAUSE:
-                    if(mBookRackFragment != null){
-                        mBookRackFragment.stopAnim();
-                    }
-                    if(mHomeFragment != null){
-                        mHomeFragment.stopAnim();
-                    }
-                    break;
 
-                case MainActivity.MAIN_PLAY:
-                    if(mBookRackFragment != null){
-                        mBookRackFragment.startAnim();
-                    }
-                    if(mHomeFragment != null){
-                        mHomeFragment.statAnim();
-                    }
-                    break;
-            }
-        }
-    }
 
     /**
      * Downloadmanager下载完成接受的广播

@@ -101,7 +101,7 @@ public class BookRackAdapter extends RecyclerView.Adapter<BookRackAdapter.ItemVi
             DBListenHistory vo = (DBListenHistory) v.getTag();
             Bundle bundle = new Bundle();
             bundle.putString("bookId", vo.getBookId());
-            bundle.putBoolean("play", true);
+            bundle.putBoolean("isPlay", true);
             mActivity.intent(PlayActivity.class, bundle);
         }
     }

@@ -22,10 +22,13 @@ public class BaseObserver<T extends BaseResult> extends DisposableObserver<T> {
     public static final int MODEL_ALL = 2;
     public static final int MODEL_LAYOUT = 3;
     public static final int MODEL_SHOW_DIALOG = 4;
-    public static final int MODEL_SHOW_TOAST = 5;
+    public static final int MODEL_ONLY_SHOW_TOAST = 5;
     public static final int MODEL_SHOW_DIALOG_TOAST = 6;
     public static final int MODEL_ONLY_SHOW_DIALOG = 7;
-    public static final int MODEL_SHOW_PROGRESSBAR = 8;
+    public static final int MODEL_SHOW_PROGRESSBAR_LAYOUT = 8;
+    public static final int MODEL_REFRESH = 9;
+    public static final int MODEL_LOADMORE = 10;
+
 
     private int model = 1;
     //默认显示加载loading
@@ -80,7 +83,7 @@ public class BaseObserver<T extends BaseResult> extends DisposableObserver<T> {
                 }
                 break;
 
-            case MODEL_SHOW_PROGRESSBAR:
+            case MODEL_SHOW_PROGRESSBAR_LAYOUT:
                 if (mActivityWeakReference != null && mActivityWeakReference.get() != null) {
                     mActivityWeakReference.get().showErrorService(R.layout.base_loading);
                 }

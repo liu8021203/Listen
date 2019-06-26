@@ -3,23 +3,16 @@ package com.ting.myself;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
 import android.widget.TextView;
 
-import com.aspsine.swipetoloadlayout.OnLoadMoreListener;
-import com.aspsine.swipetoloadlayout.OnRefreshListener;
-import com.aspsine.swipetoloadlayout.SwipeToLoadLayout;
 import com.ting.R;
 import com.ting.base.BaseActivity;
 import com.ting.base.BaseObserver;
 import com.ting.bean.BaseResult;
-import com.ting.bean.myself.MySeeInfo;
 import com.ting.bean.vo.HostVO;
-import com.ting.common.AppData;
 import com.ting.common.TokenManager;
 import com.ting.common.http.HttpService;
 import com.ting.myself.adapter.MySeeAdapter;
-import com.ting.bean.myself.MySeeResult;
 import com.ting.util.UtilRetrofit;
 import com.ting.view.CustomItemDecoration;
 
@@ -99,7 +92,7 @@ public class MySeeActivity extends BaseActivity {
                     }
                     have_see_number.setText(String.valueOf(data.getData().size()));
                 }else{
-                    errorEmpty("还没有关注主播哦~~");
+                    showErrorEmpty("还没有关注主播哦~~");
                 }
             }
 
@@ -121,7 +114,7 @@ public class MySeeActivity extends BaseActivity {
     }
 
     public void showEmpty(){
-        errorEmpty("还没有关注主播哦~~");
+        showErrorEmpty("还没有关注主播哦~~");
     }
 
 

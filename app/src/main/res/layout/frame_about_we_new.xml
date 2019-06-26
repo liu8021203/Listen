@@ -10,7 +10,6 @@
         android:id="@+id/ll_about_top"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp750_440"
-        android:layout_below="@id/title"
         android:gravity="center"
         android:orientation="vertical">
 
@@ -185,7 +184,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="乐清主播网络科技有限公司"
+            android:text="乐清畅听网络科技有限公司"
             android:textColor="@color/cfdaa3b"
             android:textSize="@dimen/px28" />
 
@@ -235,14 +234,6 @@
             android:textSize="@dimen/px24" />
 
 
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="技术支持WX:18611041664"
-            android:layout_marginTop="@dimen/dp750_20"
-            android:textColor="@color/c666666"
-            android:textSize="@dimen/px24" />
 
         <TextView
             android:id="@+id/tv_kefu_qq"

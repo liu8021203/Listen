@@ -36,7 +36,7 @@ public class MusicDBController {
      * @param bookid
      * @return
      */
-    public DBListenHistory getBookIdData(String bookid)
+    public static DBListenHistory getBookIdData(String bookid)
     {
         DBListenHistoryDao dao = BaseApplication.getInstance().getDaoSession().getDBListenHistoryDao();
         List<DBListenHistory> temps = dao.queryRaw("where BOOK_ID = ? order by SYSTEM_TIME desc", new String[]{bookid});
@@ -85,4 +85,50 @@ public class MusicDBController {
         DBListenHistoryDao dao = BaseApplication.getInstance().getDaoSession().getDBListenHistoryDao();
         dao.deleteAll();
     }
+
+    /**
+     * 获取指定书籍的DB数据
+     *
+     * @param chapterId
+     * @return
+     */
+    public static DBListenHistory getListenHistoryByChapterId(String chapterId) {
+        DBListenHistoryDao dao = BaseApplication.getInstance().getDaoSession().getDBListenHistoryDao();
+        List<DBListenHistory> temps = dao.queryRaw("where CHAPTER_ID = ?", new String[]{chapterId});
+        if (temps != null && !temps.isEmpty()) {
+            return temps.get(0);
+        } else {
+            return null;
+        }
+    }
+
+
+    /**
+     * 获取最近播放的章节
+     *
+     * @return
+     */
+    public static DBListenHistory getLastDBListenHistoryByBookId(String bookId) {
+        DBListenHistoryDao dao = BaseApplication.getInstance().getDaoSession().getDBListenHistoryDao();
+        List<DBListenHistory> temps = dao.queryRaw("where BOOK_ID = ? order by SYSTEM_TIME desc", new String[]{bookId});
+        if (temps != null && !temps.isEmpty()) {
+            return temps.get(0);
+        } else {
+            return null;
+        }
+    }
+
+
+    /**
+     * 获取指定书籍的DB数据
+     *
+     * @param bookid
+     * @return
+     */
+    public static List<DBListenHistory> getListenHistoryByBookId(String bookid) {
+        DBListenHistoryDao dao = BaseApplication.getInstance().getDaoSession().getDBListenHistoryDao();
+        List<DBListenHistory> temps = dao.queryRaw("where BOOK_ID = ? order by position desc", new String[]{bookid});
+        return temps;
+    }
+
 }

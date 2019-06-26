@@ -1,35 +1,270 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical">
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:background="#f3fbfe"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="2dip">
 
-        <android.support.design.widget.TabLayout
-            android:id="@+id/tab_layout"
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/book_details_notice"/>
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="3dip"
+            android:ellipsize="marquee"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:marqueeRepeatLimit="-1"
+            android:singleLine="true"
+            android:text="听世界作品由主播自主上传和运营，平台不参与制作和销售，如有问题，请及时与我们联系!!!"
+            android:textSize="14sp"/>
+
+    </LinearLayout>
+
+    <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                                     xmlns:app="http://schemas.android.com/apk/res-auto"
+                                                     android:layout_width="match_parent"
+                                                     android:layout_height="match_parent">
+
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/appbar_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:tabBackground="@color/white"
-            app:tabIndicatorColor="@color/c15acf0"
-            app:tabSelectedTextColor="@color/c15acf0"
-            app:tabTextColor="@color/black">
+            android:background="@color/white"
+            app:elevation="0dp">
 
 
-        </android.support.design.widget.TabLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/actionbarColor"
+                android:orientation="vertical"
+                app:layout_scrollFlags="scroll">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp750_270"
+                    android:background="@color/white"
+                    android:paddingLeft="@dimen/dp750_30"
+                    android:paddingRight="@dimen/dp750_30">
+
+
+                    <ImageView
+                        android:id="@+id/iv_cover"
+                        android:layout_width="@dimen/dp750_186"
+                        android:layout_height="@dimen/dp750_186"
+                        android:layout_centerVertical="true"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/book_def"
+                        />
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="@dimen/dp750_28"
+                        android:layout_toRightOf="@+id/iv_cover"
+                        android:orientation="vertical">
+
+
+                        <TextView
+                            android:id="@+id/tv_title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:ellipsize="end"
+                            android:lines="1"
+                            android:text=""
+                            android:textColor="#333333"
+                            android:textSize="16sp"/>
+
+
+                        <TextView
+                            android:id="@+id/tv_anchor"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/dp750_30"
+                            android:ellipsize="end"
+                            android:lines="1"
+                            android:text=""
+                            android:textColor="#5e5e5e"
+                            android:textSize="14sp"/>
+
+
+                        <RelativeLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/dp750_30">
+
+
+                            <TextView
+                                android:id="@+id/tv_collect"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:drawableLeft="@mipmap/bookdetails_uncollect"
+                                android:drawablePadding="4dip"
+                                android:text="收藏"
+
+                                />
+
+
+                        </RelativeLayout>
+
+
+                    </LinearLayout>
+
+
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.1dip"
+                    android:background="#dedede"></View>
+
+
+                <LinearLayout
+                    android:id="@+id/ll_reward_collect"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp750_73"
+                    android:background="@color/white"
+                    android:orientation="horizontal">
+
+                    <RelativeLayout
+                        android:id="@+id/rl_collect"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:drawableLeft="@drawable/vector_collect"
+                            android:drawablePadding="@dimen/dp750_20"
+                            android:gravity="center_vertical"
+                            android:text="订阅此书"
+                            android:textColor="#666666"
+                            android:textSize="16sp"/>
+
+                    </RelativeLayout>
+
+                    <View
+                        android:id="@+id/h_view"
+                        android:layout_width="0.1dip"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="@dimen/dp750_10"
+                        android:layout_marginTop="@dimen/dp750_10"
+                        android:background="#dedede"/>
+
+                    <RelativeLayout
+                        android:id="@+id/rl_reward"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:drawableLeft="@drawable/vector_reward"
+                            android:drawablePadding="@dimen/dp750_20"
+                            android:text="打赏催更"
+                            android:textColor="#666666"
+                            android:textSize="16sp"/>
+                    </RelativeLayout>
+                </LinearLayout>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.1dip"
+                    android:background="#dedede"></View>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:orientation="vertical"
+                    android:paddingBottom="4dip"
+                    android:paddingTop="@dimen/dp750_20">
+
+
+                    <TextView
+                        android:id="@+id/tv_introduce_state"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/dp750_40"
+                        android:text="本书简介："
+                        android:textColor="#333333"
+                        android:textSize="16sp"/>
+
+
+                    <TextView
+                        android:id="@+id/tv_introduce"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/dp750_40"
+                        android:layout_marginRight="@dimen/dp750_40"
+                        android:layout_marginTop="@dimen/dp750_20"
+                        android:ellipsize="end"
+                        android:textColor="#5e5e5e"
+                        android:textSize="12sp"
+                        />
+
+
+                    <ImageView
+                        android:id="@+id/iv_open_close"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="right"
+                        android:padding="10dip"
+                        android:src="@drawable/vector_introduce_down"
+                        />
+
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+
+
+            <android.support.design.widget.TabLayout
+                android:id="@+id/tab_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:tabBackground="@color/white"
+                app:tabIndicatorColor="@color/c15acf0"
+                app:tabIndicatorFullWidth="false"
+                app:tabSelectedTextColor="@color/c15acf0"
+                app:tabTextColor="@color/black">
+
+
+            </android.support.design.widget.TabLayout>
+
+        </android.support.design.widget.AppBarLayout>
 
 
         <android.support.v4.view.ViewPager
             android:id="@+id/pager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/tab_layout">
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
         </android.support.v4.view.ViewPager>
 
 
-    </RelativeLayout>
+    </android.support.design.widget.CoordinatorLayout>
+
 
 </LinearLayout>

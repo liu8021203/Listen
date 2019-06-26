@@ -1,36 +1,29 @@
 package com.ting.play.service;
 
 import android.annotation.TargetApi;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
-import android.media.MediaMetadataRetriever;
-import android.media.MediaPlayer;
-import android.media.MediaPlayer.OnCompletionListener;
-import android.media.MediaPlayer.OnErrorListener;
-import android.media.MediaPlayer.OnPreparedListener;
-import android.media.MediaPlayer.OnSeekCompleteListener;
 import android.media.RemoteControlClient;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.IBinder;
-import android.os.Message;
-import android.os.PowerManager;
+import android.os.Parcelable;
+import android.os.SystemClock;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.media.MediaBrowserCompat;
+import android.support.v4.media.MediaBrowserServiceCompat;
+import android.support.v4.media.session.MediaButtonReceiver;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.telephony.PhoneStateListener;
-import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.widget.Toast;
 
 import com.google.android.exoplayer2.DefaultLoadControl;
@@ -49,37 +42,26 @@ import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
-import com.google.android.exoplayer2.upstream.DataSource;
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 import com.ting.base.BaseObserver;
 import com.ting.base.BaseToast;
 import com.ting.bean.BaseResult;
 import com.ting.bean.ChapterResult;
-import com.ting.bean.play.PlayingVO;
-import com.ting.bean.vo.ChapterListVO;
 import com.ting.common.AppData;
 import com.ting.common.TokenManager;
 import com.ting.common.http.HttpService;
 import com.ting.db.DBChapter;
 import com.ting.db.DBListenHistory;
-import com.ting.bean.play.PlayListVO;
+import com.ting.download.DownloadController;
 import com.ting.play.AESDataSourceFactory;
-import com.ting.play.adapter.PlayListAdapter;
 import com.ting.play.controller.MusicDBController;
-import com.ting.bean.play.PlayResult;
-import com.ting.play.receiver.MyRemoteControlEventReceiver;
 import com.ting.play.state.MusicNotification;
-import com.ting.util.UtilGson;
+import com.ting.util.UtilListener;
 import com.ting.util.UtilMD5Encryption;
 import com.ting.util.UtilRetrofit;
-import com.ting.util.UtilSPutil;
-import com.ting.util.UtilStr;
-import com.ting.view.MyToast;
 import com.ting.welcome.MainActivity;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -94,36 +76,26 @@ import static com.google.android.exoplayer2.C.CONTENT_TYPE_MUSIC;
 import static com.google.android.exoplayer2.C.USAGE_MEDIA;
 
 /**
- * MusicService 2014/7/31
  *
- * @author Young
  */
-public class MusicService extends Service {
-    private static final String TAG = "MusicService";
-    //播放界面加载中
-    public static final String MUSIC_LOADING = "MUSIC_LOADING";
-    //播放界面播放
-    public static final String MUSIC_PLAY = "MUSIC_PLAY";
-    //播放界面进度条更新
-    public static final String MUSIC_PROGRESS = "MUSIC_PROGRESS";
-    //播放暂停
-    public static final String MUSIC_PAUSE = "MUSIC_PAUSE";
-    //播放界面播放完成
-    public static final String MUSIC_COMPLETE = "MUSIC_COMPLETE";
-    //播放错误
-    public static final String MUSIC_ERROR = "MUSIC_ERROR";
-    //加载中
-    public static final String MUSIC_BUFFER_START = "MUSIC_BUFFER_START";
-    //加载完成
-    public static final String MUSIC_BUFFER_END = "MUSIC_BUFFER_END";
-    //通知数据更新
-    public static final String MUSIC_DATA_UPDATE = "MUSIC_DATA_UPDATE";
-    //
-    public static final String MUSIC_DESTORY = "MUSIC_DESTORY";
+public class MusicService extends MediaBrowserServiceCompat {
+    public static final String MEDIA_ID_ROOT = "__ROOT__";
+
+    //定时器开启
+    public static final String MUSIC_TIMER_START = "MUSIC_TIMER_START";
+    //定时器停止
+    public static final String MUSIC_TIMER_STOP = "MUSIC_TIMER_STOP";
+
+    //倍速播放
+    public static final String MUSIC_SPEED = "MUSIC_SPEED";
     //定时器
     public static final String TIMER_PROGRESS = "TIMER_PROGRESS";
     //定时完成
     public static final String TIMER_COMPLETE = "TIMER_COMPLETE";
+    //定时器开启
+    public static final String TIMER_START = "TIMER_START";
+    //定时器关闭close
+    public static final String TIMER_CLOSE = "TIMER_CLOSE";
 
     // The volume we set the media player to when we lose audio focus, but are
     // allowed to reduce the volume instead of stopping playback.
@@ -142,13 +114,14 @@ public class MusicService extends Service {
     public static final int TIME_STOP = 8; //关闭定时
     public static final int SPEED = 9; //倍速播放
     public static final int SEEKTO_PLAY_MSG = 10;  //播放
+    public static final int PLAY_SEEK_TIME_MSG = 12;       //滑动到指定位置播放
 
     private ExoPlayerEventListener mEventListener = new ExoPlayerEventListener();
-    private boolean mAudioNoisyReceiverRegistered;
+    private boolean mAudioNoisyReceiverRegistered = false;
+    private boolean mNotificationReceiverRegistered = false;
     private boolean mPlayOnFocusGain;
 
 
-    private boolean mExoPlayerNullIsStopped = false;
     private final IntentFilter mAudioNoisyIntentFilter =
             new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
     private final BroadcastReceiver mAudioNoisyReceiver =
@@ -156,12 +129,12 @@ public class MusicService extends Service {
                 @Override
                 public void onReceive(Context context, Intent intent) {
                     if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(intent.getAction())) {
-
+                        pause();
                     }
                 }
             };
 
-
+    private IntentFilter filter = null;
     private RemoteControlClient mControlClient;
 
     enum State {
@@ -198,9 +171,8 @@ public class MusicService extends Service {
     //章节ID
     private String chapterId = null;
     //播放集合
-    private ArrayList<DBChapter> data;
-    public static MusicNotification notification;
-    private NotificationReceiver notificationReceiver;
+    private ArrayList<DBChapter> playQueue;
+    private MusicNotification notification;
     //定时器
     private Timer tTimer;
     //wifi锁
@@ -208,7 +180,8 @@ public class MusicService extends Service {
     //音频管理
     private AudioManager mAudioManager;
 
-
+    private MusicDBController mController;
+    private DownloadController mDownloadController;
     public static MusicService service = null;
 
     public static MusicService getInstance() {
@@ -218,208 +191,45 @@ public class MusicService extends Service {
     //0:未播放进行滑动，1：在播放状态下进行滑动
     private int seekType = 0;
     //定时时间
-    private int timimg = 0;
+    private int timer = 0;
 
     private DBChapter currentPlayVO = null;
 
     private ComponentName mMediaButtonReceiverComponent;
 
+    private MediaSessionCompat mSessionCompat;
+    private PlaybackStateCompat mPlaybackStateCompat;
+
 
     //当前播放完毕, 停止播放  true是停止， false是不停止
     private boolean currentPlayComplete = false;
+
+    private float speed = 1.0f;
+
 
     @Override
     public void onCreate() {
         super.onCreate();
         mWifiLock = ((WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE)).createWifiLock(WifiManager.WIFI_MODE_FULL, "mylock");
         mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        // 通知状态
-        notificationReceiver = new NotificationReceiver();
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(MusicNotification.PAUSE_MSG);
-        filter.addAction(MusicNotification.PLAY_MSG);
-        filter.addAction(MusicNotification.CLOSE_MSG);
-        filter.addAction(MusicNotification.SHOW_PLAY_MSG);
-        registerReceiver(notificationReceiver, filter);
-        notification = new MusicNotification(getApplicationContext());
-        mMediaButtonReceiverComponent = new ComponentName(this, MyRemoteControlEventReceiver.class);
+
+        notification = new MusicNotification(this);
+        mSessionCompat = new MediaSessionCompat(this, this.getClass().getSimpleName());
+        mSessionCompat.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS | MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
+        mSessionCompat.setCallback(mCallback);
+        setSessionToken(mSessionCompat.getSessionToken());
+        mController = new MusicDBController();
+        mDownloadController = new DownloadController();
     }
 
     /* 启动service时执行的方法 */
     @Override
     public int onStartCommand(Intent intent, final int flags, int startId) {
-
-        /* 得到从startService传来的动作，后是默认参数，这里是我自定义的常量 */
-        if (intent == null) {
-            return super.onStartCommand(intent, flags, startId);
-        }
-        if (mState == State.Preparing) {
-            return super.onStartCommand(intent, flags, startId);
-        }
-        Bundle bundle = intent.getExtras();
-        msg = bundle.getInt("MSG", 0);
-        switch (msg) {
-            //播放
-            case PLAY_MSG: {
-                if (currentPlayVO != null) {
-                    record();
-                }
-                currentPlayVO = bundle.getParcelable("vo");
-                if (bundle.getParcelableArrayList("data") != null) {
-                    data = bundle.getParcelableArrayList("data");
-                }
-                if (currentPlayVO != null) {
-                    play();
-                }
-            }
-            break;
-            //暂停
-            case PAUSE_MSG: {
-                pause();
-            }
-            break;
-            //上一章
-            case PLAY_PREVIOUS: {
-                //当前播放的位置
-                int currentPosition = getCurrPlayPostion();
-                if (currentPosition == -1 || currentPosition == -2) {
-                    Toast.makeText(this, "前面没有更多章节", Toast.LENGTH_SHORT).show();
-                    break;
-                }
-                if (currentPosition == 0) {
-                    Toast.makeText(this, "前面没有更多章节", Toast.LENGTH_SHORT).show();
-                } else {
-                    DBChapter vo = data.get(currentPosition - 1);
-                    if (UtilStr.isEmpty(vo.getUrl())) {
-                        Toast.makeText(MusicService.this, "此章节收费", Toast.LENGTH_SHORT).show();
-                    } else {
-                        if (currentPlayVO != null) {
-                            record();
-                        }
-                        currentPlayVO = vo;
-                        play();
-                    }
-                }
-            }
-            break;
-            //下一章
-            case PLAY_NEXT: {
-                int currentPosition = getCurrPlayPostion();
-                if (currentPosition == -1) {
-                    Toast.makeText(MusicService.this, "后面没有更多章节", Toast.LENGTH_SHORT).show();
-                    break;
-                }
-                if (currentPosition == -2) {
-                    if (data != null && !data.isEmpty()) {
-                        DBChapter vo = data.get(0);
-                        if (UtilStr.isEmpty(vo.getUrl())) {
-                            Toast.makeText(MusicService.this, "此章节收费", Toast.LENGTH_SHORT).show();
-                        } else {
-                            if (currentPlayVO != null) {
-                                record();
-                            }
-                            currentPlayVO = vo;
-                            play();
-                        }
-                    }
-                } else {
-                    if (data != null && !data.isEmpty()) {
-                        if (currentPosition < data.size() - 1) {
-                            DBChapter vo = data.get(currentPosition + 1);
-                            if (UtilStr.isEmpty(vo.getUrl())) {
-                                Toast.makeText(MusicService.this, "此章节收费", Toast.LENGTH_SHORT).show();
-                            } else {
-                                if (currentPlayVO != null) {
-                                    record();
-                                }
-                                currentPlayVO = vo;
-                                play();
-                            }
-                        } else {
-                            Toast.makeText(MusicService.this, "后面没有更多章节", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                }
-            }
-            break;
-            //跳转
-            case SEEKTO_MSG: {
-                time = bundle.getLong("seekTime", 0);
-                if (mExoPlayer != null) {
-                    mExoPlayer.seekTo(time);
-                    mExoPlayer.setPlayWhenReady(true);
-                }
-            }
-            break;
-
-            case SEEKTO_PLAY_MSG: {
-                time = bundle.getLong("seekTime", 0);
-                if (currentPlayVO != null) {
-                    record();
-                }
-                currentPlayVO = bundle.getParcelable("vo");
-                if (bundle.getParcelableArrayList("data") != null) {
-                    data = bundle.getParcelableArrayList("data");
-                }
-                if (currentPlayVO != null) {
-                    play();
-                }
-            }
-            break;
-
-            case TIME_START: {
-                timimg = intent.getIntExtra("time", -1);
-                if (tTimer != null) {
-                    tTimer.cancel();
-                    tTimer = null;
-                }
-                if (timimg != -1) {
-                    tTimer = new Timer();
-                    tTimer.schedule(new TimerTask() {
-                        @Override
-                        public void run() {
-                            if (timimg == 0) {
-                                tTimer.cancel();
-                                tTimer = null;
-                                notifyTimerComplete();
-                                AppData.ifTimeSetting = false;
-                                AppData.shutDownTimer = 0;
-                                record();
-                                notifyPlayStop();
-                                MusicService.this.stopSelf();
-                            } else {
-                                timimg--;
-                                notifyTimerProgress();
-                            }
-
-                        }
-                    }, 0, 1000);
-                }
-            }
-            break;
-
-            case TIME_STOP: {
-                if (tTimer != null) {
-                    tTimer.cancel();
-                    tTimer = null;
-                }
-            }
-            break;
-
-            case SPEED:
-                float speed = intent.getFloatExtra("speed", 1.0f);
-                if (mExoPlayer != null) {
-                    PlaybackParameters playbackParameters = new PlaybackParameters(speed, 1.0F);
-                    mExoPlayer.setPlaybackParameters(playbackParameters);
-                }
-                break;
-
-            default:
-                notifyError();
-                break;
-        }
+        Log.d("aaa", "MusicService-------onStartCommand");
+        MediaButtonReceiver.handleIntent(mSessionCompat, intent);
         return START_NOT_STICKY;
     }
+
 
     /**
      * 播放
@@ -427,14 +237,20 @@ public class MusicService extends Service {
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     private void play() {
         Log.d("aaa", "play----------播放");
+        if (currentPlayVO == null) {
+            return;
+        }
         String url = currentPlayVO.getUrl();
         mPlayOnFocusGain = true;
         tryToGetAudioFocus();
         registerAudioNoisyReceiver();
-        String localFile = AppData.FILE_PATH + currentPlayVO.getBookId() + "/" + UtilMD5Encryption.getMd5Value(currentPlayVO.getChapterId()) + ".tsj";
-        File file = new File(localFile);
-        if (file.exists()) {
-            url = localFile;
+        DBChapter chapter = DownloadController.queryDBChapter(currentPlayVO.getBookId(), currentPlayVO.getChapterId());
+        if (chapter != null && chapter.getState() == 4) {
+            String localFile = AppData.FILE_PATH + currentPlayVO.getBookId() + "/" + UtilMD5Encryption.getMd5Value(currentPlayVO.getChapterId()) + ".tsj";
+            File file = new File(localFile);
+            if (file.exists()) {
+                url = localFile;
+            }
         }
         url = url.replaceAll(" ", "%20");
         boolean mediaHasChanged = !TextUtils.equals(url, currentURL);
@@ -464,50 +280,29 @@ public class MusicService extends Service {
      */
     private void pause() {
         mState = State.Paused;
-        record();
+        if (currentPlayVO != null) {
+            record();
+        }
         if (mExoPlayer != null) {
             mExoPlayer.setPlayWhenReady(false);
         }
         releaseResources(false);
         unregisterAudioNoisyReceiver();
-//        stopForeground(false);
+        stopForeground(false);
         notifyPause();
     }
 
 
     @Override
     public void onDestroy() {
-        Log.d("aaa", "onDestroy");
+        Log.d("aaa", "MusicService--------onDestroy");
         super.onDestroy();
-        errorRelease();
+
     }
 
-    /**
-     * 某种异常错误释放资源
-     */
-    public void errorRelease() {
-        mState = State.Stopped;
-        currentPlayVO = null;
-        if (notificationReceiver != null) {
-            this.unregisterReceiver(notificationReceiver);
-        }
-        sendPauseStatus();
-        giveUpAudioFocus();
-        stopForeground(true);
-        unregisterAudioNoisyReceiver();
-        releaseResources(true);
-        if (tTimer != null) {
-            tTimer.cancel();
-            tTimer = null;
-        }
-        AppData.playKey = null;
-        AppData.isPlaying = false;
-        AppData.loadingKey = null;
-    }
 
     public void record() {
         if (currentPlayVO != null) {
-            MusicDBController controller = new MusicDBController();
             DBListenHistory vo = new DBListenHistory();
             vo.setBookId(currentPlayVO.getBookId());
             vo.setChapterTitle(currentPlayVO.getTitle());
@@ -529,7 +324,7 @@ public class MusicService extends Service {
             } else {
                 vo.setTotal(0L);
             }
-            controller.insert(vo);
+            mController.insert(vo);
         }
     }
 
@@ -556,6 +351,99 @@ public class MusicService extends Service {
 
 
     /**
+     * 加载数据
+     *
+     * @param model 1:  主动上一章， 2：主动下一章  3：被动下一章
+     */
+    private void loadData(final int model, final int pages) {
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("page", String.valueOf(pages));
+        map.put("size", "50");
+        map.put("bookId", currentPlayVO.getBookId());
+        if (TokenManager.isLogin(this)) {
+            map.put("uid", TokenManager.getUid(this));
+        }
+        BaseObserver baseObserver = new BaseObserver<BaseResult<ChapterResult>>() {
+
+
+            @Override
+            public void success(BaseResult<ChapterResult> data) {
+                super.success(data);
+                Log.d("aaa", "请求网络");
+                ChapterResult result = data.getData();
+                if (result != null && result.getList() != null && !result.getList().isEmpty()) {
+                    if (model == 1) {
+                        playQueue.addAll(0, result.getList());
+                        DBChapter vo = result.getList().get(result.getList().size() - 1);
+                        if (TextUtils.isEmpty(vo.getUrl())) {
+                            BaseToast.makeText(MusicService.this, "此章节收费").show();
+                            musicStop();
+                            MusicService.this.stopSelf();
+                        } else {
+                            currentPlayVO = vo;
+                            play();
+                        }
+                    } else {
+                        int startPosition = result.getList().get(0).getPosition();
+                        int endPosition = result.getList().get(result.getList().size() - 1).getPosition();
+                        if (currentPlayVO.getPosition() < startPosition) {
+                            MusicService.this.playQueue.addAll(result.getList());
+                            DBChapter vo = result.getList().get(0);
+                            if (TextUtils.isEmpty(vo.getUrl())) {
+                                BaseToast.makeText(MusicService.this, "此章节收费").show();
+                                musicStop();
+                                MusicService.this.stopSelf();
+                            } else {
+                                currentPlayVO = vo;
+                                play();
+                            }
+                        } else if (currentPlayVO.getPosition() >= endPosition) {
+                            BaseToast.makeText(MusicService.this, "后面没有更多章节").show();
+                            musicStop();
+                            MusicService.this.stopSelf();
+                        } else {
+                            playQueue = (ArrayList<DBChapter>) result.getList();
+                            int index = getCurrPlayPostion();
+                            DBChapter vo = playQueue.get(index + 1);
+                            if (TextUtils.isEmpty(vo.getUrl())) {
+                                Log.d("aaa", "playCompletion======此章节收费");
+                                BaseToast.makeText(MusicService.this, "此章节收费").show();
+                                musicStop();
+                                MusicService.this.stopSelf();
+                            } else {
+                                Log.d("aaa", "下一集");
+                                currentPlayVO = vo;
+                                play();
+                            }
+                        }
+                    }
+                } else {
+                    if (model == 1) {
+                        BaseToast.makeText(MusicService.this, "前面没有更多章节").show();
+                    } else if (model == 2) {
+                        BaseToast.makeText(MusicService.this, "后面没有更多章节").show();
+                    } else {
+                        BaseToast.makeText(MusicService.this, "后面没有更多章节").show();
+                        musicStop();
+                        MusicService.this.stopSelf();
+                    }
+                }
+            }
+
+            @Override
+            public void error(BaseResult<ChapterResult> value, Throwable e) {
+                super.error(value, e);
+                BaseToast.makeText(MusicService.this, "最后一章").show();
+                musicStop();
+                MusicService.this.stopSelf();
+            }
+
+        };
+        UtilRetrofit.getInstance().create(HttpService.class).chapter(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
+    }
+
+
+    /**
      * 释放资源
      *
      * @param b
@@ -565,7 +453,6 @@ public class MusicService extends Service {
             mExoPlayer.release();
             mExoPlayer.removeListener(mEventListener);
             mExoPlayer = null;
-            mExoPlayerNullIsStopped = true;
             mPlayOnFocusGain = false;
         }
         if (mWifiLock.isHeld()) {
@@ -594,7 +481,7 @@ public class MusicService extends Service {
                     break;
                 case AudioManager.AUDIOFOCUS_LOSS:
                     // Lost audio focus, probably "permanently"
-                    mAudioFocus = AudioFocus.NoFocusCanDuck;
+                    mAudioFocus = AudioFocus.NoFocusNoDuck;
                     break;
             }
 
@@ -609,6 +496,7 @@ public class MusicService extends Service {
      * 配置播放状态
      */
     private void configurePlayerState() {
+        Log.d("aaa", "MusicService------configurePlayerState-------" + mAudioNoisyReceiverRegistered);
         if (mAudioFocus == AudioFocus.NoFocusNoDuck) {
             pause();
         } else {
@@ -619,6 +507,7 @@ public class MusicService extends Service {
                 mExoPlayer.setVolume(VOLUME_NORMAL);
             }
             if (mPlayOnFocusGain) {
+                mState = State.Playing;
                 mExoPlayer.setPlayWhenReady(true);
                 mPlayOnFocusGain = false;
             }
@@ -629,15 +518,18 @@ public class MusicService extends Service {
 
     private void registerAudioNoisyReceiver() {
         if (!mAudioNoisyReceiverRegistered) {
-            registerReceiver(mAudioNoisyReceiver, mAudioNoisyIntentFilter);
             mAudioNoisyReceiverRegistered = true;
+            registerReceiver(mAudioNoisyReceiver, mAudioNoisyIntentFilter);
         }
     }
 
+    /**
+     * 取消
+     */
     private void unregisterAudioNoisyReceiver() {
         if (mAudioNoisyReceiverRegistered) {
-            unregisterReceiver(mAudioNoisyReceiver);
             mAudioNoisyReceiverRegistered = false;
+            unregisterReceiver(mAudioNoisyReceiver);
         }
     }
 
@@ -646,10 +538,16 @@ public class MusicService extends Service {
      * 通知加载
      */
     private void notifyLoading() {
-        AppData.loadingKey = currentPlayVO.getChapterId();
-        Intent intent = new Intent();
-        intent.setAction(MUSIC_LOADING);
-        sendBroadcast(intent);
+        Log.d("aaa", "notifyLoading------通知加载");
+        PlaybackStateCompat.Builder playbackstateBuilder = new PlaybackStateCompat.Builder();
+        Bundle bundle = new Bundle();
+        bundle.putString("chapterTitle", currentPlayVO.getTitle());
+        bundle.putString("bookId", currentPlayVO.getBookId());
+        bundle.putString("bookTitle", currentPlayVO.getBookTitle());
+        bundle.putString("bookImage", currentPlayVO.getBookImage());
+        bundle.putInt("timer", timer);
+        playbackstateBuilder.setState(PlaybackStateCompat.STATE_REWINDING, mExoPlayer.getCurrentPosition(), 1.0f, SystemClock.elapsedRealtime());
+        mSessionCompat.setPlaybackState(playbackstateBuilder.build());
     }
 
     /**
@@ -657,181 +555,135 @@ public class MusicService extends Service {
      */
     private void notifyStartPlay() {
         Log.d("aaa", "通知播放");
-        if(mState != State.Paused) {
+        if (mState != State.Paused) {
+            Intent intent = new Intent(getApplicationContext(), MusicService.class);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startForegroundService(intent);
+            } else {
+                startService(intent);
+            }
             startForeground(NOTIFICATION_ID, notification.getNotification());
         }
         mState = State.Playing;
+        mSessionCompat.setActive(true);
         record();
         notification.notifyInit(currentPlayVO.getBookTitle(), currentPlayVO.getTitle(), currentPlayVO.getBookImage());
-        Intent intent = new Intent();
-        intent.putExtra("totalTime", mExoPlayer.getDuration());
-        intent.putExtra("chapterTitle", currentPlayVO.getTitle());
-        intent.setAction(MUSIC_PLAY);
-        sendBroadcast(intent);
-        AppData.loadingKey = null;
-        AppData.isPlaying = true;
-        AppData.playKey = currentPlayVO.getChapterId();
-        updateProgress();
+        PlaybackStateCompat.Builder playbackstateBuilder = new PlaybackStateCompat.Builder();
+        Bundle bundle = new Bundle();
+        bundle.putLong("totalTime", mExoPlayer.getDuration());
+        bundle.putString("chapterTitle", currentPlayVO.getTitle());
+        bundle.putString("chapterId", currentPlayVO.getChapterId());
+        bundle.putString("bookId", currentPlayVO.getBookId());
+        bundle.putString("bookTitle", currentPlayVO.getBookTitle());
+        bundle.putString("bookImage", currentPlayVO.getBookImage());
+        bundle.putParcelableArrayList("playQueue", playQueue);
+        bundle.putInt("timer", timer);
+        playbackstateBuilder.setExtras(bundle);
+        playbackstateBuilder.setState(PlaybackStateCompat.STATE_PLAYING, mExoPlayer.getCurrentPosition(), speed, SystemClock.elapsedRealtime());
+        mSessionCompat.setPlaybackState(playbackstateBuilder.build());
     }
 
     /**
      * 通知暂停
      */
     private void notifyPause() {
-        handler.removeCallbacksAndMessages(null);
-        Intent intent = new Intent();
-        intent.putExtra("bookId", currentPlayVO.getBookId());
-        intent.setAction(MUSIC_PAUSE);
-        sendBroadcast(intent);
+        if (mExoPlayer == null) {
+            mState = State.Stopped;
+            notifyStop();
+            return;
+        }
         notification.notifyPause();
-        AppData.loadingKey = null;
-        AppData.isPlaying = false;
+        Bundle bundle = new Bundle();
+        mState = State.Paused;
+        bundle.putLong("totalTime", mExoPlayer.getDuration());
+        bundle.putString("chapterTitle", currentPlayVO.getTitle());
+        bundle.putString("chapterId", currentPlayVO.getChapterId());
+        bundle.putString("bookId", currentPlayVO.getBookId());
+        bundle.putString("bookTitle", currentPlayVO.getBookTitle());
+        bundle.putString("bookImage", currentPlayVO.getBookImage());
+        bundle.putParcelableArrayList("playQueue", playQueue);
+        bundle.putInt("timer", timer);
+        PlaybackStateCompat.Builder playbackstateBuilder = new PlaybackStateCompat.Builder();
+        playbackstateBuilder.setExtras(bundle);
+        playbackstateBuilder.setState(PlaybackStateCompat.STATE_PAUSED, mExoPlayer.getCurrentPosition(), speed, SystemClock.elapsedRealtime());
+        mSessionCompat.setPlaybackState(playbackstateBuilder.build());
     }
 
-
-    protected void notifyPlayStop() {
+    /**
+     * 通知停止播放
+     */
+    protected void notifyStop() {
         Log.d("aaa", "MusicService--------播放完成");
         mState = State.Stopped;
-        handler.removeCallbacksAndMessages(null);
-        Intent intent = new Intent();
-        notification.notifyCancel();
-        intent.setAction(MUSIC_COMPLETE);
-        sendBroadcast(intent);
-        AppData.loadingKey = null;
-        AppData.isPlaying = false;
-        AppData.playKey = null;
-    }
-
-    protected void notifyDataUpdate(PlayListVO vo) {
-        Log.d("aaa", "通知数据更新");
-        Intent intent = new Intent();
-        intent.putExtra("bookid", bookId);
-        intent.putExtra("data", vo);
-        intent.setAction(MUSIC_DATA_UPDATE);
-        sendBroadcast(intent);
-    }
-
-    /**
-     * 通知定时结束
-     */
-    protected void notifyTimerComplete() {
-        Intent intent = new Intent();
-        intent.setAction(TIMER_COMPLETE);
-        sendBroadcast(intent);
-    }
-
-    protected void notifyTimerProgress() {
-        Intent intent = new Intent();
-        intent.setAction(TIMER_PROGRESS);
-        intent.putExtra("timing", timimg);
-        sendBroadcast(intent);
-    }
-
-
-    /**
-     * 错误通知
-     */
-    private void notifyError() {
-        mState = State.Stopped;
-        AppData.playKey = null;
-        AppData.loadingKey = null;
-        AppData.isPlaying = false;
-        Intent intent = new Intent();
-        intent.putExtra("bookid", bookId);
-        intent.setAction(MUSIC_ERROR);
-        sendBroadcast(intent);
-
-    }
-
-    /**
-     * 通知进度条更新
-     */
-    private void notifyProgress() {
+        mSessionCompat.setActive(false);
+        Bundle bundle = new Bundle();
         if (mExoPlayer != null) {
-            try {
-                Intent intent = new Intent();
-                intent.putExtra("currentTime", mExoPlayer.getCurrentPosition());
-                intent.putExtra("totalTime", mExoPlayer.getDuration());
-                intent.putExtra("chapterTitle", currentPlayVO.getTitle());
-                intent.putExtra("bookTitle", currentPlayVO.getBookTitle());
-                intent.setAction(MUSIC_PROGRESS);
-                sendBroadcast(intent);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            bundle.putLong("totalTime", mExoPlayer.getDuration());
         }
+        bundle.putString("chapterTitle", currentPlayVO.getTitle());
+        bundle.putString("bookId", currentPlayVO.getBookId());
+        bundle.putString("bookImage", currentPlayVO.getBookImage());
+        PlaybackStateCompat.Builder playbackstateBuilder = new PlaybackStateCompat.Builder();
+        playbackstateBuilder.setExtras(bundle);
+        playbackstateBuilder.setState(PlaybackStateCompat.STATE_STOPPED, PlaybackStateCompat.STATE_NONE, speed);
+        mSessionCompat.setPlaybackState(playbackstateBuilder.build());
     }
+
+
+    /**
+     * Music 关闭
+     */
+    private void musicStop() {
+        mState = State.Stopped;
+        giveUpAudioFocus();
+        stopForeground(true);
+        unregisterAudioNoisyReceiver();
+        releaseResources(true);
+        if (tTimer != null) {
+            tTimer.cancel();
+            tTimer = null;
+        }
+        notifyStop();
+    }
+
 
     //通知开始缓存
     private void notifyBuffStart() {
         mState = State.Preparing;
-        Intent intent = new Intent();
-        intent.setAction(MUSIC_BUFFER_START);
-        sendBroadcast(intent);
+
     }
 
     //通知完成缓存
     private void notifyBuffEnd() {
+        Log.d("aaa", "notifyBuffEnd------通知完成加载");
         mState = State.Playing;
-        Intent intent = new Intent();
-        intent.setAction(MUSIC_BUFFER_END);
-        sendBroadcast(intent);
+        PlaybackStateCompat.Builder playbackstateBuilder = new PlaybackStateCompat.Builder();
+        Bundle bundle = new Bundle();
+        bundle.putLong("totalTime", mExoPlayer.getDuration());
+        bundle.putString("chapterTitle", currentPlayVO.getTitle());
+        bundle.putString("chapterId", currentPlayVO.getChapterId());
+        bundle.putString("bookId", currentPlayVO.getBookId());
+        bundle.putString("bookTitle", currentPlayVO.getBookTitle());
+        bundle.putString("bookImage", currentPlayVO.getBookImage());
+        bundle.putParcelableArrayList("playQueue", playQueue);
+        bundle.putInt("timer", timer);
+        playbackstateBuilder.setExtras(bundle);
+        playbackstateBuilder.setState(PlaybackStateCompat.STATE_PLAYING, mExoPlayer.getCurrentPosition(), speed, SystemClock.elapsedRealtime());
+        mSessionCompat.setPlaybackState(playbackstateBuilder.build());
     }
 
 
-    /**
-     * 发送播放状态
-     */
-    private void sendPlaySatus() {
-        Intent intent = new Intent();
-        intent.setAction(MainActivity.MAIN_PLAY);
-        sendBroadcast(intent);
+    @Nullable
+    @Override
+    public BrowserRoot onGetRoot(@NonNull String clientPackageName, int clientUid, @Nullable Bundle rootHints) {
+
+        return new BrowserRoot(MEDIA_ID_ROOT, null);
     }
-
-
-    private void sendPauseStatus() {
-        Intent intent = new Intent();
-        intent.setAction(MainActivity.MAIN_PAUSE);
-        sendBroadcast(intent);
-    }
-
 
     @Override
-    public IBinder onBind(Intent arg0) {
-        return null;
+    public void onLoadChildren(@NonNull String parentId, @NonNull Result<List<MediaBrowserCompat.MediaItem>> result) {
+
     }
-
-
-    /*
-     * 接受notification发来的广播控制播放器
-     */
-    public class NotificationReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            Log.d("aaa", "action==========" + action);
-            switch (action) {
-                case MusicNotification.PLAY_MSG:
-                    play();
-                    sendPlaySatus();
-                    break;
-                case MusicNotification.PAUSE_MSG:
-                    pause();
-                    sendPauseStatus();
-                    break;
-                case MusicNotification.CLOSE_MSG:
-                    record();
-                    notifyPlayStop();
-                    sendPauseStatus();
-                    MusicService.this.stopSelf();
-                    break;
-
-
-            }
-
-        }
-    }
-
 
     /**
      * 获取当前播放的位置
@@ -839,9 +691,9 @@ public class MusicService extends Service {
      * @return -1：没有相关数据   -2：当前播放url不在播放队列中
      */
     private int getCurrPlayPostion() {
-        if (data != null && !data.isEmpty()) {
-            for (int i = 0; i < data.size(); i++) {
-                if(TextUtils.equals(currentPlayVO.getChapterId(), data.get(i).getChapterId())){
+        if (playQueue != null && !playQueue.isEmpty()) {
+            for (int i = 0; i < playQueue.size(); i++) {
+                if (TextUtils.equals(currentPlayVO.getChapterId(), playQueue.get(i).getChapterId())) {
                     return i;
                 }
             }
@@ -851,6 +703,7 @@ public class MusicService extends Service {
         }
     }
 
+
     /**
      * 播放完成
      */
@@ -858,104 +711,50 @@ public class MusicService extends Service {
         //播放完成
         msg = PLAY_MSG;
         currentURL = null;
+        record();
         if (!currentPlayComplete) {
-            if (data != null && !data.isEmpty()) {
+            if (playQueue != null && !playQueue.isEmpty()) {
                 int index = getCurrPlayPostion();
+                Log.d("aaa", "playCompletion======" + index + "=======" + playQueue.size());
                 if (index == -2) {
-                    DBChapter vo = data.get(0);
+                    DBChapter vo = playQueue.get(0);
                     if (TextUtils.isEmpty(vo.getUrl())) {
-                        BaseToast.makeText(MusicService.this, "此章节收费", Toast.LENGTH_SHORT).show();
+                        BaseToast.makeText(MusicService.this, "此章节收费").show();
+                        musicStop();
                         MusicService.this.stopSelf();
                     } else {
                         currentPlayVO = vo;
                         play();
                     }
                 } else {
-                    if (index < data.size() - 1) {
-                        DBChapter vo = data.get(index + 1);
+                    if (index < playQueue.size() - 1) {
+                        DBChapter vo = playQueue.get(index + 1);
                         if (TextUtils.isEmpty(vo.getUrl())) {
-                            BaseToast.makeText(MusicService.this, "此章节收费", Toast.LENGTH_SHORT).show();
+                            Log.d("aaa", "playCompletion======此章节收费");
+                            BaseToast.makeText(MusicService.this, "此章节收费").show();
+                            musicStop();
                             MusicService.this.stopSelf();
                         } else {
-                            Log.d("service", "下一集");
+                            Log.d("aaa", "下一集");
                             currentPlayVO = vo;
                             play();
                         }
                     } else {
-                        int page = (data.get(index).getPosition() - 1) / 50 + 2;
-                        loadData(page);
+                        int page = currentPlayVO.getPosition() / 50 + 1;
+                        loadData(3, page);
                     }
                 }
             } else {
-                BaseToast.makeText(MusicService.this, "播放完成", Toast.LENGTH_SHORT).show();
-                MusicService.this.stopSelf();
+                Log.d("aaa", "播放列表为空");
+                BaseToast.makeText(MusicService.this, "播放完成").show();
+                musicStop();
             }
+        } else {
+            Log.d("aaa", "定时该章节播放完毕关闭播放器");
+            currentPlayComplete = false;
+            BaseToast.makeText(MusicService.this, "播放完成").show();
+            musicStop();
         }
-    }
-
-    /**
-     * 加载数据
-     *
-     * @param pages
-     */
-    private void loadData(final int pages) {
-        Map<String, String> map = new HashMap<String, String>();
-        map.put("page", String.valueOf(pages));
-        map.put("size", "50");
-        map.put("bookId", currentPlayVO.getBookId());
-        if (TokenManager.isLogin(this)) {
-            map.put("uid", TokenManager.getUid(this));
-        }
-        BaseObserver baseObserver = new BaseObserver<BaseResult<ChapterResult>>() {
-            @Override
-            public void success(BaseResult<ChapterResult> data) {
-                super.success(data);
-                ChapterResult result = data.getData();
-                Log.d("aaa", "请求网络");
-                if (result != null && result.getList() != null && !result.getList().isEmpty()) {
-                    DBChapter vo = result.getList().get(0);
-                    if (TextUtils.isEmpty(vo.getUrl())) {
-                        BaseToast.makeText(MusicService.this, "此章节收费").show();
-                        MusicService.this.stopSelf();
-                    } else {
-                        currentPlayVO = vo;
-                        play();
-                    }
-                    MusicService.this.data.addAll(result.getList());
-                } else {
-                    BaseToast.makeText(MusicService.this, "最后一章").show();
-                    MusicService.this.stopSelf();
-                }
-            }
-
-
-            @Override
-            public void error(BaseResult<ChapterResult> value, Throwable e) {
-                super.error(value, e);
-                BaseToast.makeText(MusicService.this, "最后一章").show();
-                MusicService.this.stopSelf();
-            }
-        };
-        UtilRetrofit.getInstance().create(HttpService.class).chapter(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
-    }
-
-    private void updateProgress() {
-        handler.removeCallbacksAndMessages(null);
-        notifyProgress();
-        handler.sendEmptyMessageDelayed(0, 1000);
-    }
-
-    private Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            updateProgress();
-        }
-    };
-
-    @Override
-    public boolean stopService(Intent name) {
-        return super.stopService(name);
     }
 
 
@@ -988,25 +787,24 @@ public class MusicService extends Service {
                 case Player.STATE_IDLE:
                     break;
                 case Player.STATE_BUFFERING:
-                    notifyLoading();
+//                    notifyLoading();
                     break;
                 case Player.STATE_READY:
                     if (playWhenReady) {
-                        if (msg == SEEKTO_PLAY_MSG) {
+                        if (msg == PLAY_SEEK_TIME_MSG) {
                             if (mExoPlayer != null) {
                                 mExoPlayer.seekTo(time);
                             }
-                            record();
                             msg = PLAY_MSG;
                         }
                         notifyStartPlay();
                     }
                     break;
                 case Player.STATE_ENDED:
-                    record();
-                    notifyPlayStop();
                     if (playWhenReady) {
                         playCompletion();
+                    } else {
+                        notifyPause();
                     }
                     break;
 
@@ -1027,26 +825,24 @@ public class MusicService extends Service {
         public void onPlayerError(ExoPlaybackException error) {
             final String what;
             currentURL = null;
-            notifyError();
             switch (error.type) {
                 case ExoPlaybackException.TYPE_SOURCE:
                     what = error.getSourceException().getMessage();
                     record();
-                    MusicService.this.stopSelf();
                     break;
                 case ExoPlaybackException.TYPE_RENDERER:
                     what = error.getRendererException().getMessage();
                     record();
-                    MusicService.this.stopSelf();
                     break;
                 case ExoPlaybackException.TYPE_UNEXPECTED:
                     what = error.getUnexpectedException().getMessage();
                     record();
-                    MusicService.this.stopSelf();
                     break;
                 default:
                     what = "Unknown: " + error;
             }
+            musicStop();
+            MusicService.this.stopSelf();
             Log.d("aaa", "onPlayerError------" + what + "------" + mWifiLock.isHeld() + "--------" + error.type);
         }
 
@@ -1065,5 +861,248 @@ public class MusicService extends Service {
             Log.d("aaa", "onSeekProcessed");
         }
     }
+
+
+    private MediaSessionCompat.Callback mCallback = new MediaSessionCompat.Callback() {
+
+        @Override
+        public void onPlay() {
+            super.onPlay();
+            msg = PLAY_MSG;
+            if (mExoPlayer != null) {
+                mExoPlayer.setPlayWhenReady(true);
+            }
+        }
+
+
+        @Override
+        public void onStop() {
+            super.onStop();
+            musicStop();
+        }
+
+        @Override
+        public void onPlayFromSearch(String query, Bundle extras) {
+            super.onPlayFromSearch(query, extras);
+            Log.d("aaa", "播放搜索内容");
+            extras.setClassLoader(getClass().getClassLoader());
+            msg = PLAY_MSG;
+            currentPlayVO = extras.getParcelable("vo");
+            ArrayList<DBChapter> list = extras.getParcelableArrayList("data");
+            if (list != null && !list.isEmpty()) {
+                playQueue = list;
+            }
+            DBListenHistory history = MusicDBController.getListenHistoryByChapterId(currentPlayVO.getChapterId());
+            if (history != null) {
+                if (history.getTotal() != 0 && history.getDuration() * 100 / history.getTotal() < 95) {
+                    msg = PLAY_SEEK_TIME_MSG;
+                    time = history.getDuration();
+                    currentPlayVO = UtilListener.dBListenHistoryToDBChapter(history);
+                    play();
+                } else {
+                    if (!TextUtils.isEmpty(currentPlayVO.getUrl())) {
+                        play();
+                    }
+                }
+            } else {
+                if (!TextUtils.isEmpty(currentPlayVO.getUrl())) {
+                    play();
+                }
+            }
+
+        }
+
+
+        @Override
+        public void onPause() {
+            super.onPause();
+            msg = PAUSE_MSG;
+            pause();
+        }
+
+        @Override
+        public void onSeekTo(long pos) {
+            super.onSeekTo(pos);
+            time = pos;
+            Log.d("aaa", "onSeekTo-----" + pos);
+            if (mExoPlayer != null) {
+                mExoPlayer.seekTo(pos);
+            }
+        }
+
+
+        @Override
+        public void onPrepare() {
+            super.onPrepare();
+        }
+
+
+        @Override
+        public void onSkipToNext() {
+            super.onSkipToNext();
+            int currentPosition = getCurrPlayPostion();
+            if (currentPosition == -1 && currentPosition == -2) {
+                BaseToast.makeText(MusicService.this, "后面没有更多章节").show();
+                return;
+            }
+            if (playQueue != null && !playQueue.isEmpty()) {
+                if (currentPosition < playQueue.size() - 1) {
+                    DBChapter vo = playQueue.get(currentPosition + 1);
+                    if (TextUtils.isEmpty(vo.getUrl())) {
+                        BaseToast.makeText(MusicService.this, "下一章节收费").show();
+                    } else {
+                        record();
+                        currentPlayVO = vo;
+                        play();
+                    }
+                } else {
+                    if (currentPlayVO.getPosition() % 50 == 0) {
+                        record();
+                        loadData(2, (currentPlayVO.getPosition() - 1) / 50 + 2);
+                    } else {
+                        BaseToast.makeText(MusicService.this, "后面没有更多章节").show();
+                    }
+                }
+            } else {
+                BaseToast.makeText(MusicService.this, "后面没有更多章节").show();
+            }
+        }
+
+        @Override
+        public void onSkipToPrevious() {
+            super.onSkipToPrevious();
+            int currentPosition = getCurrPlayPostion();
+            if (currentPosition == -1 || currentPosition == -2) {
+                BaseToast.makeText(MusicService.this, "前面没有更多章节").show();
+                return;
+            }
+            if (playQueue != null && !playQueue.isEmpty()) {
+                if (currentPosition == 0) {
+                    if (currentPlayVO.getPosition() == 1) {
+                        BaseToast.makeText(MusicService.this, "前面没有更多章节").show();
+                    } else {
+                        if ((currentPlayVO.getPosition() - 1) % 50 == 0) {
+                            record();
+                            loadData(1, (currentPlayVO.getPosition() - 1) / 50);
+                        } else {
+                            BaseToast.makeText(MusicService.this, "前面没有更多章节").show();
+                        }
+                    }
+                } else {
+                    DBChapter vo = playQueue.get(currentPosition - 1);
+                    if (TextUtils.isEmpty(vo.getUrl())) {
+                        BaseToast.makeText(MusicService.this, "前一章节收费").show();
+                    } else {
+                        record();
+                        currentPlayVO = vo;
+                        play();
+                    }
+                }
+            }
+        }
+
+        @Override
+        public void onCustomAction(String action, Bundle extras) {
+            super.onCustomAction(action, extras);
+            if (TextUtils.equals(action, MUSIC_SPEED)) {
+                speed = extras.getFloat("speed", 1.0f);
+                if (mExoPlayer != null) {
+                    PlaybackParameters playbackParameters = new PlaybackParameters(speed, 1.0F);
+                    mExoPlayer.setPlaybackParameters(playbackParameters);
+                    if (mState == State.Playing) {
+                        PlaybackStateCompat.Builder playbackstateBuilder = new PlaybackStateCompat.Builder();
+                        Bundle bundle = new Bundle();
+                        bundle.putLong("totalTime", mExoPlayer.getDuration());
+                        bundle.putString("chapterTitle", currentPlayVO.getTitle());
+                        bundle.putString("bookId", currentPlayVO.getBookId());
+                        bundle.putString("bookTitle", currentPlayVO.getBookTitle());
+                        bundle.putString("bookImage", currentPlayVO.getBookImage());
+                        bundle.putString("chapterId", currentPlayVO.getChapterId());
+                        bundle.putParcelableArrayList("playQueue", (ArrayList<? extends Parcelable>) playQueue);
+                        bundle.putInt("timer", timer);
+                        playbackstateBuilder.setExtras(bundle);
+                        playbackstateBuilder.setState(PlaybackStateCompat.STATE_PLAYING, mExoPlayer.getCurrentPosition(), speed, SystemClock.elapsedRealtime());
+                        mSessionCompat.setPlaybackState(playbackstateBuilder.build());
+                    }
+                }
+            } else if (TextUtils.equals(action, MUSIC_TIMER_START)) {
+                timer = extras.getInt("timer", -1);
+                if (timer == 0) {
+                    currentPlayComplete = true;
+                    timer = (int) ((mExoPlayer.getDuration() - mExoPlayer.getCurrentPosition()) / 1000 + 10);
+                }
+                if (tTimer != null) {
+                    tTimer.cancel();
+                    tTimer = null;
+                }
+                Bundle bundle = new Bundle();
+                bundle.putString("model", MUSIC_TIMER_START);
+                bundle.putInt("timer", timer);
+                mSessionCompat.setExtras(bundle);
+                if (timer != -1) {
+                    tTimer = new Timer();
+                    tTimer.schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            if (timer <= 1) {
+                                tTimer.cancel();
+                                tTimer = null;
+                                record();
+                                musicStop();
+                            } else {
+                                timer--;
+                                mSessionCompat.getController().getPlaybackState().getExtras().putInt("timer", timer);
+                            }
+
+                        }
+                    }, 0, 1000);
+                }
+            } else if (TextUtils.equals(action, MUSIC_TIMER_STOP)) {
+                currentPlayComplete = false;
+                if (tTimer != null) {
+                    tTimer.cancel();
+                    tTimer = null;
+                }
+                timer = -1;
+                Bundle bundle = new Bundle();
+                bundle.putString("model", MUSIC_TIMER_STOP);
+                mSessionCompat.setExtras(bundle);
+            }
+        }
+
+        @Override
+        public boolean onMediaButtonEvent(Intent mediaButtonEvent) {
+            KeyEvent event = mediaButtonEvent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
+            if (event.getKeyCode() == KeyEvent.KEYCODE_MEDIA_STOP && event.getAction() == KeyEvent.ACTION_DOWN) {
+                mState = State.Stopped;
+                record();
+                musicStop();
+                MusicService.this.stopSelf();
+            } else if (event.getKeyCode() == KeyEvent.KEYCODE_MEDIA_PAUSE && event.getAction() == KeyEvent.ACTION_DOWN) {
+                record();
+                pause();
+                notifyPause();
+            } else if (event.getKeyCode() == KeyEvent.KEYCODE_MEDIA_PLAY && event.getAction() == KeyEvent.ACTION_DOWN) {
+                record();
+                if (mExoPlayer != null) {
+                    mExoPlayer.setPlayWhenReady(true);
+                } else {
+                    play();
+                }
+            } else if (event.getKeyCode() == KeyEvent.KEYCODE_HEADSETHOOK && event.getAction() == KeyEvent.ACTION_DOWN) {
+                if (mState == State.Playing) {
+                    pause();
+                } else {
+                    if (mExoPlayer != null) {
+                        mExoPlayer.setPlayWhenReady(true);
+                    } else {
+                        play();
+                    }
+                }
+            }
+            return super.onMediaButtonEvent(mediaButtonEvent);
+        }
+    };
+
 
 }

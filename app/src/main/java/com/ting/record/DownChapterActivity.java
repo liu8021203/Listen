@@ -4,9 +4,6 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.TextView;
 
 import com.ting.R;
 import com.ting.base.BaseActivity;
@@ -96,6 +93,6 @@ public class DownChapterActivity extends BaseActivity{
     }
 
     public void showEmpty(){
-        errorEmpty("还没有下载的章节");
+        showErrorEmpty("还没有下载的章节");
     }
 }

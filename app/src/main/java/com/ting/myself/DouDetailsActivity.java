@@ -137,6 +137,6 @@ public class DouDetailsActivity extends BaseActivity implements OnLoadMoreListen
     @Override
     public void onLoadMore() {
         page++;
-        getData(BaseObserver.MODEL_SHOW_TOAST);
+        getData(BaseObserver.MODEL_ONLY_SHOW_TOAST);
     }
 }

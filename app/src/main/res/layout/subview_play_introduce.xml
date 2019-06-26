@@ -6,34 +6,43 @@
               android:layout_height="match_parent"
               android:orientation="vertical">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:padding="2dip"
-        android:background="#f3fbfe">
+        android:layout_height="@dimen/dp750_70"
+        android:background="@color/white"
+        android:orientation="horizontal">
 
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@mipmap/book_details_notice"/>
-
+        <View
+            android:layout_width="@dimen/dp750_6"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="8dip"
+            android:layout_marginTop="8dip"
+            android:background="#46bafc"></View>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="14sp"
-            android:singleLine="true"
-            android:ellipsize="marquee"
-            android:focusable="true"
-            android:layout_marginLeft="3dip"
-            android:marqueeRepeatLimit="-1"
-            android:focusableInTouchMode="true"
-            android:text="听世界作品由主播自主上传和运营，平台不参与制作和销售，如有问题，请及时与我们联系!!!"/>
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dip"
+            android:text="听友评论"
+            android:textColor="#666666"
+            android:textSize="13sp"/>
 
-    </LinearLayout>
+        <TextView
+            android:id="@+id/tv_comment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/dpx20"
+            android:drawableLeft="@mipmap/book_details_comment"
+            android:drawablePadding="4dip"
+            android:gravity="center_vertical"
+            android:text="写评论"
+            android:textColor="#808080"
+            android:textSize="13sp"/>
+    </RelativeLayout>
     <com.aspsine.swipetoloadlayout.SwipeToLoadLayout
         android:id="@+id/swipeToLoadLayout"
         android:layout_width="match_parent"

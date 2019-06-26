@@ -91,12 +91,12 @@ public class PlayListDialogAdapter extends RecyclerView.Adapter<PlayListDialogAd
         downloadReceiver = new DownloadReceiver();
         activity.registerReceiver(downloadReceiver, intentFilter);
         IntentFilter intentFilterPlayState = new IntentFilter();
-        intentFilterPlayState.addAction(MusicService.MUSIC_LOADING);
-        intentFilterPlayState.addAction(MusicService.MUSIC_PLAY);
-        intentFilterPlayState.addAction(MusicService.MUSIC_PAUSE);
-        intentFilterPlayState.addAction(MusicService.MUSIC_COMPLETE);
-        intentFilterPlayState.addAction(MusicService.MUSIC_ERROR);
-        intentFilterPlayState.addAction(MusicService.MUSIC_DATA_UPDATE);
+//        intentFilterPlayState.addAction(MusicService.MUSIC_LOADING);
+//        intentFilterPlayState.addAction(MusicService.MUSIC_PLAY);
+//        intentFilterPlayState.addAction(MusicService.MUSIC_PAUSE);
+//        intentFilterPlayState.addAction(MusicService.MUSIC_COMPLETE);
+//        intentFilterPlayState.addAction(MusicService.MUSIC_ERROR);
+//        intentFilterPlayState.addAction(MusicService.MUSIC_DATA_UPDATE);
         mPlayListReceiver = new PlayListReceiver();
         activity.registerReceiver(mPlayListReceiver, intentFilterPlayState);
         controller = new DownloadController();
@@ -491,29 +491,29 @@ public class PlayListDialogAdapter extends RecyclerView.Adapter<PlayListDialogAd
             loadCid = -1;
             String action = intent.getAction();
             Log.d("aaa", "PlayListDialog===========action=====" + action);
-            switch (action) {
-                case MusicService.MUSIC_LOADING:
-                    loadCid = intent.getIntExtra("cid", -1);
-                    notifyDataSetChanged();
-                    break;
-                case MusicService.MUSIC_PLAY:
-                    notifyDataSetChanged();
-                    break;
-                case MusicService.MUSIC_COMPLETE:
-                    notifyDataSetChanged();
-                    break;
-                case MusicService.MUSIC_PAUSE:
-                    notifyDataSetChanged();
-                    break;
-                case MusicService.MUSIC_ERROR:
-                    notifyDataSetChanged();
-                    break;
-                case MusicService.MUSIC_DATA_UPDATE:
-                    PlayListVO vo = intent.getParcelableExtra("data");
-                    data = vo.getData();
-                    notifyDataSetChanged();
-                    break;
-            }
+//            switch (action) {
+//                case MusicService.MUSIC_LOADING:
+//                    loadCid = intent.getIntExtra("cid", -1);
+//                    notifyDataSetChanged();
+//                    break;
+//                case MusicService.MUSIC_PLAY:
+//                    notifyDataSetChanged();
+//                    break;
+//                case MusicService.MUSIC_COMPLETE:
+//                    notifyDataSetChanged();
+//                    break;
+//                case MusicService.MUSIC_PAUSE:
+//                    notifyDataSetChanged();
+//                    break;
+//                case MusicService.MUSIC_ERROR:
+//                    notifyDataSetChanged();
+//                    break;
+//                case MusicService.MUSIC_DATA_UPDATE:
+//                    PlayListVO vo = intent.getParcelableExtra("data");
+//                    data = vo.getData();
+//                    notifyDataSetChanged();
+//                    break;
+//            }
             Log.d("aaa", "cid======" + loadCid);
         }
     }

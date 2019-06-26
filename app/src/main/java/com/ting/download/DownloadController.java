@@ -84,6 +84,31 @@ public class DownloadController {
         }
     }
 
+    public static DBChapter queryDBChapter(String bookId, String chapterId){
+        DBChapterDao dao = BaseApplication.getInstance().getDaoSession().getDBChapterDao();
+        List<DBChapter> data = dao.queryRaw("where BOOK_ID = ? AND CHAPTER_ID = ?", new String[]{bookId, chapterId});
+        if(data != null && !data.isEmpty()){
+            return data.get(0);
+        }else{
+            return null;
+        }
+    }
+
+
+    public DBChapter queryByBookIdAndPosition(String bookId, String position)
+    {
+        DBChapterDao dao = BaseApplication.getInstance().getDaoSession().getDBChapterDao();
+        List<DBChapter> data = dao.queryRaw("where BOOK_ID = ? and POSITION = ?", new String[]{bookId, position});
+        if(data == null || data.size() == 0)
+        {
+            return null;
+        }
+        else
+        {
+            return data.get(0);
+        }
+    }
+
     public List<DBChapter> queryData(String BOOK_ID, String STATE)
     {
         DBChapterDao dao = BaseApplication.getInstance().getDaoSession().getDBChapterDao();
@@ -143,6 +168,11 @@ public class DownloadController {
     }
 
 
-
+    public static List<DBChapter> queryDataAsc(String BOOK_ID, String STATE)
+    {
+        DBChapterDao dao = BaseApplication.getInstance().getDaoSession().getDBChapterDao();
+        List<DBChapter> data = dao.queryRaw("where BOOK_ID = ? and STATE = ? order by position asc", new String[]{BOOK_ID, STATE});
+        return data;
+    }
 
 }

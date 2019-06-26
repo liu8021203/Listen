@@ -30,7 +30,7 @@
 
     <!-- ###################播放权限###################### -->
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>ScanC
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
     <uses-permission android:name="android.permission.VIBRATE"/>
@@ -155,6 +155,16 @@
             android:label="热门推荐"
             android:screenOrientation="portrait"
             android:theme="@style/BaseAppTheme">
+
+
+        </activity>
+
+
+
+        <activity
+            android:name=".myself.BuyBookActivity"
+            android:label="已购书籍"
+            android:screenOrientation="portrait">
 
 
         </activity>
@@ -354,15 +364,28 @@
         <!-- *************************音乐播放Service*********************************** -->
         <service
             android:name="com.ting.play.service.MusicService"
-            android:exported="false"/>
+            android:exported="false">
+
+            <intent-filter>
+                <action android:name="android.media.browse.MediaBrowserService" />
+            </intent-filter>
+
+        </service>
+
+
+        <receiver android:name="android.support.v4.media.session.MediaButtonReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+            </intent-filter>
+        </receiver>
 
         <service android:name=".download.DownLoadService"></service>
 
-        <receiver android:name=".play.receiver.MyRemoteControlEventReceiver">
-            <intent-filter>
-                <action android:name="android.intent.action.MEDIA_BUTTON"/>
-            </intent-filter>
-        </receiver>
+        <!--<receiver android:name=".play.receiver.MyRemoteControlEventReceiver">-->
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MEDIA_BUTTON"/>-->
+            <!--</intent-filter>-->
+        <!--</receiver>-->
         <!--下载广播 -->
         <receiver android:name=".download.receiver.ApkInstallReceiver">
             <intent-filter>

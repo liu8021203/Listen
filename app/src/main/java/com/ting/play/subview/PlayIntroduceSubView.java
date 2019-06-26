@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.aspsine.swipetoloadlayout.OnLoadMoreListener;
 import com.aspsine.swipetoloadlayout.SwipeToLoadLayout;
@@ -13,20 +14,25 @@ import com.ting.base.BaseObserver;
 import com.ting.bean.BaseResult;
 import com.ting.bean.BookResult;
 import com.ting.bean.CommentListResult;
+import com.ting.bean.vo.CommentListVO;
 import com.ting.common.AppData;
 import com.ting.common.TokenManager;
 import com.ting.common.http.HttpService;
+import com.ting.login.LoginMainActivity;
 import com.ting.play.BookDetailsActivity;
 import com.ting.play.adapter.CommentAdapter;
 import com.ting.bean.play.MessageResult;
 import com.ting.bean.play.CommentResult;
+import com.ting.play.dialog.SendMessDialog;
 import com.ting.util.UtilFileManage;
 import com.ting.util.UtilGson;
 import com.ting.util.UtilMD5Encryption;
 import com.ting.util.UtilNetStatus;
 import com.ting.util.UtilRetrofit;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -36,7 +42,7 @@ import io.reactivex.schedulers.Schedulers;
  * Created by gengjiajia on 15/9/6.
  * 播放之详情界面
  */
-public class PlayIntroduceSubView extends LinearLayout implements OnLoadMoreListener {
+public class PlayIntroduceSubView extends LinearLayout implements OnLoadMoreListener, View.OnClickListener {
     private BookDetailsActivity activity;
     private View playIntroduceSubView;
     private SwipeToLoadLayout mSwipeToLoadLayout;
@@ -44,6 +50,7 @@ public class PlayIntroduceSubView extends LinearLayout implements OnLoadMoreList
     private CommentAdapter adapter;
     private int page = 1;//评论制定的查询页数;
     private String bookId;
+    private TextView tvComment;
 
     public PlayIntroduceSubView(BookDetailsActivity activity, String bookId) {
         super(activity);
@@ -61,6 +68,8 @@ public class PlayIntroduceSubView extends LinearLayout implements OnLoadMoreList
         LinearLayoutManager manager = new LinearLayoutManager(activity);
         mCommentRecycle.setLayoutManager(manager);
         mCommentRecycle.setAdapter(adapter);
+        tvComment = playIntroduceSubView.findViewById(R.id.tv_comment);
+        tvComment.setOnClickListener(this);
     }
 
     public void initData() {
@@ -86,13 +95,9 @@ public class PlayIntroduceSubView extends LinearLayout implements OnLoadMoreList
                 super.success(data);
                 mSwipeToLoadLayout.setLoadingMore(false);
                 BookResult result = data.getData();
-                activity.setBookTitle(result.getBookData().getBookTitle());
-                activity.setCardData(result.getCardData());
                 if (adapter == null) {
                     adapter = new CommentAdapter(activity);
                     adapter.setData(result.getCommentData().getCommentList());
-                    adapter.setBookDataVO(result.getBookData());
-                    adapter.setBookId(bookId);
                     mCommentRecycle.setAdapter(adapter);
                 } else {
                     if (type == 0) {
@@ -123,7 +128,7 @@ public class PlayIntroduceSubView extends LinearLayout implements OnLoadMoreList
         }
         map.put("page", String.valueOf(page));
         map.put("size", "10");
-        BaseObserver baseObserver = new BaseObserver<BaseResult<CommentListResult>>(activity, BaseObserver.MODEL_SHOW_TOAST) {
+        BaseObserver baseObserver = new BaseObserver<BaseResult<CommentListResult>>(activity, BaseObserver.MODEL_ONLY_SHOW_TOAST) {
             @Override
             public void success(BaseResult<CommentListResult> data) {
                 super.success(data);
@@ -164,5 +169,36 @@ public class PlayIntroduceSubView extends LinearLayout implements OnLoadMoreList
     public void onLoadMore() {
         page++;
         loadMoreComments();
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.tv_comment:
+
+                if (!TokenManager.isLogin(activity)) {
+                    activity.intent(LoginMainActivity.class);
+                } else {
+                    SendMessDialog dialog = new SendMessDialog(activity);
+                    dialog.setListener(new SendMessDialog.SendMessageCallBackListener() {
+                        @Override
+                        public void callback(CommentListVO vo) {
+                            if(adapter != null){
+                                adapter.addVO(vo);
+                                adapter.notifyDataSetChanged();
+                            }else{
+                                List<CommentListVO> commentList = new ArrayList<>();
+                                commentList.add(vo);
+                                adapter = new CommentAdapter(activity);
+                                adapter.setData(commentList);
+                                mCommentRecycle.setAdapter(adapter);
+                            }
+                        }
+                    });
+                    dialog.setBookId(bookId);
+                    dialog.show();
+                }
+                break;
+        }
     }
 }

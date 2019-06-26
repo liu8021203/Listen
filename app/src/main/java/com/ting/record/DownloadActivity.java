@@ -6,7 +6,6 @@ import android.support.v7.widget.RecyclerView;
 
 import com.ting.R;
 import com.ting.base.BaseActivity;
-import com.ting.db.DBBook;
 import com.ting.db.DBChapter;
 import com.ting.download.DownloadController;
 import com.ting.record.adapter.DownBookAdapter;
@@ -87,6 +86,6 @@ public class DownloadActivity extends BaseActivity{
 
 
     public void showEmpty(){
-        errorEmpty("还没有下载的书籍~");
+        showErrorEmpty("还没有下载的书籍~");
     }
 }

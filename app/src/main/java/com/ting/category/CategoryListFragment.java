@@ -46,14 +46,14 @@ public class CategoryListFragment extends BaseFragment {
             @Override
             public void onLoadMore() {
                 page++;
-                requestData(BaseObserver.MODEL_SHOW_TOAST, page);
+                requestData(BaseObserver.MODEL_ONLY_SHOW_TOAST, page);
             }
         });
     }
 
     @Override
     protected void initData() {
-        requestData(BaseObserver.MODEL_SHOW_PROGRESSBAR, 1);
+        requestData(BaseObserver.MODEL_SHOW_PROGRESSBAR_LAYOUT, 1);
     }
 
     @Override
@@ -79,7 +79,7 @@ public class CategoryListFragment extends BaseFragment {
 
     @Override
     protected void reload() {
-        requestData(BaseObserver.MODEL_SHOW_PROGRESSBAR, 1);
+        requestData(BaseObserver.MODEL_SHOW_PROGRESSBAR_LAYOUT, 1);
     }
 
     private void requestData(final int model, final int p) {
@@ -88,7 +88,7 @@ public class CategoryListFragment extends BaseFragment {
             public void success(BaseResult<CategoryListResult> data) {
                 super.success(data);
                 CategoryListResult result = data.getData();
-                if (model == BaseObserver.MODEL_SHOW_PROGRESSBAR) {
+                if (model == BaseObserver.MODEL_SHOW_PROGRESSBAR_LAYOUT) {
                     if (result.getList() != null && !result.getList().isEmpty()) {
                         if (mAdapter == null) {
                             mAdapter = new CategoryListAdapter(mActivity);

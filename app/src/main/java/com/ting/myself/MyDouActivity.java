@@ -47,7 +47,6 @@ public class MyDouActivity extends BaseActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.frame_my_dou);
-        showRightText("明细");
     }
 
     @Override
@@ -135,9 +134,7 @@ public class MyDouActivity extends BaseActivity {
     public void onClick(View v) {
         super.onClick(v);
         switch (v.getId()){
-            case R.id.tv_right:
-                intent(DouDetailsActivity.class);
-                break;
+
             case R.id.btn_vip:
                 if(TextUtils.isEmpty(vipPrice)) {
                     btnVIP.setEnabled(false);

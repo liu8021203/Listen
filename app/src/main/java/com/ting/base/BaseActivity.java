@@ -191,7 +191,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
     }
 
 
-    protected void errorEmpty(){
+    protected void showErrorEmpty(){
         flContent.setVisibility(View.GONE);
         if(stubError == null){
             stubError = findViewById(R.id.view_stub_error);
@@ -208,7 +208,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
     }
 
 
-    protected void errorEmpty(String str){
+    protected void showErrorEmpty(String str){
         flContent.setVisibility(View.GONE);
         if(stubError == null){
             stubError = findViewById(R.id.view_stub_error);

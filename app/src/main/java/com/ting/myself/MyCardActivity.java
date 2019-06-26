@@ -8,11 +8,9 @@ import com.ting.R;
 import com.ting.base.BaseActivity;
 import com.ting.base.BaseObserver;
 import com.ting.bean.BaseResult;
-import com.ting.bean.myself.MyCardResult;
 import com.ting.bean.vo.CardListVO;
 import com.ting.common.TokenManager;
 import com.ting.common.http.HttpService;
-import com.ting.constant.StaticConstant;
 import com.ting.myself.adapter.ListenerCardAdapter;
 import com.ting.util.UtilRetrofit;
 import com.ting.view.CustomItemDecoration;
@@ -65,7 +63,7 @@ public class MyCardActivity extends BaseActivity {
                     adapter.setData(list);
                     mRecyclerView.setAdapter(adapter);
                 }else{
-                    errorEmpty("还没有主播听书卡，快去购买吧。");
+                    showErrorEmpty("还没有主播听书卡，快去购买吧。");
                 }
             }
         };

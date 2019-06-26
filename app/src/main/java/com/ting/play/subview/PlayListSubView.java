@@ -177,7 +177,7 @@ public class PlayListSubView extends LinearLayout implements View.OnClickListene
             mSmartRefreshLayout.setVisibility(View.GONE);
             networkErrorLayout.setVisibility(View.GONE);
         }
-        BaseObserver baseObserver = new BaseObserver<BaseResult<ChapterResult>>(activity, BaseObserver.MODEL_SHOW_TOAST) {
+        BaseObserver baseObserver = new BaseObserver<BaseResult<ChapterResult>>(activity, BaseObserver.MODEL_ONLY_SHOW_TOAST) {
             @Override
             public void success(BaseResult<ChapterResult> data) {
                 super.success(data);
@@ -318,5 +318,13 @@ public class PlayListSubView extends LinearLayout implements View.OnClickListene
 
     public int getNextPage() {
         return nextPage;
+    }
+
+
+    public void notifyPlayStateChange(){
+        if(playListAdapter != null){
+            playListAdapter.initHistory();
+            playListAdapter.notifyDataSetChanged();
+        }
     }
 }

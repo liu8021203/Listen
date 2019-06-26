@@ -45,9 +45,9 @@ public class PlayViewPagerAdapter extends PagerAdapter {
     @Override
     public CharSequence getPageTitle(int position) {
         if(position == 0){
-            return "书籍·详情";
+            return "评论";
         }else{
-            return  "目录·下载";
+            return  "章节";
         }
     }
 }
