@@ -2,8 +2,6 @@ package com.ting.common.http;
 
 import com.ting.bean.BaseResult;
 
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;

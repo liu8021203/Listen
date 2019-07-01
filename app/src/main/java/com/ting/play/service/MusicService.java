@@ -760,9 +760,11 @@ public class MusicService extends MediaBrowserServiceCompat {
 
     private final class ExoPlayerEventListener implements ExoPlayer.EventListener {
 
+
+
         @Override
-        public void onTimelineChanged(Timeline timeline, Object manifest) {
-            Log.d("aaa", "onTimelineChanged");
+        public void onTimelineChanged(Timeline timeline, Object manifest, int reason) {
+
         }
 
         @Override
