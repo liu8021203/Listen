@@ -598,6 +598,7 @@ public class PlayActivity extends PlayerBaseActivity {
         super.notifyServiceConnected();
 
         if (getPlaybackStateCompat() != null) {
+
             Bundle bundle = getPlaybackStateCompat().getExtras();
             if (bundle != null) {
                 String currentPlayBookId = bundle.getString("bookId", "-1");
@@ -649,28 +650,31 @@ public class PlayActivity extends PlayerBaseActivity {
                         music_seekbar.setMax((int) duration);
                     }
                     if (getPlaybackStateCompat().getState() == PlaybackStateCompat.STATE_PLAYING) {
-
+                        Log.d("aaa", "notifyServiceConnected==========STATE_PLAYING");
                         playQueue = bundle.getParcelableArrayList("playQueue");
                         updateProgress();
-                        if (getPlaybackStateCompat().getState() == PlaybackStateCompat.STATE_PLAYING) {
-                            animator.start();
-                            ivPlay.setImageResource(R.drawable.vector_play);
-                            scheduleSeekbarUpdate();
-                        }
+                        animator.start();
+                        ivPlay.setImageResource(R.drawable.vector_play);
+                        scheduleSeekbarUpdate();
                     } else if (getPlaybackStateCompat().getState() == PlaybackStateCompat.STATE_PAUSED) {
+                        Log.d("aaa", "notifyServiceConnected==========STATE_PAUSED");
                         playQueue = bundle.getParcelableArrayList("playQueue");
                         notifyPause();
                         updateProgress();
                     } else if (getPlaybackStateCompat().getState() == PlaybackStateCompat.STATE_STOPPED) {
+                        Log.d("aaa", "notifyServiceConnected==========STATE_STOPPED");
                         loadingPlayData();
                     } else if (getPlaybackStateCompat().getState() == PlaybackStateCompat.STATE_ERROR) {
+                        Log.d("aaa", "notifyServiceConnected==========STATE_ERROR");
                         loadingPlayData();
                     }
                 }
             } else {
+                Log.d("aaa", "notifyServiceConnected==========Bundle为空");
                 loadingPlayData();
             }
         } else {
+            Log.d("aaa", "notifyServiceConnected==========没有播放状态");
             if (animator.isRunning()) {
                 notifyStop();
             }

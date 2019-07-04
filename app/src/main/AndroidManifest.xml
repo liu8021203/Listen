@@ -363,7 +363,8 @@
         <!-- *************************音乐播放Service*********************************** -->
         <service
             android:name="com.ting.play.service.MusicService"
-            android:exported="false">
+            android:exported="false"
+            android:process=":tingshijie">
 
             <intent-filter>
                 <action android:name="android.media.browse.MediaBrowserService" />

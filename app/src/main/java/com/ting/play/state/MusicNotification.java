@@ -113,7 +113,7 @@ public class MusicNotification {
 
 
     public void notifyInit(String bookName, String cateName, String pic) {
-        Log.d("aaa", "notifyInit");
+        Log.d("aaa", "MusicNotification==============notifyInit");
         notification.contentView.setTextViewText(
                 R.id.play_notification_album_name, bookName);
         notification.contentView.setTextViewText(

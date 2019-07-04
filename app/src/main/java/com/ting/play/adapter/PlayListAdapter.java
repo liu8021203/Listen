@@ -41,7 +41,6 @@ import com.ting.login.LoginMainActivity;
 import com.ting.myself.MyDouActivity;
 import com.ting.play.BookDetailsActivity;
 import com.ting.play.PlayActivity;
-import com.ting.play.controller.MusicController;
 import com.ting.play.controller.MusicDBController;
 import com.ting.play.dialog.PlayListDialog;
 import com.ting.play.dialog.PlayListPayDialog;
@@ -74,7 +73,6 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.ItemVi
     private LayoutInflater inflater;
     private List<DBChapter> data;//分集详情;
     private List<CardVO> cardData;
-    private MusicController mMusicController;
     private DownloadController controller;
 
     private DownloadReceiver downloadReceiver;
@@ -113,7 +111,6 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.ItemVi
         downloadReceiver = new DownloadReceiver();
         activity.registerReceiver(downloadReceiver, intentFilter);
         controller = new DownloadController();
-        mMusicController = new MusicController(activity);
         musicDBController = new MusicDBController();
         initData();
         initHistory();

@@ -1,12 +1,7 @@
 package com.ting.play.adapter;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,19 +10,13 @@ import android.widget.TextView;
 
 import com.ting.R;
 import com.ting.base.BaseActivity;
-import com.ting.bean.play.PlayListVO;
-import com.ting.bean.play.PlayingVO;
 import com.ting.common.AppData;
 import com.ting.db.DBChapter;
 import com.ting.db.DBListenHistory;
 import com.ting.download.DownloadController;
-import com.ting.play.BookDetailsActivity;
-import com.ting.play.controller.MusicController;
 import com.ting.play.controller.MusicDBController;
 import com.ting.play.dialog.DeleteDialog;
-import com.ting.play.service.MusicService;
 import com.ting.view.AnimView;
-import com.ting.view.CircleProgressBar;
 import com.ting.view.ColorfulRingProgressView;
 
 import java.util.List;
@@ -46,8 +35,6 @@ public class OfflinePlayListAdapter extends RecyclerView.Adapter<OfflinePlayList
     private DeleteOnClickListener deleteOnClickListener;
     private ItemOnClickListener mItemOnClickListener;
     private DBListenHistory mHistory;
-    private MusicController mMusicController;
-    private PlayListReceiver mPlayListReceiver;
 
 
     public OfflinePlayListAdapter(BaseActivity activity, int bookId) {
@@ -57,18 +44,8 @@ public class OfflinePlayListAdapter extends RecyclerView.Adapter<OfflinePlayList
         controller = new DownloadController();
         deleteOnClickListener = new DeleteOnClickListener();
         this.mItemOnClickListener = new ItemOnClickListener();
-        mMusicController = new MusicController(activity);
         musicDBController = new MusicDBController();
         mHistory = musicDBController.getBookIdData(String.valueOf(bookId));
-
-        IntentFilter intentFilterPlayState = new IntentFilter();
-//        intentFilterPlayState.addAction(MusicService.MUSIC_LOADING);
-//        intentFilterPlayState.addAction(MusicService.MUSIC_PLAY);
-//        intentFilterPlayState.addAction(MusicService.MUSIC_PAUSE);
-//        intentFilterPlayState.addAction(MusicService.MUSIC_COMPLETE);
-//        intentFilterPlayState.addAction(MusicService.MUSIC_ERROR);
-        mPlayListReceiver = new PlayListReceiver();
-        activity.registerReceiver(mPlayListReceiver, intentFilterPlayState);
     }
 
 
@@ -208,49 +185,6 @@ public class OfflinePlayListAdapter extends RecyclerView.Adapter<OfflinePlayList
         }
     }
 
-    private class PlayListReceiver extends BroadcastReceiver {
 
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            Log.d("aaa", "action=====offlinePlayListAdapter=======" + action);
-//            switch (action) {
-//                case MusicService.MUSIC_LOADING:
-//                    notifyDataSetChanged();
-//                    break;
-//                case MusicService.MUSIC_PLAY:
-//                    notifyDataSetChanged();
-//                    if(activity instanceof BookDetailsActivity){
-//                        BookDetailsActivity detailsActivity = (BookDetailsActivity) activity;
-//                        detailsActivity.startAnim();
-//                    }
-//                    break;
-//                case MusicService.MUSIC_COMPLETE:
-//                    notifyDataSetChanged();
-//                    if(activity instanceof BookDetailsActivity){
-//                        BookDetailsActivity detailsActivity = (BookDetailsActivity) activity;
-//                        detailsActivity.stopAnim();
-//                    }
-//                    break;
-//                case MusicService.MUSIC_PAUSE:
-//                    notifyDataSetChanged();
-//                    if(activity instanceof BookDetailsActivity){
-//                        BookDetailsActivity detailsActivity = (BookDetailsActivity) activity;
-//                        detailsActivity.stopAnim();
-//                    }
-//                    break;
-//                case MusicService.MUSIC_ERROR:
-//                    notifyDataSetChanged();
-//                    if(activity instanceof BookDetailsActivity){
-//                        BookDetailsActivity detailsActivity = (BookDetailsActivity) activity;
-//                        detailsActivity.stopAnim();
-//                    }
-//                    break;
-//            }
-        }
-    }
 
-    public void unregister(){
-        activity.unregisterReceiver(mPlayListReceiver);
-    }
 }

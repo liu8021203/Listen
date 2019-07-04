@@ -78,8 +78,5 @@ public class OffLinePlayListDialog extends Dialog implements View.OnClickListene
     @Override
     public void dismiss() {
         super.dismiss();
-        if(mAdapter != null){
-            mAdapter.unregister();
-        }
     }
 }

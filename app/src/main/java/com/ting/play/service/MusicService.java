@@ -288,7 +288,7 @@ public class MusicService extends MediaBrowserServiceCompat {
         }
         releaseResources(false);
         unregisterAudioNoisyReceiver();
-        stopForeground(false);
+//        stopForeground(false);
         notifyPause();
     }
 
@@ -297,7 +297,7 @@ public class MusicService extends MediaBrowserServiceCompat {
     public void onDestroy() {
         Log.d("aaa", "MusicService--------onDestroy");
         super.onDestroy();
-
+        mState = State.Stopped;
     }
 
 
