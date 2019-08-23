@@ -28,7 +28,7 @@
 
 #-----------------不需要混淆第三方类库------------------------------------------------------------------
 -dontwarn android.support.v4.**                                             #去掉警告
--keep class android.support.v4.** { *; }                                    #过滤android.support.v4
+-keep class android.support.v4.** { *; }
 -keep interface android.support.v4.app.** { *; }
 -keep public class * extends android.support.v4.**
 -keep public class * extends android.app.Fragment
@@ -258,8 +258,21 @@ public static java.lang.String TABLENAME;
 -keep class com.ta.utdid2.** { *;}
 -keep class com.ut.device.** { *;}
 
-#-------------小米推送-------------
-#这里com.xiaomi.mipushdemo.DemoMessageRreceiver改成app中定义的完整类名
-#-keep class com.xiaomi.mipush.sdk.DemoMessageReceiver {*;}
-#可以防止一个误报的 warning 导致无法成功编译，如果编译使用的 Android 版本是 23。
--keep class com.xiaomi.**{ *; }
+#---------广点通--------
+-keep class com.qq.e.** {
+    public protected *;
+}
+-keep class android.support.v4.**{
+    public *;
+}
+-keep class android.support.v7.**{
+    public *;
+}
+-keep class MTT.ThirdAppInfoNew {
+            *;
+}
+-keep class com.tencent.** {
+    *;
+}
+-dontwarn dalvik.**
+-dontwarn com.tencent.smtt.**

@@ -16,6 +16,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.ting.R;
+import com.ting.anchor.AnchorMainActivity;
 import com.ting.anchor.dialog.GiftDialog;
 import com.ting.base.MessageEventBus;
 import com.ting.base.PlayerBaseActivity;
@@ -25,6 +26,7 @@ import com.ting.bean.BaseResult;
 import com.ting.bean.vo.BookDataVO;
 import com.ting.bean.vo.CardVO;
 import com.ting.bean.vo.GiftVO;
+import com.ting.bean.vo.HostInfoVO;
 import com.ting.common.AppData;
 import com.ting.common.GiftManager;
 import com.ting.common.TokenManager;
@@ -33,6 +35,7 @@ import com.ting.db.DBListenHistory;
 import com.ting.login.LoginMainActivity;
 import com.ting.play.adapter.PlayViewPagerAdapter;
 import com.ting.play.controller.MusicDBController;
+import com.ting.play.dialog.ContactDialog;
 import com.ting.play.dialog.ListenBookDialog;
 import com.ting.play.subview.PlayIntroduceSubView;
 import com.ting.play.subview.PlayListSubView;
@@ -97,6 +100,7 @@ public class BookDetailsActivity extends PlayerBaseActivity implements View.OnCl
     private List<CardVO> cardData;
     //书籍信息
     private BookDataVO mBookDataVO;
+    private HostInfoVO mInfoVO;
 
     private String bookId;//书页的ID;
     private String bookTitle;
@@ -148,6 +152,7 @@ public class BookDetailsActivity extends PlayerBaseActivity implements View.OnCl
         ivCover = findViewById(R.id.iv_cover);
         tvTitle = findViewById(R.id.tv_title);
         tvAnchor = findViewById(R.id.tv_anchor);
+        tvAnchor.setOnClickListener(this);
         tvIntroduce =  findViewById(R.id.tv_introduce);
         ivOpenClose =  findViewById(R.id.iv_open_close);
         ivOpenClose.setOnClickListener(this);
@@ -191,6 +196,7 @@ public class BookDetailsActivity extends PlayerBaseActivity implements View.OnCl
                 super.success(data);
                 BookResult result = data.getData();
                 mBookDataVO = data.getData().getBookData();
+                mInfoVO = data.getData().getHostInfo();
                 tvActionBarTitle.setText(mBookDataVO.getBookTitle());
                 BookDetailsActivity.this.cardData = result.getCardData();
 
@@ -295,34 +301,16 @@ public class BookDetailsActivity extends PlayerBaseActivity implements View.OnCl
                     isOpen = true;
                 }
                 break;
-            case R.id.rl_reward:
-                if(mBookDataVO == null || TextUtils.isEmpty(mBookDataVO.getHostId())){
-                   showToast("主播信息加载失败，请重新加载书籍");
-                   return;
+            case R.id.rl_reward: {
+                if (mInfoVO == null) {
+                    showToast("主播信息加载失败，请重新加载书籍");
+                    return;
                 }
-                if (!TokenManager.isLogin(this)) {
-                    intent(LoginMainActivity.class);
-                } else {
-                    if (GiftManager.getGifts() != null) {
-                        GiftDialog dialog = new GiftDialog(this);
-                        dialog.setHostId(mBookDataVO.getHostId());
-                        dialog.show();
-                    } else {
-                        BaseObserver baseObserver = new BaseObserver<BaseResult<List<GiftVO>>>(mActivity, BaseObserver.MODEL_SHOW_DIALOG_TOAST) {
-                            @Override
-                            public void success(BaseResult<List<GiftVO>> data) {
-                                super.success(data);
-                                GiftManager.setGifts(data.getData());
-                                GiftDialog dialog = new GiftDialog(mActivity);
-                                dialog.setHostId(mBookDataVO.getHostId());
-                                dialog.show();
-                            }
 
-                        };
-                        mDisposable.add(baseObserver);
-                        UtilRetrofit.getInstance().create(HttpService.class).gift().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
-                    }
-                }
+                ContactDialog dialog = new ContactDialog(mActivity);
+                dialog.setData(mInfoVO.getNickname(), mInfoVO.getContact());
+                dialog.show();
+            }
                 break;
             case R.id.rl_collect:
                 if(cardData != null && !cardData.isEmpty()) {
@@ -358,6 +346,16 @@ public class BookDetailsActivity extends PlayerBaseActivity implements View.OnCl
                 }
             }
             break;
+
+            case R.id.tv_anchor:
+                if (mInfoVO == null) {
+                    showToast("主播信息加载失败，请重新加载书籍");
+                    return;
+                }
+                Bundle bundle = new Bundle();
+                bundle.putString("anchorId", mInfoVO.getId());
+                mActivity.intent(AnchorMainActivity.class, bundle);
+                break;
 
             default:
                 break;

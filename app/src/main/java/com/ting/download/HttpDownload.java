@@ -19,7 +19,7 @@ public class HttpDownload {
     private Map<String, DBChapter> downloadMap = new HashMap<String, DBChapter>();
     public static HttpDownload downloadWork = null;
 
-    private Map<String, DownloadThread> downloadThreadMap = new HashMap<String, DownloadThread>();
+    private Map<String, DownloadManager> downloadThreadMap = new HashMap<String, DownloadManager>();
     private List<String> waitingList = new Vector();
     private List<String> threadList = new Vector();
     private boolean loading = false;
@@ -70,9 +70,9 @@ public class HttpDownload {
                                     if(!file.exists()){
                                         file.mkdirs();
                                     }
-                                    DownloadThread downloadThread = new DownloadThread(vo, file, downloadListener);
-                                    downloadThread.start();
-                                    downloadThreadMap.put(key, downloadThread);
+                                    DownloadManager manager = new DownloadManager();
+                                    manager.download(vo, file, downloadListener);
+                                    downloadThreadMap.put(key, manager);
                                 }
                             }
                             Thread.sleep(1000);
@@ -90,7 +90,7 @@ public class HttpDownload {
 
     public void stopDownload(DBChapter result) {
         String keyString = result.getBookId() + "" + result.getChapterId();
-        DownloadThread thread = downloadThreadMap.get(keyString);
+        DownloadManager thread = downloadThreadMap.get(keyString);
         if (thread != null) {
             thread.setPause();
         }

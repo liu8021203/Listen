@@ -100,6 +100,10 @@
                             android:ellipsize="end"
                             android:lines="1"
                             android:text=""
+                            android:gravity="center_vertical"
+                            android:includeFontPadding="false"
+                            android:drawableRight="@mipmap/gray_arrow_right"
+                            android:drawablePadding="4dp"
                             android:textColor="#5e5e5e"
                             android:textSize="14sp"/>
 
@@ -179,9 +183,10 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_centerInParent="true"
-                            android:drawableLeft="@drawable/vector_reward"
+                            android:drawableLeft="@mipmap/buy_tip"
+                            android:includeFontPadding="false"
                             android:drawablePadding="@dimen/dp750_20"
-                            android:text="打赏催更"
+                            android:text="购买须知"
                             android:textColor="#666666"
                             android:textSize="16sp"/>
                     </RelativeLayout>

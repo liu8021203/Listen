@@ -22,9 +22,8 @@ import javax.crypto.spec.SecretKeySpec;
  * Created by 汪常伟 on 2017/9/4.
  */
 
-public class AESHelper {
+public class UtilAES {
     public static final String VIPARA = "9321354325342543";
-    private static final String TAG = AESHelper.class.getSimpleName();
 
     /**
      * 初始化 AES Cipher

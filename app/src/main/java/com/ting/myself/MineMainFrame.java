@@ -1,6 +1,8 @@
 package com.ting.myself;
 
+import android.Manifest;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -24,17 +26,19 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import pub.devrel.easypermissions.EasyPermissions;
 
 /**
  * Created by gengjiajia on 15/8/31.
  * 我的主frame
  */
-public class MineMainFrame extends BaseFragment implements View.OnClickListener {
+public class MineMainFrame extends BaseFragment implements View.OnClickListener, EasyPermissions.PermissionCallbacks {
     private RelativeLayout rlMoney;
     private RelativeLayout rlScard;
     private RelativeLayout rlCollect;
@@ -49,6 +53,7 @@ public class MineMainFrame extends BaseFragment implements View.OnClickListener 
     private TextView tvLoginHint;
     private TextView tvName;
     private TextView tvMoney;
+//    private RelativeLayout rlJifen;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -143,6 +148,8 @@ public class MineMainFrame extends BaseFragment implements View.OnClickListener 
         rlBuy.setOnClickListener(this);
         rlMoneyDetails = flContent.findViewById(R.id.rl_money_details);
         rlMoneyDetails.setOnClickListener(this);
+//        rlJifen = flContent.findViewById(R.id.rl_jifen);
+//        rlJifen.setOnClickListener(this);
     }
 
     @Override
@@ -268,9 +275,38 @@ public class MineMainFrame extends BaseFragment implements View.OnClickListener 
                     intent(LoginMainActivity.class);
                 }
                 break;
+
+//            case R.id.rl_jifen:
+//                String[] perms = {Manifest.permission.READ_PHONE_STATE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+//                if(EasyPermissions.hasPermissions(mActivity, perms)){
+//                    OffersManager.getInstance(mActivity).showOffersWall();
+//                }else{
+//                    EasyPermissions.requestPermissions(this, "获取权限",
+//                            999, perms);
+//                }
+
+
+//                break;
             default:
                 break;
         }
     }
 
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        // Forward results to EasyPermissions
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    @Override
+    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
+    }
+
+    @Override
+    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
+
+    }
 }

@@ -104,8 +104,12 @@ public class ApkDownload {
             else if(status == DownloadManager.STATUS_FAILED)
             {
                 startDownload(url, title, "");
-            }else {
-                Logger.d("apk is already downloading");
+            }else if(status == DownloadManager.STATUS_PENDING){
+                Logger.d("apk is already pending");
+            }else if(status == DownloadManager.STATUS_RUNNING){
+                Logger.d("apk is already running");
+            } else {
+                startDownload(url, title, "");
             }
         }
         else {

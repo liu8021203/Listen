@@ -106,7 +106,7 @@ public class AESDataSource implements DataSource {
         if (Util.isLocalFileUri(dataSpec.uri)) {
             //如果路径尾包含aitrip的文件名，使用解密类
             Log.d("aaa", dataSpec.uri.getPath());
-            if (dataSpec.uri.getPath().endsWith(".yl")) {
+            if (dataSpec.uri.getPath().endsWith(".tsj")) {
                 TestDataSource aes128DataSource =
                         new TestDataSource();
                 dataSource = aes128DataSource;

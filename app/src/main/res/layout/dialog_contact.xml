@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/white_corner">
+
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:text="购买须知"
+        android:layout_centerHorizontal="true"/>
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="500dp"
+        android:layout_below="@+id/tv_title"
+        android:scrollbars="none"
+
+        >
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                      android:layout_width="match_parent"
+                      android:layout_height="match_parent"
+                      android:paddingBottom="10dp"
+                      android:paddingLeft="10dp"
+                      android:paddingRight="10dp"
+                      android:orientation="vertical">
+
+
+            <TextView
+                android:id="@+id/tv_contact"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:textSize="14sp"/>
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="遇到不能收听的任何问题 请联系听世界客服：QQ 51493492（微信可搜索此QQ号添加）"
+                android:textColor="@color/black"
+                android:textSize="14sp"/>
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="购买须知："
+                android:textColor="@color/black"
+                android:textSize="14sp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="作品收费行为属于主播/上传者行为，听世界不参录制与销售。"
+                android:textColor="@color/black"
+                android:textSize="14sp"
+                android:textStyle="bold"/>
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="1、购买：用户可在正常收听过程中，若遇到提示：本章节收费，可以充值听豆，在返回本作品用听豆进行购买，购买可选：单集购买（一集一集购买）；全集购买（所有章节打包购买，可听完全本，相比单集要优惠很多；）听书卡购买（按天数计算，月卡30天，只能收听该主播/上传者的所有作品。到期后自动上锁，购买方式：点击 订阅此书）"
+                android:textColor="@color/black"
+                android:textSize="14sp"/>
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="2、退款：用户购买作品后，听豆将直接进入主播账户，若有需要退听豆须跟主播协商，未消费的听豆，可以联系听世界客服进行退款。"
+                android:textColor="@color/black"
+                android:textSize="14sp"/>
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="版权及购买声明：\n
+听世界听书由乐清畅听网络科技有限公司研发（以下简称“本平台”），主要用于播音员/播客的有声作品展示交流之用，其方式为：有声主播（播音员/播客）可将作品上传到听世界后分享给自己的听众收听，其中有有偿收听的行为，均属用户跟主播之间的自愿行为，本平台不参与主播跟用户之间的任何交易行为，产生的任何纠纷跟本平台无关，本平台不录制销售任何有声制品，主播在上传有声作品时已签署版权风险告知书，若有任何有声读物中的版权纠纷问题与平台无关，同时若发现本平台中有涉及您的版权，请及时与我们取得联系，提供相关证明后本平台会立即断开作品链接，并且删除作品。"
+                android:textColor="@color/black"
+                android:textSize="14sp"/>
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="主播入驻听世界请联系听世界客服！主播上传作品入口：\nhttps://xiaochengxu.tingshijie.com\n请用PC电脑使用！
+"
+                android:textColor="@color/black"
+                android:textSize="14sp"/>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <View
+        android:id="@+id/line"
+        android:layout_width="match_parent"
+        android:layout_height="0.1dp"
+        android:layout_below="@+id/scrollView"
+        android:background="@color/lineColor"></View>
+    <Button
+        android:id="@+id/btn_ok"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_below="@+id/line"
+        android:background="@drawable/btn_white_corner"
+        android:text="知道了"/>
+
+
+</RelativeLayout>

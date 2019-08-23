@@ -1,10 +1,8 @@
 package com.ting.base;
 
 import android.app.Activity;
-import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
-import android.os.Process;
 import android.support.multidex.MultiDex;
 
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
@@ -21,7 +19,6 @@ import com.ting.db.DaoMaster;
 import com.ting.db.DaoSession;
 import com.umeng.commonsdk.UMConfigure;
 import com.umeng.socialize.PlatformConfig;
-import com.xiaomi.mipush.sdk.MiPushClient;
 
 import org.greenrobot.greendao.database.Database;
 
@@ -64,9 +61,7 @@ public class BaseApplication extends Application {
         super.onCreate();
         application = this;
         initUM();
-        if(shouldInit()) {
-            MiPushClient.registerPush(this, "2882303761517189747", "5761718946747");
-        }
+
         DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, ENCRYPTED ? "tingshijie-db-encrypted" : "tingshijie-db");
         Database db = ENCRYPTED ? helper.getEncryptedWritableDb("super-secret") : helper.getWritableDb();
         daoSession = new DaoMaster(db).newSession();
@@ -91,18 +86,6 @@ public class BaseApplication extends Application {
 
     }
 
-    private boolean shouldInit() {
-        ActivityManager am = ((ActivityManager) getSystemService(Context.ACTIVITY_SERVICE));
-        List<ActivityManager.RunningAppProcessInfo> processInfos = am.getRunningAppProcesses();
-        String mainProcessName = getPackageName();
-        int myPid = Process.myPid();
-        for (ActivityManager.RunningAppProcessInfo info : processInfos) {
-            if (info.pid == myPid && mainProcessName.equals(info.processName)) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     @Override
     protected void attachBaseContext(Context base) {

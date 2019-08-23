@@ -880,7 +880,9 @@ public class MusicService extends MediaBrowserServiceCompat {
         @Override
         public void onStop() {
             super.onStop();
-            musicStop();
+            if(mState == State.Paused || mState == State.Playing || mState == State.Preparing) {
+                musicStop();
+            }
         }
 
         @Override
@@ -943,7 +945,7 @@ public class MusicService extends MediaBrowserServiceCompat {
         public void onSkipToNext() {
             super.onSkipToNext();
             int currentPosition = getCurrPlayPostion();
-            if (currentPosition == -1 && currentPosition == -2) {
+            if (currentPosition == -1 || currentPosition == -2) {
                 BaseToast.makeText(MusicService.this, "后面没有更多章节").show();
                 return;
             }

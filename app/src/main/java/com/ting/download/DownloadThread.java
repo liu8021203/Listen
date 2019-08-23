@@ -1,6 +1,7 @@
 package com.ting.download;
 
 import com.ting.db.DBChapter;
+import com.ting.util.UtilAES;
 import com.ting.util.UtilMD5Encryption;
 
 import java.io.File;
@@ -8,6 +9,9 @@ import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.net.HttpURLConnection;
 import java.net.URL;
+
+import javax.crypto.Cipher;
+import javax.crypto.CipherInputStream;
 
 
 /**
@@ -63,6 +67,7 @@ public class DownloadThread extends Thread{
         InputStream inputStream = null;
         HttpURLConnection connection = null;
         RandomAccessFile threadFile = null;
+        CipherInputStream cipherInputStream = null;
         try{
 
             long fileSize = getResourceSize(fileURL);
@@ -77,19 +82,24 @@ public class DownloadThread extends Thread{
             connection.setRequestProperty("Range", "bytes="+ completeSize + "-" + fileSize);//设置获取实体数据的范围
             connection.setRequestProperty("User-Agent", "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.2; Trident/4.0; .NET CLR 1.1.4322; .NET CLR 2.0.50727; .NET CLR 3.0.04506.30; .NET CLR 3.0.4506.2152; .NET CLR 3.5.30729)");
             connection.setRequestProperty("Connection", "Keep-Alive");
-            if(connection.getResponseCode() == HttpURLConnection.HTTP_PARTIAL)
+            if(connection.getResponseCode() == HttpURLConnection.HTTP_PARTIAL || connection.getResponseCode() == HttpURLConnection.HTTP_OK)
             {
                 result.setSize(fileSize);
                 inputStream = connection.getInputStream();
-                byte[] buffer = new byte[1024];
-                int offset = 0;
                 threadFile = new RandomAccessFile(this.saveFile, "rwd");
                 threadFile.seek(completeSize);
                 long currentTime = 0;
-                while((offset = inputStream.read(buffer)) != -1 && !isPause)
+
+                Cipher cipher = UtilAES.initAESCipher(Cipher.ENCRYPT_MODE);
+                //以加密流写入文件
+                cipherInputStream = new CipherInputStream(inputStream, cipher);
+
+                byte[] cache = new byte[1024];
+                int nRead = 0;
+                while((nRead = cipherInputStream.read(cache)) != -1 && !isPause)
                 {
-                    threadFile.write(buffer, 0, offset);
-                    completeSize += offset;
+                    threadFile.write(cache, 0, nRead);
+                    completeSize += nRead;
                     if((System.currentTimeMillis() - currentTime) >= 3000)
                     {
                         currentTime = System.currentTimeMillis();
@@ -114,6 +124,9 @@ public class DownloadThread extends Thread{
                 if(inputStream != null)
                 {
                     inputStream.close();
+                }
+                if(cipherInputStream != null){
+                    cipherInputStream.close();
                 }
                 if(threadFile != null)
                 {

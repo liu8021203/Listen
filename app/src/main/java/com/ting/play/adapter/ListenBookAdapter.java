@@ -54,11 +54,11 @@ public class ListenBookAdapter extends RecyclerView.Adapter<ListenBookAdapter.It
         if(defId == Integer.parseInt(vo.getId()))
         {
             holder.tvDesc.setTextColor(0xff1296db);
-            holder.ivMark.setVisibility(View.VISIBLE);
+            holder.ivMark.setImageResource(R.mipmap.check_select);
         }
         else {
             holder.tvDesc.setTextColor(0xff000000);
-            holder.ivMark.setVisibility(View.GONE);
+            holder.ivMark.setImageResource(R.mipmap.check_unselect);
         }
     }
 

@@ -12,6 +12,7 @@ public class HostInfoVO {
     private String userImage;
     private String nickname;
     private int userCard;
+    private String contact;
 
     public int getUserCard() {
         return userCard;
@@ -43,5 +44,13 @@ public class HostInfoVO {
 
     public void setNickname(String nickname) {
         this.nickname = nickname;
+    }
+
+    public String getContact() {
+        return contact;
+    }
+
+    public void setContact(String contact) {
+        this.contact = contact;
     }
 }
