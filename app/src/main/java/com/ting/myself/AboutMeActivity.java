@@ -3,6 +3,7 @@ package com.ting.myself;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -11,6 +12,8 @@ import com.ting.base.BaseActivity;
 import com.ting.base.BaseApplication;
 import com.ting.util.UtilSystem;
 import com.ting.welcome.AdActivity;
+import com.umeng.socialize.UMShareAPI;
+import com.umeng.socialize.bean.SHARE_MEDIA;
 
 
 /**
@@ -88,9 +91,16 @@ public class AboutMeActivity extends BaseActivity {
                 startActivity(it1);
                 break;
             case R.id.tv_kefu_qq:
-                //指定的QQ号只需要修改uin后的值即可。
-                String url11 = "mqqwpa://im/chat?chat_type=wpa&uin=769991514&version=1";
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url11)));
+                boolean isInstall = UMShareAPI.get(this).isInstall(mActivity, SHARE_MEDIA.QQ);
+                Log.d("aaa", "isInstall=====" + isInstall);
+                if(isInstall){
+                    //指定的QQ号只需要修改uin后的值即可。
+                    String url11 = "mqqwpa://im/chat?chat_type=wpa&uin=769991514&version=1";
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url11)));
+                }else{
+                    showToast("未安装QQ");
+                }
+
                 break;
 
 

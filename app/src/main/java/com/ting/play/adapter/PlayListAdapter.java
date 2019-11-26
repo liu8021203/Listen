@@ -5,14 +5,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,40 +20,26 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.ting.R;
-import com.ting.base.BaseActivity;
-import com.ting.base.BaseApplication;
 import com.ting.base.PlayerBaseActivity;
-import com.ting.bean.anchor.ListenBookVO;
-import com.ting.bean.play.PlayListVO;
-import com.ting.bean.play.PlayingVO;
 import com.ting.bean.vo.CardVO;
-import com.ting.bean.vo.ChapterListVO;
 import com.ting.common.AppData;
 import com.ting.common.TokenManager;
 import com.ting.db.DBChapter;
 import com.ting.db.DBListenHistory;
-import com.ting.db.DBListenHistoryDao;
 import com.ting.download.DownLoadService;
 import com.ting.download.DownloadController;
 import com.ting.login.LoginMainActivity;
-import com.ting.myself.MyDouActivity;
-import com.ting.play.BookDetailsActivity;
-import com.ting.play.PlayActivity;
 import com.ting.play.controller.MusicDBController;
-import com.ting.play.dialog.PlayListDialog;
 import com.ting.play.dialog.PlayListPayDialog;
-import com.ting.play.service.MusicService;
 import com.ting.play.subview.PlayListSubView;
 import com.ting.base.ListenDialog;
 import com.ting.util.UtilFileManage;
-import com.ting.util.UtilIntent;
-import com.ting.util.UtilListener;
+import com.ting.util.UtilFloat;
 import com.ting.util.UtilMD5Encryption;
 import com.ting.util.UtilNetStatus;
 import com.ting.util.UtilPermission;
 import com.ting.util.UtilStr;
 import com.ting.view.AnimView;
-import com.ting.view.CircleProgressBar;
 import com.ting.view.ColorfulRingProgressView;
 
 import java.util.ArrayList;
@@ -74,6 +58,7 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.ItemVi
     private List<DBChapter> data;//分集详情;
     private List<CardVO> cardData;
     private DownloadController controller;
+    private int bookDownloadStatus;
 
     private DownloadReceiver downloadReceiver;
     private Map<String, DBChapter> downloadMap = new HashMap<String, DBChapter>();
@@ -146,6 +131,10 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.ItemVi
         }
     }
 
+    public void setBookDownloadStatus(int bookDownloadStatus) {
+        this.bookDownloadStatus = bookDownloadStatus;
+    }
+
     public List<DBChapter> getResult() {
         return data;
     }
@@ -216,7 +205,7 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.ItemVi
             holder.ivMark.setImageResource(R.mipmap.chapter_lock);
             holder.progressBar.setVisibility(View.GONE);
             holder.tvPrice.setVisibility(View.VISIBLE);
-            holder.tvPrice.setText(vo.getPrice() + "听豆");
+            holder.tvPrice.setText(vo.getPrice() + "听豆/" + UtilFloat.getValue(2, 0.05 * vo.getPrice()) + "元");
         }
         holder.play_diversity_name.setText(vo.getTitle());
         holder.item_play.setTag(vo);
@@ -245,57 +234,62 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.ItemVi
         } else {
             holder.item_play.setOnClickListener(payOnClickListener);
         }
-        DBChapter tempVO = downloadMap.get(vo.getChapterId());
-        if (tempVO != null) {
-            switch (tempVO.getState()) {
-                case 0: {
-                    holder.progressBar.downloadInit();
-                    holder.progressBar.setTag(tempVO);
-                    holder.progressBar.setOnClickListener(downloadOnClickListener);
-                    holder.ivMark.setVisibility(View.GONE);
+        if(bookDownloadStatus == 0){
+            DBChapter tempVO = downloadMap.get(vo.getChapterId());
+            if (tempVO != null) {
+                switch (tempVO.getState()) {
+                    case 0: {
+                        holder.progressBar.downloadInit();
+                        holder.progressBar.setTag(tempVO);
+                        holder.progressBar.setOnClickListener(downloadOnClickListener);
+                        holder.ivMark.setVisibility(View.GONE);
 
-                }
-                break;
-
-                case 1: {
-                    holder.progressBar.downloadWait();
-                    holder.progressBar.setOnClickListener(null);
-                }
-                break;
-
-                case 2: {
-                    if (tempVO.getSize() != null && tempVO.getCompleteSize() != null && tempVO.getSize() != 0) {
-                        holder.progressBar.downloadResume(tempVO.getCompleteSize() * 100 / tempVO.getSize());
-                    } else {
-                        holder.progressBar.downloadResume(0f);
                     }
-                    holder.progressBar.setTag(tempVO);
-                    holder.progressBar.setOnClickListener(downloadStopOnClickListener);
-                }
-
-                break;
-                case 3: {
-                    if (tempVO.getSize() != null && tempVO.getCompleteSize() != null && tempVO.getSize() != 0) {
-                        holder.progressBar.downloadPause(tempVO.getCompleteSize() * 100 / tempVO.getSize());
-                    } else {
-                        holder.progressBar.downloadPause(0f);
-                    }
-                    holder.progressBar.setTag(tempVO);
-                    holder.progressBar.setOnClickListener(downloadOnClickListener);
-                }
-                break;
-
-                case 4:
-                    holder.progressBar.downloadComplete();
-                    holder.progressBar.setTag(tempVO);
-                    holder.progressBar.setOnClickListener(deleteOnClickListener);
                     break;
+
+                    case 1: {
+                        holder.progressBar.downloadWait();
+                        holder.progressBar.setOnClickListener(null);
+                    }
+                    break;
+
+                    case 2: {
+                        if (tempVO.getSize() != null && tempVO.getCompleteSize() != null && tempVO.getSize() != 0) {
+                            holder.progressBar.downloadResume(tempVO.getCompleteSize() * 100 / tempVO.getSize());
+                        } else {
+                            holder.progressBar.downloadResume(0f);
+                        }
+                        holder.progressBar.setTag(tempVO);
+                        holder.progressBar.setOnClickListener(downloadStopOnClickListener);
+                    }
+
+                    break;
+                    case 3: {
+                        if (tempVO.getSize() != null && tempVO.getCompleteSize() != null && tempVO.getSize() != 0) {
+                            holder.progressBar.downloadPause(tempVO.getCompleteSize() * 100 / tempVO.getSize());
+                        } else {
+                            holder.progressBar.downloadPause(0f);
+                        }
+                        holder.progressBar.setTag(tempVO);
+                        holder.progressBar.setOnClickListener(downloadOnClickListener);
+                    }
+                    break;
+
+                    case 4:
+                        holder.progressBar.downloadComplete();
+                        holder.progressBar.setTag(tempVO);
+                        holder.progressBar.setOnClickListener(deleteOnClickListener);
+                        break;
+                }
+            } else {
+                holder.progressBar.downloadInit();
+                holder.progressBar.setTag(vo);
+                holder.progressBar.setOnClickListener(fisrtDownloadOnClickListener);
             }
-        } else {
-            holder.progressBar.downloadInit();
-            holder.progressBar.setTag(vo);
-            holder.progressBar.setOnClickListener(fisrtDownloadOnClickListener);
+        }else{
+            holder.progressBar.setVisibility(View.GONE);
         }
+
     }
 
     @Override

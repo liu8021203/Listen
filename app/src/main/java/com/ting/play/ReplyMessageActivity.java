@@ -1,14 +1,13 @@
 package com.ting.play;
 
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.ting.R;
@@ -17,16 +16,13 @@ import com.ting.base.BaseObserver;
 import com.ting.bean.BaseResult;
 import com.ting.bean.play.CommentDate;
 import com.ting.bean.play.ReplyResult;
-import com.ting.common.AppData;
 import com.ting.common.TokenManager;
 import com.ting.common.http.BaseSubscriber;
 import com.ting.common.http.HttpService;
-import com.ting.constant.StaticConstant;
 import com.ting.login.LoginMainActivity;
 import com.ting.play.adapter.ReplyAdapter;
 import com.ting.util.UtilDate;
 import com.ting.util.UtilGlide;
-import com.ting.util.UtilIntent;
 import com.ting.util.UtilRetrofit;
 
 import java.util.HashMap;

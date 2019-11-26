@@ -2,19 +2,15 @@ package com.ting.anchor.dialog;
 
 import android.app.Dialog;
 import android.os.Bundle;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 
 import com.ting.R;
-import com.ting.bean.anchor.LiWuResult;
 import com.ting.base.BaseActivity;
-import com.ting.common.AppData;
 import com.ting.common.GiftManager;
 import com.ting.play.adapter.GiftAdapter;
-
-import java.util.List;
 
 /**
  * Created by gengjiajia on 15/9/2.

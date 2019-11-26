@@ -1,27 +1,18 @@
 package com.ting.classification.adapter;
 
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.ting.R;
 import com.ting.base.BaseActivity;
 import com.ting.bean.classfi.ClassChilderMess;
 import com.ting.classification.ClassChilActivity;
-import com.ting.classification.ClassMainFrame;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by gengjiajia on 15/9/14.

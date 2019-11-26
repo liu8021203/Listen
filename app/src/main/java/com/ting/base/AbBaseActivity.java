@@ -1,6 +1,6 @@
 package com.ting.base;
 
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 
 /**
  * Created by liu on 2017/7/1.

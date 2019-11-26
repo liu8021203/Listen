@@ -1,11 +1,10 @@
 package com.ting.myself.adapter;
 
-import android.support.v4.view.PagerAdapter;
+import androidx.viewpager.widget.PagerAdapter;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.ting.myself.StudyUseActivity;
 import com.ting.myself.StudyUseDetailsActivity;
 
 import java.util.List;

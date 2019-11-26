@@ -1,8 +1,8 @@
 package com.ting.bookcity;
 
 import android.os.Bundle;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.widget.RelativeLayout;
 
@@ -15,7 +15,6 @@ import com.ting.bookcity.adapter.HotAnchorAdapter;
 import com.ting.bean.home.HotAnchorResult;
 import com.ting.common.TokenManager;
 import com.ting.common.http.HttpService;
-import com.ting.constant.StaticConstant;
 import com.ting.util.UtilRetrofit;
 import com.ting.view.GridItemDecoration;
 import com.ting.view.LfLayoutManager;

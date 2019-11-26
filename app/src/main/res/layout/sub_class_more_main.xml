@@ -97,10 +97,10 @@
         android:layout_height="@dimen/dp750_1"
         android:background="@color/cdcdcdc"></View>
 
-    <android.support.v4.view.ViewPager
+    <androidx.viewpager.widget.ViewPager
         android:id="@+id/class_more_main_viewpager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"></android.support.v4.view.ViewPager>
+        android:layout_height="match_parent"></androidx.viewpager.widget.ViewPager>
 
 
 </LinearLayout>

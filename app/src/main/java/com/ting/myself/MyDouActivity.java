@@ -1,14 +1,13 @@
 package com.ting.myself;
 
 import android.os.Bundle;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import com.tencent.mm.opensdk.openapi.IWXAPI;
-import com.tencent.mm.opensdk.openapi.WXAPIFactory;
+
 import com.ting.R;
 import com.ting.base.BaseActivity;
 import com.ting.base.BaseObserver;
@@ -16,7 +15,6 @@ import com.ting.base.ListenDialog;
 import com.ting.bean.BaseResult;
 import com.ting.bean.MoneyResult;
 import com.ting.bean.myself.GetVIPTingdouResult;
-import com.ting.common.AppData;
 import com.ting.common.TokenManager;
 import com.ting.common.http.HttpService;
 import com.ting.myself.adapter.MyDouAdapter;

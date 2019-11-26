@@ -1,18 +1,15 @@
 package com.ting.myself.adapter;
 
-import android.support.v7.widget.RecyclerView;
-import android.text.Html;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.ting.R;
-import com.ting.bean.myself.DouChildrenBean;
 import com.ting.bean.vo.ExpenseVO;
 import com.ting.myself.DouDetailsActivity;
-import com.ting.myself.DouDetailsChildrenActivity;
 
 import java.util.List;
 

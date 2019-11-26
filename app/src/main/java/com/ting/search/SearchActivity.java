@@ -1,18 +1,16 @@
 package com.ting.search;
 
 import android.os.Bundle;
-import android.support.v4.widget.NestedScrollView;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.core.widget.NestedScrollView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -25,10 +23,6 @@ import com.ting.bean.vo.HotSearchVO;
 import com.ting.category.adapter.CategoryListAdapter;
 import com.ting.common.http.HttpService;
 import com.ting.search.adapter.SearchHostAdapter;
-import com.ting.search.adapter.SearchHotAdapter;
-import com.ting.search.adapter.SearchResultAdapter;
-import com.ting.bean.search.SearchHotResult;
-import com.ting.bean.search.SearchResult;
 import com.ting.util.UtilPixelTransfrom;
 import com.ting.util.UtilRetrofit;
 import com.ting.util.UtilStr;

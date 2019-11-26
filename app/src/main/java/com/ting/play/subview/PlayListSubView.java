@@ -1,9 +1,9 @@
 package com.ting.play.subview;
 
 import android.os.Bundle;
-import android.support.constraint.ConstraintLayout;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -81,6 +81,8 @@ public class PlayListSubView extends LinearLayout implements View.OnClickListene
     private String bookId;
     private MusicDBController mMusicController = new MusicDBController();
 
+    private int bookDownloadStatus = 0;
+
     public PlayListSubView(BookDetailsActivity activity, String bookId) {
         super(activity);
         this.activity = activity;
@@ -106,6 +108,8 @@ public class PlayListSubView extends LinearLayout implements View.OnClickListene
         }
         getData(0, page);
     }
+
+
 
     private void initView() {
         mSmartRefreshLayout = playIntroduceSubView.findViewById(R.id.refreshLayout);
@@ -202,6 +206,7 @@ public class PlayListSubView extends LinearLayout implements View.OnClickListene
                             PlayListSubView.this.previousPage = page;
                             if (playListAdapter == null) {
                                 playListAdapter = new PlayListAdapter(activity, bookId, PlayListSubView.this);
+                                playListAdapter.setBookDownloadStatus(result.getBookDownloadStatus());
                                 playListAdapter.setData(result.getList());
                                 playListAdapter.setCardData(result.getCardData());
                                 mRecyclerView.setAdapter(playListAdapter);

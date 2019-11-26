@@ -1,12 +1,8 @@
 package com.ting.myself;
 
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.TextView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.aspsine.swipetoloadlayout.OnLoadMoreListener;
 import com.aspsine.swipetoloadlayout.SwipeToLoadLayout;
@@ -15,17 +11,13 @@ import com.ting.base.BaseActivity;
 import com.ting.base.BaseObserver;
 import com.ting.bean.BaseResult;
 import com.ting.bean.ExpenseResult;
-import com.ting.bean.myself.DouChildrenBean;
-import com.ting.bean.myself.DouChildrenResult;
 import com.ting.common.TokenManager;
 import com.ting.common.http.HttpService;
 import com.ting.myself.adapter.DouDetailsAdapter;
 import com.ting.util.UtilRetrofit;
 import com.ting.view.CustomItemDecoration;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;

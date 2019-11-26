@@ -1,33 +1,21 @@
 package com.ting.bookcity.adapter;
 
 import android.os.Bundle;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.ting.R;
 import com.ting.anchor.AnchorMainActivity;
 import com.ting.base.BaseActivity;
-import com.ting.base.BaseObserver;
-import com.ting.bean.BaseResult;
-import com.ting.bean.Data;
 import com.ting.bean.home.HotAnchorVO;
-import com.ting.common.TokenManager;
-import com.ting.common.http.HttpService;
-import com.ting.login.LoginMainActivity;
 import com.ting.util.UtilGlide;
-import com.ting.util.UtilRetrofit;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by gengjiajia on 15/8/27.

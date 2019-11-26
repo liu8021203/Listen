@@ -1,29 +1,18 @@
 package com.ting.anchor.subview;
 
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
-import com.aspsine.swipetoloadlayout.OnLoadMoreListener;
-import com.aspsine.swipetoloadlayout.SwipeToLoadLayout;
 import com.ting.R;
 import com.ting.anchor.AnchorMainActivity;
 import com.ting.anchor.adapter.RewardAnchorAdapter;
-import com.ting.bean.anchor.AnchorMessResult;
-import com.ting.base.BaseObserver;
-import com.ting.bean.anchor.Reward;
 import com.ting.bean.vo.GiftDetailVO;
-import com.ting.common.http.HttpService;
-import com.ting.util.UtilRetrofit;
 import com.ting.view.CustomItemDecoration;
-import java.util.HashMap;
+
 import java.util.List;
-import java.util.Map;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by gengjiajia on 15/9/1.

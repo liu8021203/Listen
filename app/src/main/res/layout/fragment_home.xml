@@ -82,11 +82,11 @@
                     </RelativeLayout>
 
 
-                    <android.support.v7.widget.RecyclerView
+                    <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/host_recycler_view"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"></android.support.v7.widget.RecyclerView>
+                        android:layout_centerVertical="true"></androidx.recyclerview.widget.RecyclerView>
 
 
                     <RelativeLayout
@@ -128,10 +128,10 @@
                     </RelativeLayout>
 
 
-                    <android.support.v7.widget.RecyclerView
+                    <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/hot_recycle_view"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"></android.support.v7.widget.RecyclerView>
+                        android:layout_height="wrap_content"></androidx.recyclerview.widget.RecyclerView>
 
 
                 </LinearLayout>
@@ -164,11 +164,11 @@
 
                 </RelativeLayout>
 
-                <android.support.v7.widget.RecyclerView
+                <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/special_recycler_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/white"></android.support.v7.widget.RecyclerView>
+                    android:background="@color/white"></androidx.recyclerview.widget.RecyclerView>
 
 
                 <RelativeLayout
@@ -200,11 +200,11 @@
                 </RelativeLayout>
 
 
-                <android.support.v7.widget.RecyclerView
+                <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/team_recycler_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/white"></android.support.v7.widget.RecyclerView>
+                    android:background="@color/white"></androidx.recyclerview.widget.RecyclerView>
 
 
             </LinearLayout>

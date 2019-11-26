@@ -1,14 +1,12 @@
 package com.ting.bookrack;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.RequiresApi;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.RequiresApi;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -20,10 +18,6 @@ import com.ting.base.BaseApplication;
 import com.ting.base.BaseFragment;
 import com.ting.base.BaseObserver;
 import com.ting.bean.BaseResult;
-import com.ting.bean.UserInfoResult;
-import com.ting.bean.bookrack.RandomBookVO;
-import com.ting.bean.bookrack.RandomRackResult;
-import com.ting.bean.myself.CheckMessageResult;
 import com.ting.bean.vo.BookVO;
 import com.ting.bookrack.adapter.BookRackAdapter;
 import com.ting.common.AppData;
@@ -39,7 +33,6 @@ import com.ting.play.controller.MusicDBController;
 import com.ting.record.DownloadActivity;
 import com.ting.util.UtilGlide;
 import com.ting.util.UtilIntent;
-import com.ting.util.UtilListener;
 import com.ting.util.UtilRetrofit;
 import com.ting.view.MusicAnimView;
 

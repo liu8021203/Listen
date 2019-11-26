@@ -1,8 +1,8 @@
 package com.ting.myself.adapter;
 
 import android.os.Bundle;
-import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,10 +11,8 @@ import android.widget.TextView;
 
 import com.ting.R;
 import com.ting.anchor.AnchorMainActivity;
-import com.ting.bean.myself.MyCardBean;
 import com.ting.bean.vo.CardListVO;
 import com.ting.myself.MyCardActivity;
-import com.ting.util.UtilDate;
 import com.ting.util.UtilGlide;
 
 import java.util.List;

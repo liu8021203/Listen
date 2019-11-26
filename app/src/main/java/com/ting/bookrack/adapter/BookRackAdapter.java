@@ -1,7 +1,7 @@
 package com.ting.bookrack.adapter;
 
 import android.os.Bundle;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,12 +11,9 @@ import android.widget.TextView;
 import com.ting.R;
 import com.ting.base.BaseActivity;
 import com.ting.base.BaseApplication;
-import com.ting.db.DBBook;
 import com.ting.db.DBListenHistory;
 import com.ting.db.DBListenHistoryDao;
-import com.ting.play.BookDetailsActivity;
 import com.ting.play.PlayActivity;
-import com.ting.play.controller.MusicDBController;
 import com.ting.util.UtilGlide;
 
 import java.util.List;
@@ -112,6 +109,7 @@ public class BookRackAdapter extends RecyclerView.Adapter<BookRackAdapter.ItemVi
         public void onClick(View v) {
             DBListenHistory vo = (DBListenHistory) v.getTag();
             DBListenHistoryDao dao = BaseApplication.getInstance().getDaoSession().getDBListenHistoryDao();
+            dao.queryBuilder().where(DBListenHistoryDao.Properties.BookId.eq(vo.getBookId())).buildDelete().executeDeleteWithoutDetachingEntities();
             dao.delete(vo);
             data.remove(vo);
             notifyDataSetChanged();

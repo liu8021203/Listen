@@ -3,10 +3,9 @@ package com.ting.util;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
-import android.support.v4.content.FileProvider;
+import androidx.core.content.FileProvider;
 
 import com.ting.bean.play.PlayingVO;
-import com.ting.bean.vo.ChapterListVO;
 import com.ting.db.DBChapter;
 import com.ting.db.DBListenHistory;
 

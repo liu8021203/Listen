@@ -2,7 +2,7 @@ package com.ting.bookrack;
 
 import android.content.Context;
 import android.os.Build;
-import android.support.annotation.RequiresApi;
+import androidx.annotation.RequiresApi;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,7 +12,6 @@ import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 
 import com.ting.R;
-import com.ting.util.UtilSystem;
 
 /**
  * Created by liu on 2017/12/27.

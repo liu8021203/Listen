@@ -125,11 +125,11 @@
                 android:visibility="gone"></ImageView>
         </RelativeLayout>
     </LinearLayout>
-    <android.support.v4.view.ViewPager
+    <androidx.viewpager.widget.ViewPager
         android:id="@+id/book_city_viewpager"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
          >
-    </android.support.v4.view.ViewPager>
+    </androidx.viewpager.widget.ViewPager>
 
 </LinearLayout>

@@ -2,29 +2,23 @@ package com.ting.play.dialog;
 
 import android.app.Dialog;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.CompoundButton;
-import android.widget.RadioButton;
 
 import com.ting.R;
 import com.ting.base.BaseActivity;
 import com.ting.base.BaseObserver;
 import com.ting.bean.BaseResult;
-import com.ting.bean.anchor.ListenBookVO;
-import com.ting.bean.play.PlayingVO;
 import com.ting.bean.vo.BuyChapterWayVO;
 import com.ting.bean.vo.CardVO;
 import com.ting.common.TokenManager;
 import com.ting.common.http.HttpService;
 import com.ting.db.DBChapter;
-import com.ting.play.BookDetailsActivity;
-import com.ting.bean.play.PayResult;
 import com.ting.play.adapter.BuyChapterWaydapter;
 import com.ting.util.UtilRetrofit;
 

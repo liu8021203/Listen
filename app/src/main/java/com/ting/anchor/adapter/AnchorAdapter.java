@@ -1,11 +1,10 @@
 package com.ting.anchor.adapter;
 
 import android.os.Bundle;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -15,7 +14,6 @@ import com.ting.anchor.AnchorMainActivity;
 import com.ting.base.BaseActivity;
 import com.ting.base.BaseObserver;
 import com.ting.bean.BaseResult;
-import com.ting.bean.anchor.AnchorVO;
 import com.ting.bean.vo.HostVO;
 import com.ting.common.TokenManager;
 import com.ting.common.http.HttpService;

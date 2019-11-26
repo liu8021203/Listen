@@ -1,7 +1,7 @@
 package com.ting.bookcity.adapter;
 
 import android.os.Bundle;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,10 +10,8 @@ import android.widget.TextView;
 
 import com.ting.R;
 import com.ting.base.BaseActivity;
-import com.ting.bean.home.HomeBookVO;
 import com.ting.bean.vo.TeamVO;
 import com.ting.bookcity.TeamBookListActivity;
-import com.ting.play.BookDetailsActivity;
 import com.ting.util.UtilGlide;
 
 import java.util.List;

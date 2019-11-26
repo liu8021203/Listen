@@ -7,46 +7,26 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.Message;
-import android.support.annotation.NonNull;
-import android.text.TextUtils;
-import android.util.Log;
+
+import androidx.annotation.NonNull;
+
 import android.view.KeyEvent;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.target.SimpleTarget;
-import com.bumptech.glide.request.transition.Transition;
 import com.qq.e.ads.splash.SplashAD;
 import com.qq.e.ads.splash.SplashADListener;
-import com.qq.e.comm.constants.LoadAdParams;
 import com.qq.e.comm.util.AdError;
 import com.ting.R;
 import com.ting.base.BaseActivity;
-import com.ting.base.BaseObserver;
 import com.ting.common.AppData;
-import com.ting.common.TokenManager;
-import com.ting.common.http.HttpService;
-import com.ting.bean.UserInfoResult;
-import com.ting.constant.StaticConstant;
-import com.ting.util.UtilGlide;
 import com.ting.util.UtilPermission;
-import com.ting.util.UtilRetrofit;
-import com.ting.util.UtilSPutil;
-import com.ting.util.UtilStr;
-import com.ting.util.UtilSystem;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
 
 
 /**

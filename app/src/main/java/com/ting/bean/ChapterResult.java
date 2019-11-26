@@ -11,6 +11,7 @@ public class ChapterResult {
     private int pageNo;
     private int pageSize;
     private int count;
+    private int bookDownloadStatus;
     private List<DBChapter> list;
     private List<CardVO> cardData;
 
@@ -52,5 +53,13 @@ public class ChapterResult {
 
     public void setCardData(List<CardVO> cardData) {
         this.cardData = cardData;
+    }
+
+    public int getBookDownloadStatus() {
+        return bookDownloadStatus;
+    }
+
+    public void setBookDownloadStatus(int bookDownloadStatus) {
+        this.bookDownloadStatus = bookDownloadStatus;
     }
 }

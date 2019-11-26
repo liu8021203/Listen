@@ -1,17 +1,14 @@
 package com.ting.anchor.adapter;
 
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.ting.R;
 import com.ting.anchor.AnchorMainActivity;
-import com.ting.bean.anchor.Reward;
-import com.ting.bean.anchor.RewardMess;
 import com.ting.bean.vo.GiftDetailVO;
 import com.ting.util.UtilGlide;
 

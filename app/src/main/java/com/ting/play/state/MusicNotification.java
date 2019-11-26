@@ -10,9 +10,9 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Build;
-import android.os.Bundle;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.media.session.MediaButtonReceiver;
+
+import androidx.core.app.NotificationCompat;
+import androidx.media.session.MediaButtonReceiver;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 import android.view.View;
@@ -21,7 +21,6 @@ import android.widget.RemoteViews;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
-import com.ting.common.AppData;
 import com.ting.play.PlayActivity;
 import com.ting.R;
 import com.ting.play.service.MusicService;
@@ -94,7 +93,7 @@ public class MusicNotification {
         mBuilder.setCustomContentView(smallRemoteViews);
         mBuilder.setContentIntent(pendingIntent);
         mBuilder.setVisibility(Notification.VISIBILITY_PUBLIC);
-        mBuilder.setStyle(new android.support.v4.media.app.NotificationCompat.MediaStyle()
+        mBuilder.setStyle(new androidx.media.app.NotificationCompat.MediaStyle()
                 .setMediaSession(mService.getSessionToken())
                 // Add a cancel button
                 .setShowCancelButton(true)

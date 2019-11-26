@@ -1,9 +1,9 @@
 package com.ting.base;
 
 import android.content.Context;
-import android.support.annotation.IntDef;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BaseTransientBottomBar;
+import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
+
 import android.widget.Toast;
 
 

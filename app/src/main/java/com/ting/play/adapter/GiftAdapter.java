@@ -1,6 +1,6 @@
 package com.ting.play.adapter;
 
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,16 +8,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ting.R;
-import com.ting.anchor.AnchorMainActivity;
 import com.ting.anchor.dialog.GiftDialog;
 import com.ting.base.BaseActivity;
 import com.ting.base.BaseObserver;
 import com.ting.bean.BaseResult;
-import com.ting.bean.anchor.LiWuMess;
 import com.ting.bean.vo.GiftVO;
 import com.ting.common.TokenManager;
 import com.ting.common.http.HttpService;
-import com.ting.play.subview.PlayIntroduceSubView;
 import com.ting.base.ListenDialog;
 import com.ting.util.UtilGlide;
 import com.ting.util.UtilRetrofit;

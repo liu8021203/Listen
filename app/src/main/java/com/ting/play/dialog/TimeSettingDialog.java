@@ -103,7 +103,7 @@ public class TimeSettingDialog extends Dialog implements View.OnClickListener {
                 timer = -1;
                 break;
             case R.id.rb_play_dialog_shut_down_radio_button0:
-                timer = 2 * 60;
+                timer = 10 * 60;
                 isSelect = true;
                 break;
             case R.id.rb_play_dialog_shut_down_radio_button1:

@@ -1,10 +1,8 @@
 package com.ting.myself;
 
-import android.Manifest;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -19,7 +17,6 @@ import com.ting.login.LoginMainActivity;
 import com.ting.bean.UserInfoResult;
 import com.ting.util.UtilGlide;
 import com.ting.util.UtilRetrofit;
-import com.ting.welcome.MainActivity;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;

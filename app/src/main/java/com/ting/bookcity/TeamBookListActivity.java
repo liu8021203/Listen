@@ -1,16 +1,14 @@
 package com.ting.bookcity;
 
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.ting.R;
 import com.ting.base.BaseActivity;
 import com.ting.base.BaseObserver;
 import com.ting.bean.BaseResult;
-import com.ting.bean.home.HomeSpecialResult;
 import com.ting.bean.vo.BookVO;
-import com.ting.bookcity.adapter.SpecialAdapter;
 import com.ting.category.adapter.CategoryListAdapter;
 import com.ting.common.http.HttpService;
 import com.ting.util.UtilRetrofit;

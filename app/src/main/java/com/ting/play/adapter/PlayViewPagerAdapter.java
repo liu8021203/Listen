@@ -1,10 +1,8 @@
 package com.ting.play.adapter;
 
-import android.support.v4.view.PagerAdapter;
+import androidx.viewpager.widget.PagerAdapter;
 import android.view.View;
 import android.view.ViewGroup;
-
-import com.ting.base.BaseSubView;
 
 import java.util.ArrayList;
 

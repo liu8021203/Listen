@@ -1,42 +1,20 @@
 package com.ting.play.adapter;
 
-import android.os.Bundle;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.ting.R;
-import com.ting.anchor.dialog.GiftDialog;
 import com.ting.bean.BaseResult;
-import com.ting.bean.anchor.LiWuResult;
 import com.ting.base.BaseObserver;
-import com.ting.bean.play.CommentDate;
-import com.ting.bean.vo.BookDataVO;
 import com.ting.bean.vo.CommentListVO;
-import com.ting.bean.vo.GiftVO;
-import com.ting.bean.vo.HostInfoVO;
-import com.ting.common.AppData;
-import com.ting.common.GiftManager;
 import com.ting.common.TokenManager;
 import com.ting.common.http.HttpService;
-import com.ting.login.LoginMainActivity;
 import com.ting.play.BookDetailsActivity;
-import com.ting.play.ReplyMessageActivity;
-import com.ting.play.dialog.ListenBookDialog;
-import com.ting.bean.play.CommentResult;
-import com.ting.play.dialog.SendMessDialog;
-import com.ting.play.dialog.ShareDialog;
-import com.ting.play.subview.PlayIntroduceSubView;
-import com.ting.util.UtilDate;
 import com.ting.util.UtilGlide;
-import com.ting.util.UtilIntent;
-import com.ting.util.UtilListener;
 import com.ting.util.UtilRetrofit;
 
 import java.util.HashMap;

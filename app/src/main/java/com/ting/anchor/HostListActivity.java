@@ -1,8 +1,8 @@
 package com.ting.anchor;
 
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
 
@@ -15,16 +15,12 @@ import com.ting.anchor.adapter.AnchorAdapter;
 import com.ting.base.BaseActivity;
 import com.ting.base.BaseObserver;
 import com.ting.bean.BaseResult;
-import com.ting.bean.anchor.AnchorResult;
-import com.ting.bean.anchor.AnchorVO;
 import com.ting.bean.vo.HostVO;
-import com.ting.common.AppData;
 import com.ting.common.TokenManager;
 import com.ting.common.http.HttpService;
 import com.ting.util.UtilChina;
 import com.ting.util.UtilRetrofit;
 import com.ting.view.CustomItemDecoration;
-import com.ting.view.MusicAnimView;
 
 import java.text.Collator;
 import java.util.ArrayList;

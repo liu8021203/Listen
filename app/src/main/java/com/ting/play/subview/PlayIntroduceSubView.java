@@ -1,7 +1,7 @@
 package com.ting.play.subview;
 
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -15,18 +15,12 @@ import com.ting.bean.BaseResult;
 import com.ting.bean.BookResult;
 import com.ting.bean.CommentListResult;
 import com.ting.bean.vo.CommentListVO;
-import com.ting.common.AppData;
 import com.ting.common.TokenManager;
 import com.ting.common.http.HttpService;
 import com.ting.login.LoginMainActivity;
 import com.ting.play.BookDetailsActivity;
 import com.ting.play.adapter.CommentAdapter;
-import com.ting.bean.play.MessageResult;
-import com.ting.bean.play.CommentResult;
 import com.ting.play.dialog.SendMessDialog;
-import com.ting.util.UtilFileManage;
-import com.ting.util.UtilGson;
-import com.ting.util.UtilMD5Encryption;
 import com.ting.util.UtilNetStatus;
 import com.ting.util.UtilRetrofit;
 
