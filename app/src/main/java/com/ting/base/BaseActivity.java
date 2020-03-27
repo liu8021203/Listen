@@ -20,6 +20,7 @@ import com.ting.util.UtilIntent;
 import com.ting.view.LoadingDialog;
 import com.ting.view.MyToast;
 import com.umeng.analytics.MobclickAgent;
+import com.umeng.message.PushAgent;
 
 import io.reactivex.disposables.CompositeDisposable;
 
@@ -51,6 +52,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        PushAgent.getInstance(this).onAppStart();
         mActivity = this;
         getIntentData();
     }

@@ -12,7 +12,7 @@ public class CardVO {
 
     private String id;
     private String cardPrice;
-    private String cardMonth;
+    private int cardMonth;
     private String cardDesc;
 
     public String getId() {
@@ -31,11 +31,11 @@ public class CardVO {
         this.cardPrice = cardPrice;
     }
 
-    public String getCardMonth() {
+    public int getCardMonth() {
         return cardMonth;
     }
 
-    public void setCardMonth(String cardMonth) {
+    public void setCardMonth(int cardMonth) {
         this.cardMonth = cardMonth;
     }
 

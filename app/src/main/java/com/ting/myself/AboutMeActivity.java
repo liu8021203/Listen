@@ -31,7 +31,6 @@ public class AboutMeActivity extends BaseActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        BaseApplication.getInstance().addActivity(this);
         setContentView(R.layout.frame_about_we_new);
         initView();
     }

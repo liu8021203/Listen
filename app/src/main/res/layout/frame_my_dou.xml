@@ -1,69 +1,160 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/actionbarColor"
-    android:orientation="vertical">
-
-
-
-
+    android:layout_height="match_parent">
 
     <LinearLayout
-        android:layout_below="@+id/title"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+
         <RelativeLayout
-
             android:layout_width="match_parent"
-            android:layout_height="@dimen/dp750_200"
-            android:background="@color/white">
-
-
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/person_touxiang"
-                android:layout_width="@dimen/dp750_134"
-                android:layout_height="@dimen/dp750_134"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="@dimen/dp750_42"
-                android:layout_marginTop="@dimen/dp750_40"
-                android:scaleType="centerCrop"
-                android:src="@drawable/default_tou_image"></de.hdodenhof.circleimageview.CircleImageView>
+            android:layout_height="match_parent"
+            android:background="@color/actionbarColor"
+            android:orientation="vertical">
 
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginLeft="@dimen/dp750_30"
-                android:layout_toRightOf="@id/person_touxiang"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:layout_below="@+id/title"
+                android:orientation="vertical">
+
+                <RelativeLayout
+
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp750_200"
+                    android:background="@color/white">
 
 
-                <TextView
-                    android:id="@+id/tv_name"
-                    android:layout_width="wrap_content"
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/person_touxiang"
+                        android:layout_width="@dimen/dp750_134"
+                        android:layout_height="@dimen/dp750_134"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="@dimen/dp750_42"
+                        android:layout_marginTop="@dimen/dp750_40"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/default_tou_image"></de.hdodenhof.circleimageview.CircleImageView>
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="@dimen/dp750_30"
+                        android:layout_toRightOf="@id/person_touxiang"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+
+                        <TextView
+                            android:id="@+id/tv_name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:ellipsize="end"
+                            android:gravity="center_vertical"
+                            android:lines="1"
+                            android:text="@string/zhanghao"
+                            android:textColor="@color/c656565"
+                            android:textSize="@dimen/px26" />
+
+
+                        <TextView
+                            android:id="@+id/tv_money"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="30dp"
+                            android:ellipsize="end"
+                            android:singleLine="true"
+                            android:text=""
+                            android:textColor="@color/c656565"
+                            android:textSize="@dimen/px26" />
+
+
+                    </LinearLayout>
+
+                </RelativeLayout>
+
+
+                <LinearLayout
+                    android:id="@+id/to_pay_layout"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:ellipsize="end"
-                    android:lines="1"
-                    android:gravity="center_vertical"
-                    android:text="@string/zhanghao"
-                    android:textColor="@color/c656565"
-                    android:textSize="@dimen/px26" />
+                    android:layout_marginTop="@dimen/dp750_20"
+                    android:background="@color/white"
+                    android:orientation="vertical"
+                    android:paddingTop="10dip"
+                    android:paddingBottom="10dip">
 
 
-                <TextView
-                    android:id="@+id/tv_money"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="30dp"
-                    android:ellipsize="end"
-                    android:singleLine="true"
-                    android:text=""
-                    android:textColor="@color/c656565"
-                    android:textSize="@dimen/px26" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:text="听豆充值"
+                        android:textColor="@color/c656565" />
+
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recycle_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dip"
+                        android:layout_marginTop="10dip"
+                        android:layout_marginRight="10dip"></androidx.recyclerview.widget.RecyclerView>
+
+
+                </LinearLayout>
+
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="55dp"
+                    android:layout_marginTop="10dp"
+                    android:paddingLeft="20dp"
+                    android:paddingRight="20dp"
+                    android:background="@color/white">
+
+
+                    <EditText
+                        android:id="@+id/et_num"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:minWidth="80dp"
+                        android:padding="5dp"
+                        android:inputType="number"
+                        android:layout_centerVertical="true"
+                        android:hint="请输入听豆数量"
+                        android:maxLength="5"
+                        android:textSize="12sp"
+                        android:background="@drawable/tingdou_text_bg"></EditText>
+
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_toRightOf="@+id/et_num"
+                        android:layout_marginLeft="10dp"
+                        android:text="听豆"
+                        android:textColor="#333333"></TextView>
+
+
+                    <Button
+                        android:id="@+id/btn_pay"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:layout_centerVertical="true"
+                        android:textColor="@color/white"
+                        android:layout_alignParentRight="true"
+                        style="?android:attr/borderlessButtonStyle"
+                        android:background="@drawable/button_corners8_ff3000"
+                        android:text="支付"></Button>
+
+                </RelativeLayout>
+
 
 
             </LinearLayout>
@@ -71,48 +162,16 @@
         </RelativeLayout>
 
 
-        <LinearLayout
-            android:id="@+id/to_pay_layout"
-            android:layout_width="match_parent"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dp750_20"
-            android:paddingBottom="10dip"
-            android:paddingTop="10dip"
-            android:background="@color/white"
-            android:orientation="vertical">
-
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:text="听豆充值"
-                android:textColor="@color/c656565" />
-
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycle_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dip"
-                android:layout_marginRight="10dip"
-                android:layout_marginTop="10dip"></androidx.recyclerview.widget.RecyclerView>
-
-
-        </LinearLayout>
-
-
-        <Button
-            android:id="@+id/btn_vip"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:background="@drawable/button_corners8_ff3000"
-            android:layout_margin="20dp"
-            android:textColor="@color/white"
-            style="?android:attr/borderlessButtonStyle"
-            android:visibility="gone"
-            android:text="成为VIP"/>
-
+            android:textSize="14sp"
+            android:textColor="#333333"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="20dp"
+            android:text="1、什么是听豆！\n\n听豆是听世界听书/听世界FM/畅听听书的虚拟货币，用于购买平台上的付费内容，购买听世界上的作品流程为：充值听豆，进入收费作品用听豆购买作品即可收听。购买记录充值记录都会在听豆明细中可以查询到，购买作品后无法收听的可以联系听世界客服：QQ/微信：51493492\n\n2、为什么以前充值过登录后没有听豆？\n\n在听世界上听豆不会过期，会一直存在账户中，如果发现听豆没有了？1、进入听豆明细中看消费记录；2、确认登录账号是否是充值的时候的账户，一般听世界可登录的方式为：微信一键登录（比较常用），QQ一键登录，手机号注册登录，三个账户都是不相关的，必须登录对了才有购买记录跟充值记录。\n\n3、为什么扣款了但是听豆未到账？\n\n多出现于苹果手机，在充值处理中的时候操作过其他或者切换过界面，如果没有到账，可以联系客服，将手机上购买记录截图给客服即可。 客服联系方式：QQ/微信：51493492"></TextView>
     </LinearLayout>
 
-</RelativeLayout>
+
+</ScrollView>

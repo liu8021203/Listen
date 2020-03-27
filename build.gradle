@@ -2,9 +2,12 @@
 
 buildscript {
     repositories {
+        maven { url 'https://oss.jfrog.org/libs-snapshot' }
+        maven { url "https://jitpack.io" }
         jcenter()
         mavenCentral()
         google()
+        maven { url 'https://dl.bintray.com/umsdk/release' }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.5.2'
@@ -17,8 +20,11 @@ buildscript {
 
 allprojects {
     repositories {
+        maven { url 'https://oss.jfrog.org/libs-snapshot' }
+        maven { url "https://jitpack.io" }
         jcenter()
         mavenCentral() // add repository
         google()
+        maven { url 'https://dl.bintray.com/umsdk/release' }
     }
 }

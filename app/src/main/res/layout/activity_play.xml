@@ -6,46 +6,74 @@
                 android:background="@mipmap/mine_bg">
 
 
-    <RelativeLayout
-        android:id="@+id/rl_header"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card_view"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="60dip">
-
-
-        <ImageView
-            android:id="@+id/iv_thumb_bg"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:src="@mipmap/play_thumb_bg"/>
-
-
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/play_image"
-            android:layout_width="@dimen/dp750_200"
-            android:layout_height="@dimen/dp750_200"
-            android:layout_centerInParent="true"
-            android:src="@drawable/book_def"
-            app:border_color="#1c1c1c"/>
-
+        android:layout_marginTop="60dip"
+        app:cardElevation="0dp"
+        app:cardCornerRadius="5dp">
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/iv_thumb_bg"
-            android:layout_alignLeft="@+id/iv_thumb_bg"
-            android:layout_marginBottom="20dip"
-            android:layout_marginLeft="100dip"
-            android:src="@mipmap/zhizheng"/>
+            android:id="@+id/iv_img"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitXY"></ImageView>
 
-    </RelativeLayout>
 
-    <RelativeLayout
+        <RelativeLayout
+            android:id="@+id/rl_ad_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone">
+
+
+            <ImageView
+                android:id="@+id/iv_ad_img"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitXY">
+
+            </ImageView>
+
+            <ImageView
+                android:id="@+id/iv_ad_close"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:padding="4dp"
+                android:src="@mipmap/clear"></ImageView>
+
+
+            <TextView
+                android:id="@+id/tv_ad_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:background="#88000000"
+                android:paddingRight="3dp"
+                android:paddingLeft="3dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:textSize="11sp"
+                android:layout_alignParentBottom="true"></TextView>
+
+        </RelativeLayout>
+
+
+
+
+    </androidx.cardview.widget.CardView>
+
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/rl_header"
+        android:gravity="center"
+        android:layout_below="@+id/card_view"
+        android:orientation="vertical"
         android:layout_above="@+id/play_name">
 
         <TextView
@@ -57,7 +85,18 @@
             android:padding="5dp"
             android:layout_centerInParent="true"/>
 
-    </RelativeLayout>
+
+        <TextView
+            android:id="@+id/tv_setting"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:layout_marginTop="10dp"
+            android:text="设置跳过片头"
+            android:padding="5dp"
+            android:layout_centerInParent="true"/>
+
+    </LinearLayout>
 
 
 

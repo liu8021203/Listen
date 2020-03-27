@@ -98,7 +98,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/dp750_30"
                             android:ellipsize="end"
-                            android:lines="1"
+                            android:maxLines="2"
                             android:text=""
                             android:gravity="center_vertical"
                             android:includeFontPadding="false"
@@ -109,9 +109,16 @@
 
 
                         <RelativeLayout
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/dp750_30">
+
+
+                            <TextView
+                                android:id="@+id/tv_update_status"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="更新状态：已完结"></TextView>
 
 
                             <TextView
@@ -119,6 +126,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:drawableLeft="@mipmap/bookdetails_uncollect"
+                                android:layout_alignParentRight="true"
                                 android:drawablePadding="4dip"
                                 android:text="收藏"
 
@@ -159,7 +167,7 @@
                             android:drawableLeft="@drawable/vector_collect"
                             android:drawablePadding="@dimen/dp750_20"
                             android:gravity="center_vertical"
-                            android:text="订阅此书"
+                            android:text="主播听书卡"
                             android:textColor="#666666"
                             android:textSize="16sp"/>
 
@@ -239,6 +247,58 @@
 
 
                 </LinearLayout>
+
+
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.1dip"
+                    android:background="#dedede"></View>
+
+                <RelativeLayout
+                    android:id="@+id/rl_ad_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@color/white">
+
+                    <ImageView
+                        android:id="@+id/iv_ad_img"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="15dp"></ImageView>
+
+                    <TextView
+                        android:id="@+id/tv_ad_desc"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="13sp"
+                        android:layout_centerVertical="true"
+                        android:layout_toRightOf="@+id/iv_ad_img"
+                        android:layout_toLeftOf="@+id/iv_ad_right"
+                        android:lines="1"
+                        android:ellipsize="end"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:textColor="#333333"></TextView>
+
+
+                    <ImageView
+                        android:id="@+id/iv_ad_right"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginRight="15dp"
+                        android:src="@mipmap/gray_arrow_right"></ImageView>
+
+
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.1dip"
+                    android:background="#dedede"></View>
 
             </LinearLayout>
 

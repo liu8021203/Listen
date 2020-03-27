@@ -16,6 +16,7 @@ import androidx.core.content.FileProvider;
 
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -30,6 +31,7 @@ import com.ting.bookcity.HomeFragment;
 import com.ting.bookcity.dialog.ExitDialog;
 import com.ting.bookrack.BookRackFragment;
 import com.ting.category.CategoryFragment;
+import com.ting.common.dialog.NoticeDialog;
 import com.ting.common.http.HttpService;
 import com.ting.download.receiver.ApkInstallReceiver;
 import com.ting.myself.MineMainFrame;
@@ -96,6 +98,10 @@ public class MainActivity extends PlayerBaseActivity implements View.OnClickList
         intentFilter.addAction(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
         receiver = new ApkInstallReceiver();
         registerReceiver(receiver, intentFilter);
+
+
+        NoticeDialog dialog = new NoticeDialog(mActivity);
+        dialog.show();
     }
 
 

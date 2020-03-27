@@ -87,13 +87,7 @@
     </LinearLayout>
 
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:layout_gravity="center_horizontal"
-        android:textColor="#333333"
-        android:text="客服QQ/微信：51493492"/>
+
 
 
 
@@ -109,5 +103,17 @@
         android:textColor="@color/white"
         android:textSize="@dimen/px30"/>
 
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:gravity="center_horizontal"
+        android:textColor="#333333"
+        android:text="不能收听及充值问题请加听世界客服\n客服QQ/微信：51493492\n\n作品及更新、购买等问题请在作品介绍、购买须知里面联系主播"/>
 
 </LinearLayout>

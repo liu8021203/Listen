@@ -41,6 +41,7 @@ import com.ting.bean.myself.CollectResult;
 import com.ting.bean.UserInfoResult;
 import com.ting.bean.search.SearchHotResult;
 import com.ting.bean.search.SearchResult;
+import com.ting.bean.vo.BookListUpdateVO;
 import com.ting.bean.vo.BookVO;
 import com.ting.bean.vo.CardListVO;
 import com.ting.bean.vo.CategoryVO;
@@ -397,8 +398,16 @@ public interface HttpService {
     Observable<BaseResult<AppWxPayResult>> appWxPay(@QueryMap Map<String, String> map);
 
 
+    @POST("listen/api/appWxPayOther")
+    Observable<BaseResult<AppWxPayResult>> appWxPayOther(@QueryMap Map<String, String> map);
+
+
     @POST("listen/api/appAliPay")
     Observable<BaseResult<String>> appAliPay(@QueryMap Map<String, String> map);
+
+
+    @POST("listen/api/appAliPayOther")
+    Observable<BaseResult<String>> appAliPayOther(@QueryMap Map<String, String> map);
 
 
     @GET("listen/api/expense")
@@ -615,4 +624,9 @@ public interface HttpService {
      */
     @GET("listen/api/getChapterUrl")
     Observable<BaseResult<DBChapter>> getChapterUrl(@QueryMap Map<String, String> map);
+
+
+    //判断书籍是否更新
+    @GET("listen/api/isBookUpdateStatus")
+    Observable<BaseResult<List<BookListUpdateVO>>> isBookUpdateStatus(@QueryMap Map<String, String> map);
 }

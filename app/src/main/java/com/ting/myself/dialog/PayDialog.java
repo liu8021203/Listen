@@ -43,8 +43,10 @@ public class PayDialog extends Dialog implements View.OnClickListener {
     private RelativeLayout wx_pay_layout;
     private RelativeLayout ali_pay_layout;
     private MyDouActivity activity;
-    private MoneyListVO mVO;
     private IWXAPI api;
+    private String desc;
+    private String price;
+    private String num;
     private static final int SDK_PAY_FLAG = 1;
 
 
@@ -53,8 +55,23 @@ public class PayDialog extends Dialog implements View.OnClickListener {
         this.activity = (MyDouActivity) baseActivity;
     }
 
-    public void setVO(MoneyListVO VO) {
-        mVO = VO;
+
+
+
+    public void setDesc(String desc) {
+        this.desc = desc;
+    }
+
+
+
+    public void setPrice(String price) {
+        this.price = price;
+    }
+
+
+
+    public void setNum(String num) {
+        this.num = num;
     }
 
     @Override
@@ -90,7 +107,9 @@ public class PayDialog extends Dialog implements View.OnClickListener {
                 }
                 Map<String, String> map = new HashMap<>();
                 map.put("uid", TokenManager.getUid(activity));
-                map.put("moneyId", mVO.getMoneyId());
+                map.put("num", num);
+                map.put("desc", desc);
+                map.put("price", price);
                 BaseObserver baseObserver = new BaseObserver<BaseResult<AppWxPayResult>>(activity, BaseObserver.MODEL_SHOW_DIALOG_TOAST) {
                     @Override
                     public void success(BaseResult<AppWxPayResult> data) {
@@ -120,7 +139,7 @@ public class PayDialog extends Dialog implements View.OnClickListener {
                     }
                 };
                 activity.mDisposable.add(baseObserver);
-                UtilRetrofit.getInstance().create(HttpService.class).appWxPay(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
+                UtilRetrofit.getInstance().create(HttpService.class).appWxPayOther(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
             }
             break;
 
@@ -128,7 +147,9 @@ public class PayDialog extends Dialog implements View.OnClickListener {
 
                 Map<String, String> map = new HashMap<>();
                 map.put("uid", TokenManager.getUid(activity));
-                map.put("moneyId", mVO.getMoneyId());
+                map.put("num", num);
+                map.put("desc", desc);
+                map.put("price", price);
                 BaseObserver baseObserver = new BaseObserver<BaseResult<String>>(activity, BaseObserver.MODEL_SHOW_DIALOG_TOAST) {
                     @Override
                     public void success(BaseResult<String> data) {
@@ -144,7 +165,7 @@ public class PayDialog extends Dialog implements View.OnClickListener {
                     }
                 };
                 activity.mDisposable.add(baseObserver);
-                UtilRetrofit.getInstance().create(HttpService.class).appAliPay(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
+                UtilRetrofit.getInstance().create(HttpService.class).appAliPayOther(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
             }
             break;
 

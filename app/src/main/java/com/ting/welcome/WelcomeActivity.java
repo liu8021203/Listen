@@ -1,285 +1,251 @@
 package com.ting.welcome;
 
 import android.Manifest;
-import android.app.Activity;
-import android.graphics.Bitmap;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 
+import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
+import pub.devrel.easypermissions.EasyPermissions;
+import pub.devrel.easypermissions.PermissionRequest;
 
+import android.os.Message;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.TextView;
 
-import com.qq.e.ads.splash.SplashAD;
-import com.qq.e.ads.splash.SplashADListener;
-import com.qq.e.comm.util.AdError;
+import com.bytedance.sdk.openadsdk.AdSlot;
+import com.bytedance.sdk.openadsdk.TTAdConstant;
+import com.bytedance.sdk.openadsdk.TTAdNative;
+import com.bytedance.sdk.openadsdk.TTAdSdk;
+import com.bytedance.sdk.openadsdk.TTAppDownloadListener;
+import com.bytedance.sdk.openadsdk.TTSplashAd;
 import com.ting.R;
 import com.ting.base.BaseActivity;
-import com.ting.common.AppData;
-import com.ting.util.UtilPermission;
+import com.ting.util.UtilIntent;
+import com.ting.util.WeakHandler;
+import com.umeng.message.UmengNotifyClickActivity;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 /**
  * Created by gengjiajia on 15/10/18.
  * 启动界面
  */
-public class WelcomeActivity extends BaseActivity implements UtilPermission.PermissionCallbacks, SplashADListener {
-    private SplashAD splashAD;
-    private FrameLayout flAd;
-    private TextView tvSkip;
-    private Bitmap mBitmap;
-    private boolean mark = false;
-    //是否加载完成
-    private boolean loadComplete = false;
+public class WelcomeActivity extends UmengNotifyClickActivity implements WeakHandler.IHandler,  EasyPermissions.PermissionCallbacks{
+    private TTAdNative mTTAdNative;
+    private FrameLayout mSplashContainer;
+    //是否强制跳转到主页面
+    private boolean mForceGoMain;
 
-    private boolean canJump = false;
+    //开屏广告加载超时时间,建议大于3000,这里为了冷启动第一次加载到广告并且展示,示例设置了3000ms
+    private static final int AD_TIME_OUT = 3000;
+    private static final int MSG_GO_MAIN = 1;
+    //开屏广告是否已经加载
+    private boolean mHasLoaded;
 
-    /**
-     * 记录拉取广告的时间
-     */
-    private long fetchSplashADTime = 0;
-    private int minSplashTimeWhenNoAD = 2000;
-
-    private Handler handler = new Handler(Looper.getMainLooper());
+    //开屏广告加载发生超时但是SDK没有及时回调结果的时候，做的一层保护。
+    private final WeakHandler mHandler = new WeakHandler(this);
 
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        isHome = true;
-        isWelcome = true;
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
-        if (Build.VERSION.SDK_INT >= 23) {
-            if (UtilPermission.hasPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE, Manifest.permission.ACCESS_FINE_LOCATION})) {
-//                onInto();
-                fetchSplashAD(this, flAd, tvSkip, "1106518900", "2010283107418928", this, 0);
-            } else {
-                UtilPermission.requestPermissions(this, AppData.PERMISSION_CODE, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE, Manifest.permission.ACCESS_FINE_LOCATION});
-            }
+        initView();
+    }
+
+
+
+
+    private void initView() {
+        mSplashContainer =  findViewById(R.id.splash_container);
+        mTTAdNative = TTAdSdk.getAdManager().createAdNative(this);
+
+        String[] requestPermissions = {Manifest.permission.READ_PHONE_STATE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.ACCESS_FINE_LOCATION};
+        if (EasyPermissions.hasPermissions(this, requestPermissions)) {
+            //加载开屏广告
+            loadSplashAd();
         } else {
-//            splashAD = new SplashAD(mActivity, flAd, tvSkip, "1106518900", "2010283107418928", this, 0);
-            fetchSplashAD(this, flAd, tvSkip, "1106518900", "2010283107418928", this, 0);
-//            onInto();
+
+            EasyPermissions.requestPermissions(
+                    new PermissionRequest.Builder(this, 100, requestPermissions)
+                            .setRationale("为了APP的正常使用需要开启存储、手机状态权限和定位权限")
+                            .setPositiveButtonText("同意 ")
+                            .setNegativeButtonText("拒绝")
+                            .setTheme(R.style.PermissionsDialog)
+                            .build());
         }
     }
 
 
-    @Override
-    protected String setTitle() {
-        return null;
-    }
-
-    @Override
-    protected void initView() {
-        flAd = (FrameLayout) findViewById(R.id.splash_container);
-        tvSkip = (TextView) findViewById(R.id.skip_view);
-        tvSkip.setOnClickListener(this);
-    }
-
-    @Override
-    protected void initData() {
-
-    }
-
-    @Override
-    protected void getIntentData() {
-
-    }
-
-    @Override
-    protected boolean showActionBar() {
-        return false;
-    }
-
-    private void getData() {
-//        Map<String, String> map = new HashMap<>();
-//        map.put("uid", TokenManager.getUid(this));
-//        map.put("token", TokenManager.getToken(this));
-//        BaseObserver baseObserver = new BaseObserver<UserInfoResult>() {
-//            @Override
-//            public void success(UserInfoResult data) {
-//                super.success(data);
-//                TokenManager.setInfo(WelcomeActivity.this, data);
-//            }
-//
-//            @Override
-//            public void error() {
-//                super.error();
-//                TokenManager.claerUid(WelcomeActivity.this);
-//            }
-//        };
-//        UtilRetrofit.getInstance().create(HttpService.class).getMyInfo(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if(canJump){
-            next();
-        }
-        canJump = true;
-    }
-
-    private void next() {
-        if (canJump) {
-            intent(MainActivity.class);
-            finish();
-        } else {
-            canJump = true;
-        }
-    }
-
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        canJump = false;
-    }
-
-
-    @Override
-    public void onClick(View v) {
-        super.onClick(v);
-        switch (v.getId()) {
-            case R.id.skip_view:
-                intent(MainActivity.class);
-                finish();
-                break;
-
-        }
-    }
-
-    /***
-     * 进入主程序的方法
+    /**
+     * 加载开屏广告
      */
-    private void onInto() {
-//        String code = UtilSPutil.getInstance(this).getString("code");
-//        if (UtilStr.isEmpty(code)) {
-//            UtilSPutil.getInstance(this).setString("code", UtilSystem.getVersionCode(this) + "");
-//            intent(GuidActivity.class);
-//            finish();
-//        } else {
-//            if (!code.equals(UtilSystem.getVersionCode(this) + "")) {
-//                UtilSPutil.getInstance(this).setString("code", UtilSystem.getVersionCode(this) + "");
-//                intent(GuidActivity.class);
-//                finish();
-//            } else {
-//                intent(MainActivity.class);
-//                finish();
-//            }
-//        }
+    private void loadSplashAd() {
+
+        //step3:创建开屏广告请求参数AdSlot,具体参数含义参考文档
+        AdSlot adSlot = new AdSlot.Builder()
+                .setCodeId("838728440")
+                .setSupportDeepLink(true)
+                .setImageAcceptedSize(1080, 1920)
+                .build();
+        //step4:请求广告，调用开屏广告异步请求接口，对请求回调的广告作渲染处理
+        mTTAdNative.loadSplashAd(adSlot, new TTAdNative.SplashAdListener() {
+            @Override
+            @MainThread
+            public void onError(int code, String message) {
+                mHasLoaded = true;
+                goToMainActivity();
+            }
+
+            @Override
+            @MainThread
+            public void onTimeout() {
+                mHasLoaded = true;
+                goToMainActivity();
+            }
+
+            @Override
+            @MainThread
+            public void onSplashAdLoad(TTSplashAd ad) {
+                mHasLoaded = true;
+                mHandler.removeCallbacksAndMessages(null);
+                if (ad == null) {
+                    return;
+                }
+                //获取SplashView
+                View view = ad.getSplashView();
+                if (view != null) {
+                    mSplashContainer.removeAllViews();
+                    //把SplashView 添加到ViewGroup中,注意开屏广告view：width >=70%屏幕宽；height >=50%屏幕高
+                    mSplashContainer.addView(view);
+                    //设置不开启开屏广告倒计时功能以及不显示跳过按钮,如果这么设置，您需要自定义倒计时逻辑
+                    //ad.setNotAllowSdkCountdown();
+                }else {
+                    goToMainActivity();
+                }
+
+                //设置SplashView的交互监听器
+                ad.setSplashInteractionListener(new TTSplashAd.AdInteractionListener() {
+                    @Override
+                    public void onAdClicked(View view, int type) {
+                    }
+
+                    @Override
+                    public void onAdShow(View view, int type) {
+                    }
+
+                    @Override
+                    public void onAdSkip() {
+                        goToMainActivity();
+
+                    }
+
+                    @Override
+                    public void onAdTimeOver() {
+                        goToMainActivity();
+                    }
+                });
+                if(ad.getInteractionType() == TTAdConstant.INTERACTION_TYPE_DOWNLOAD) {
+                    ad.setDownloadListener(new TTAppDownloadListener() {
+                        boolean hasShow = false;
+
+                        @Override
+                        public void onIdle() {
+
+                        }
+
+                        @Override
+                        public void onDownloadActive(long totalBytes, long currBytes, String fileName, String appName) {
+                            if (!hasShow) {
+                                hasShow = true;
+                            }
+                        }
+
+                        @Override
+                        public void onDownloadPaused(long totalBytes, long currBytes, String fileName, String appName) {
+
+                        }
+
+                        @Override
+                        public void onDownloadFailed(long totalBytes, long currBytes, String fileName, String appName) {
+
+                        }
+
+                        @Override
+                        public void onDownloadFinished(long totalBytes, String fileName, String appName) {
+
+                        }
+
+                        @Override
+                        public void onInstalled(String fileName, String appName) {
+
+                        }
+                    });
+                }
+            }
+        }, AD_TIME_OUT);
     }
 
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        handler.removeCallbacksAndMessages(null);
-    }
-
-    @Override
-    public void onBackPressed() {
-
-    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        UtilPermission.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
     }
 
     @Override
-    public void onPermissionGranted(int requestCode, List<String> perms) {
-//        onInto();
-        fetchSplashAD(this, flAd, tvSkip, "1106518900", "2010283107418928", this, 0);
+    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
+        Log.d("aaa", "onPermissionsGranted");
+        UtilIntent.intentDIY(WelcomeActivity.this, MainActivity.class);
+        finish();
     }
 
     @Override
-    public void onPermissionDenied(int requestCode, List<String> perms) {
-//        onInto();
-    }
-
-    @Override
-    public void onADDismissed() {
-        next();
-    }
-
-    @Override
-    public void onNoAD(AdError error) {
-        long alreadyDelayMills = System.currentTimeMillis() - fetchSplashADTime;//从拉广告开始到onNoAD已经消耗了多少时间
-        long shouldDelayMills = alreadyDelayMills > minSplashTimeWhenNoAD ? 0 : minSplashTimeWhenNoAD
-                - alreadyDelayMills;//为防止加载广告失败后立刻跳离开屏可能造成的视觉上类似于"闪退"的情况，根据设置的minSplashTimeWhenNoAD
-
-        // 计算出还需要延时多久
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                intent(MainActivity.class);
-                finish();
-            }
-        }, shouldDelayMills);
-    }
-
-    @Override
-    public void onADPresent() {
-
-    }
-
-    @Override
-    public void onADClicked() {
-
-    }
-
-    @Override
-    public void onADTick(long l) {
-        tvSkip.setText(String.format("跳过%s", Math.round(l / 1000f)));
-    }
-
-    @Override
-    public void onADExposure() {
+    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
+        Log.d("aaa", "onPermissionsDenied");
+        UtilIntent.intentDIY(WelcomeActivity.this, MainActivity.class);
+        finish();
     }
 
 
     /**
-     * 拉取开屏广告，开屏广告的构造方法有3种，详细说明请参考开发者文档。
-     *
-     * @param activity      展示广告的activity
-     * @param adContainer   展示广告的大容器
-     * @param skipContainer 自定义的跳过按钮：传入该view给SDK后，SDK会自动给它绑定点击跳过事件。SkipView的样式可以由开发者自由定制，其尺寸限制请参考activity_splash.xml或者接入文档中的说明。
-     * @param appId         应用ID
-     * @param posId         广告位ID
-     * @param adListener    广告状态监听器
-     * @param fetchDelay    拉取广告的超时时长：取值范围[3000, 5000]，设为0表示使用广点通SDK默认的超时时长。
+     * 跳转到主页面
      */
-    private void fetchSplashAD(Activity activity, ViewGroup adContainer, View skipContainer,
-                               String appId, String posId, SplashADListener adListener, int fetchDelay) {
-        fetchSplashADTime = System.currentTimeMillis();
-        Map<String, String> tags = new HashMap<>();
-        tags.put("tag_s1", "value_s1");
-        tags.put("tag_s2", "value_s2");
-        splashAD = new SplashAD(activity, skipContainer, appId, posId, adListener, fetchDelay);
-//        splashAD = new SplashAD(activity, skipContainer, appId, posId, adListener,
-//                fetchDelay, tags);
-//        LoadAdParams params = new LoadAdParams();
-//        params.setLoginAppId("1106518900");
-//        params.setLoginOpenid("2010283107418928");
-//        params.setUin("testUin");
-//        splashAD.setLoadAdParams(params);
-        splashAD.fetchAndShowIn(adContainer);
-        // 如果不需要传tag，使用如下构造函数
+    private void goToMainActivity() {
+        UtilIntent.intentDIY(WelcomeActivity.this, MainActivity.class);
+        finish();
 
     }
 
+
+
+
+
+    @Override
+    protected void onResume() {
+        //判断是否该跳转到主页面
+        if (mForceGoMain) {
+            mHandler.removeCallbacksAndMessages(null);
+            goToMainActivity();
+        }
+        super.onResume();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mForceGoMain = true;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mSplashContainer.removeAllViews();
+    }
 
 
     /** 开屏页一定要禁止用户对返回按钮的控制，否则将可能导致用户手动退出了App而广告无法正常曝光和计费 */
@@ -289,5 +255,14 @@ public class WelcomeActivity extends BaseActivity implements UtilPermission.Perm
             return true;
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public void handleMsg(Message msg) {
+        if (msg.what == MSG_GO_MAIN) {
+            if (!mHasLoaded) {
+                goToMainActivity();
+            }
+        }
     }
 }

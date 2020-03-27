@@ -71,6 +71,12 @@ public class BookRackAdapter extends RecyclerView.Adapter<BookRackAdapter.ItemVi
             holder.itemView.setOnClickListener(mDeleteOnClickListener);
         }
 
+
+        if(vo.isUpdate()){
+            holder.tvUpdate.setVisibility(View.VISIBLE);
+        }else{
+            holder.tvUpdate.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -82,12 +88,14 @@ public class BookRackAdapter extends RecyclerView.Adapter<BookRackAdapter.ItemVi
         private TextView tvTitle;
         private ImageView ivImg;
         private ImageView ivDelete;
+        private TextView tvUpdate;
 
         public ItemViewHolder(View itemView) {
             super(itemView);
             tvTitle = itemView.findViewById(R.id.tv_title);
             ivImg = itemView.findViewById(R.id.iv_img);
             ivDelete = itemView.findViewById(R.id.iv_delete);
+            tvUpdate = itemView.findViewById(R.id.tv_update);
         }
     }
 

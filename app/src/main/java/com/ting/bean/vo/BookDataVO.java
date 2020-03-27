@@ -34,7 +34,7 @@ public class BookDataVO {
     private String bookImage;
     private String bookName;
     private String bookAnchor;
-    private String bookUpdateStatus;
+    private int bookUpdateStatus;
     private String bookPriceType;
     private String chapterPrice;
     private String bookPrice;
@@ -101,11 +101,11 @@ public class BookDataVO {
         this.bookAnchor = bookAnchor;
     }
 
-    public String getBookUpdateStatus() {
+    public int getBookUpdateStatus() {
         return bookUpdateStatus;
     }
 
-    public void setBookUpdateStatus(String bookUpdateStatus) {
+    public void setBookUpdateStatus(int bookUpdateStatus) {
         this.bookUpdateStatus = bookUpdateStatus;
     }
 

@@ -48,7 +48,14 @@ public class ListenBookAdapter extends RecyclerView.Adapter<ListenBookAdapter.It
     @Override
     public void onBindViewHolder(ItemViewHolder holder, int position) {
         CardVO vo = data.get(position);
-        holder.tvDesc.setText(vo.getCardDesc());
+        if(vo.getCardMonth() == 1){
+            holder.tvDesc.setText("月卡-" + vo.getCardPrice() + "听豆");
+        }else if(vo.getCardMonth() == 3){
+            holder.tvDesc.setText("季卡-" + vo.getCardPrice() + "听豆");
+        }else if(vo.getCardMonth() == 12){
+            holder.tvDesc.setText("年卡-" + vo.getCardPrice() + "听豆");
+        }
+
         holder.itemView.setTag(vo);
         holder.itemView.setOnClickListener(listener);
         if(defId == Integer.parseInt(vo.getId()))

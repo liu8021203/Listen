@@ -5,10 +5,18 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import androidx.annotation.NonNull;
+
+import com.bytedance.sdk.openadsdk.AdSlot;
+import com.bytedance.sdk.openadsdk.TTAdConstant;
+import com.bytedance.sdk.openadsdk.TTAdNative;
+import com.bytedance.sdk.openadsdk.TTAdSdk;
+import com.bytedance.sdk.openadsdk.TTFeedAd;
+import com.bytedance.sdk.openadsdk.TTNativeAd;
 import com.google.android.material.tabs.TabLayout;
 import android.support.v4.media.session.PlaybackStateCompat;
 import androidx.viewpager.widget.ViewPager;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -77,6 +85,11 @@ public class BookDetailsActivity extends PlayerBaseActivity implements View.OnCl
     //展开
     private ImageView ivOpenClose;
 
+    private ImageView ivAdImg;
+    private TextView tvAdDesc;
+    private RelativeLayout rlAdLayout;
+    private TTAdNative mTTAdNative;
+
     private TextView tvComment;
     private LinearLayout llRewardCollect;
     private View hView;
@@ -86,6 +99,8 @@ public class BookDetailsActivity extends PlayerBaseActivity implements View.OnCl
     private RelativeLayout rlReward;
 
     private TextView tvCollect;
+
+    private TextView tvUpdateStatus;
 
     private MusicAnimView mAnimView;
     //书籍详情
@@ -161,6 +176,68 @@ public class BookDetailsActivity extends PlayerBaseActivity implements View.OnCl
         hView = findViewById(R.id.h_view);
         tvCollect = findViewById(R.id.tv_collect);
         tvCollect.setOnClickListener(this);
+
+        ivAdImg = findViewById(R.id.iv_ad_img);
+        tvAdDesc = findViewById(R.id.tv_ad_desc);
+        rlAdLayout = findViewById(R.id.rl_ad_layout);
+
+        AdSlot adSlot = new AdSlot.Builder()
+                .setCodeId("938728263") //广告位id
+                .setSupportDeepLink(true)
+                .setAdCount(1) //请求广告数量为1到3条
+                .setImageAcceptedSize(100, 100)//这个参数设置即可，不影响模板广告的size
+                .build();
+        mTTAdNative = TTAdSdk.getAdManager().createAdNative(this);
+        mTTAdNative.loadFeedAd(adSlot, new TTAdNative.FeedAdListener() {
+            @Override
+            public void onError(int i, String s) {
+
+            }
+
+            @Override
+            public void onFeedAdLoad(List<TTFeedAd> list) {
+                if (list != null && !list.isEmpty()) {
+                    rlAdLayout.setVisibility(View.VISIBLE);
+                    TTFeedAd ad = list.get(0);
+                    UtilGlide.loadImg(mActivity, ad.getIcon().getImageUrl(), ivAdImg, 40);
+                    Log.d("ad", "url=====" + ad.getIcon().getImageUrl());
+                    tvAdDesc.setText(ad.getDescription());
+                    //可以被点击的view, 也可以把convertView放进来意味item可被点击
+                    List<View> clickViewList = new ArrayList<>();
+                    clickViewList.add(rlAdLayout);
+                    List<View> creativeViewList = new ArrayList<>();
+                    creativeViewList.add(rlAdLayout);
+                    ad.registerViewForInteraction(rlAdLayout, clickViewList, creativeViewList, new TTNativeAd.AdInteractionListener() {
+                        @Override
+                        public void onAdClicked(View view, TTNativeAd ad) {
+
+                        }
+
+                        @Override
+                        public void onAdCreativeClick(View view, TTNativeAd ad) {
+                        }
+
+                        @Override
+                        public void onAdShow(TTNativeAd ad) {
+
+                        }
+
+
+                    });
+
+
+                    switch (ad.getInteractionType()) {
+                        case TTAdConstant.INTERACTION_TYPE_DOWNLOAD:
+                            //如果初始化ttAdManager.createAdNative(getApplicationContext())没有传入activity 则需要在此传activity，否则影响使用Dislike逻辑
+                            ad.setActivityForDownloadApp(mActivity);
+                            break;
+
+                    }
+                }
+            }
+        });
+
+        tvUpdateStatus = findViewById(R.id.tv_update_status);
     }
 
     @Override
@@ -197,7 +274,11 @@ public class BookDetailsActivity extends PlayerBaseActivity implements View.OnCl
                 tvActionBarTitle.setText(mBookDataVO.getBookTitle());
                 BookDetailsActivity.this.cardData = result.getCardData();
 
-
+                if(mBookDataVO.getBookUpdateStatus() == 1){
+                    tvUpdateStatus.setText("更新状态：已完结");
+                }else{
+                    tvUpdateStatus.setText("更新状态：更新至" + mBookDataVO.getCount() + "集");
+                }
 
                 UtilGlide.loadImg(mActivity, mBookDataVO.getBookImage(), ivCover);
                 tvTitle.setText(mBookDataVO.getBookTitle());

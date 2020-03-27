@@ -5,6 +5,7 @@ import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Index;
 import org.greenrobot.greendao.annotation.NotNull;
 import org.greenrobot.greendao.annotation.Generated;
+import org.greenrobot.greendao.annotation.Transient;
 
 /**
  * Created by liu on 2017/7/25.
@@ -27,6 +28,10 @@ public class DBListenHistory {
     private String bookImage;         //图片
     private String chapterUrl;         //播放url
     private Long systemTime;     //插入时间
+
+
+    @Transient
+    private boolean update = false;
     @Generated(hash = 1878333219)
     public DBListenHistory(Long id, @NotNull Long duration, Long total,
             String bookId, String chapterId, Integer position, String bookTitle,
@@ -121,7 +126,11 @@ public class DBListenHistory {
         this.systemTime = systemTime;
     }
 
-    
-    
+    public boolean isUpdate() {
+        return update;
+    }
 
+    public void setUpdate(boolean update) {
+        this.update = update;
+    }
 }

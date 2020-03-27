@@ -19,11 +19,20 @@ public abstract class PlayerBaseActivity extends BaseActivity{
     private final String TAG = getClass().getSimpleName();
 
     private MediaBrowserCompat mMediaBrowser;
+    private MediaControllerCompat mControllerCompat;
+    private PlaybackStateCompat mLastPlaybackState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mMediaBrowser = new MediaBrowserCompat(this, new ComponentName(this, MusicService.class), mConnectionCallback, null);
+
+
+        if (mMediaBrowser == null) {
+            mMediaBrowser = new MediaBrowserCompat(this, new ComponentName(this, MusicService.class), mConnectionCallback, null);
+        }
+        if (mControllerCompat == null) {
+            mControllerCompat = MediaControllerCompat.getMediaController(PlayerBaseActivity.this);
+        }
     }
 
 
@@ -39,9 +48,8 @@ public abstract class PlayerBaseActivity extends BaseActivity{
     @Override
     protected void onStop() {
         super.onStop();
-        MediaControllerCompat controllerCompat = MediaControllerCompat.getMediaController(PlayerBaseActivity.this);
-        if (controllerCompat != null) {
-            controllerCompat.unregisterCallback(mCallback);
+        if (mControllerCompat != null) {
+            mControllerCompat.unregisterCallback(mCallback);
         }
         if (mMediaBrowser != null) {
             Log.d("aaa", "MediaBrowserCompat------disconnect");
@@ -51,8 +59,15 @@ public abstract class PlayerBaseActivity extends BaseActivity{
     }
 
 
+
+
     protected void notifyServiceConnected() {
 
+    }
+
+
+    public PlaybackStateCompat getLastPlaybackState() {
+        return mLastPlaybackState;
     }
 
     /**
@@ -61,10 +76,12 @@ public abstract class PlayerBaseActivity extends BaseActivity{
      * @return
      */
     public PlaybackStateCompat getPlaybackStateCompat() {
-        if (MediaControllerCompat.getMediaController(mActivity) != null) {
-            return MediaControllerCompat.getMediaController(PlayerBaseActivity.this).getPlaybackState();
+        if (mControllerCompat != null && mControllerCompat.getPlaybackState() != null) {
+            mLastPlaybackState = mControllerCompat.getPlaybackState();
+            return mControllerCompat.getPlaybackState();
+        } else {
+            return null;
         }
-        return null;
     }
 
     private MediaBrowserCompat.ConnectionCallback mConnectionCallback = new MediaBrowserCompat.ConnectionCallback() {
@@ -72,14 +89,13 @@ public abstract class PlayerBaseActivity extends BaseActivity{
         public void onConnected() {
             super.onConnected();
             Log.d("aaa", "MediaSession-----链接成功------" + TAG);
-            MediaControllerCompat mMediaControllerCompat = null;
             try {
-                mMediaControllerCompat = new MediaControllerCompat(PlayerBaseActivity.this, mMediaBrowser.getSessionToken());
+                mControllerCompat = new MediaControllerCompat(PlayerBaseActivity.this, mMediaBrowser.getSessionToken());
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
-            mMediaControllerCompat.registerCallback(mCallback);
-            MediaControllerCompat.setMediaController(PlayerBaseActivity.this, mMediaControllerCompat);
+            mControllerCompat.registerCallback(mCallback);
+            MediaControllerCompat.setMediaController(PlayerBaseActivity.this, mControllerCompat);
             notifyServiceConnected();
         }
 
@@ -100,6 +116,7 @@ public abstract class PlayerBaseActivity extends BaseActivity{
         @Override
         public void onPlaybackStateChanged(PlaybackStateCompat state) {
             super.onPlaybackStateChanged(state);
+            mLastPlaybackState = state;
             updatePlaybackState(state);
         }
 

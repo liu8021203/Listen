@@ -7,17 +7,22 @@ import android.os.Bundle;
 import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.huawei.hms.api.Api;
 import com.ting.R;
 import com.ting.base.BaseApplication;
 import com.ting.base.BaseFragment;
 import com.ting.base.BaseObserver;
 import com.ting.bean.BaseResult;
+import com.ting.bean.vo.BookListUpdateVO;
+import com.ting.bean.vo.BookListenVO;
 import com.ting.bean.vo.BookVO;
 import com.ting.bookrack.adapter.BookRackAdapter;
 import com.ting.common.AppData;
@@ -32,10 +37,15 @@ import com.ting.play.PlayActivity;
 import com.ting.play.controller.MusicDBController;
 import com.ting.record.DownloadActivity;
 import com.ting.util.UtilGlide;
+import com.ting.util.UtilGson;
 import com.ting.util.UtilIntent;
 import com.ting.util.UtilRetrofit;
 import com.ting.view.MusicAnimView;
+import com.umeng.message.PushAgent;
+import com.umeng.message.common.inter.ITagManager;
+import com.umeng.message.tag.TagManager;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -102,15 +112,88 @@ public class BookRackFragment extends BaseFragment {
 
     private void getListenData() {
         DBListenHistoryDao dao = BaseApplication.getInstance().getDaoSession().getDBListenHistoryDao();
-        List<DBListenHistory> data = dao.queryRaw("group by BOOK_ID");
-        if (mAdapter == null) {
-            mAdapter = new BookRackAdapter(mActivity);
-            mAdapter.setData(data);
-            mRecyclerView.setAdapter(mAdapter);
-        } else {
-            mAdapter.setData(data);
-            mAdapter.notifyDataSetChanged();
+        final List<DBListenHistory> historyList = dao.queryRaw("group by BOOK_ID order by SYSTEM_TIME desc");
+
+
+        List<BookListenVO> list = new ArrayList<>();
+        List<String> tags = new ArrayList<>();
+        for (int i = 0; i < historyList.size(); i++) {
+            if (i == 21) {
+                break;
+            }
+            BookListenVO vo = new BookListenVO();
+            vo.setBookId(historyList.get(i).getBookId());
+            vo.setSystemTime(historyList.get(i).getSystemTime() / 1000);
+            list.add(vo);
+            tags.add("bookId" + historyList.get(i).getBookId());
         }
+
+        if (!tags.isEmpty()) {
+            String[] strings = new String[tags.size()];
+            tags.toArray(strings);
+            PushAgent.getInstance(mActivity).getTagManager().addTags(new TagManager.TCallBack() {
+                @Override
+                public void onMessage(boolean b, ITagManager.Result result) {
+                    Log.d("aaa", "添加推送标签---" + b);
+                }
+            }, strings);
+        }
+
+
+        Map<String, String> map = new HashMap<>();
+        map.put("list", UtilGson.toJson(list));
+        BaseObserver observer = new BaseObserver<BaseResult<List<BookListUpdateVO>>>(this, BaseObserver.MODEL_NO) {
+            @Override
+            public void success(BaseResult<List<BookListUpdateVO>> data) {
+                List<BookListUpdateVO> listUpdateVOS = data.getData();
+                for (int i = 0; i < historyList.size(); i++) {
+                    if (i == 21) {
+                        break;
+                    }
+                    for (int j = 0; j < listUpdateVOS.size(); j++) {
+                        if (TextUtils.equals(historyList.get(i).getBookId(), listUpdateVOS.get(j).getBookId())) {
+                            historyList.get(i).setUpdate(listUpdateVOS.get(j).isUpdate());
+                            break;
+                        }
+                    }
+                }
+
+                if (historyList != null && !historyList.isEmpty()) {
+                    if (mAdapter == null) {
+                        mAdapter = new BookRackAdapter(mActivity);
+                        mAdapter.setData(historyList);
+                        mRecyclerView.setAdapter(mAdapter);
+                    } else {
+                        mAdapter.setData(historyList);
+                        mAdapter.notifyDataSetChanged();
+                    }
+                }
+            }
+
+
+            @Override
+            public void error(BaseResult<List<BookListUpdateVO>> value, Throwable e) {
+                super.error(value, e);
+                if (historyList != null && !historyList.isEmpty()) {
+                    if (mAdapter == null) {
+                        mAdapter = new BookRackAdapter(mActivity);
+                        mAdapter.setData(historyList);
+                        mRecyclerView.setAdapter(mAdapter);
+                    } else {
+                        mAdapter.setData(historyList);
+                        mAdapter.notifyDataSetChanged();
+                    }
+                }
+            }
+
+
+        };
+        mDisposable.add(observer);
+        UtilRetrofit.getInstance().create(HttpService.class).isBookUpdateStatus(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(observer);
+
+
+
+
     }
 
     @Override

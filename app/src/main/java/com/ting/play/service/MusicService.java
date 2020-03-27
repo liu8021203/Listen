@@ -14,11 +14,15 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.os.SystemClock;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import android.support.v4.media.MediaBrowserCompat;
+
 import androidx.media.MediaBrowserServiceCompat;
 import androidx.media.session.MediaButtonReceiver;
+
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
@@ -58,6 +62,7 @@ import com.ting.play.state.MusicNotification;
 import com.ting.util.UtilListener;
 import com.ting.util.UtilMD5Encryption;
 import com.ting.util.UtilRetrofit;
+import com.ting.util.UtilSPutil;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -225,7 +230,7 @@ public class MusicService extends MediaBrowserServiceCompat {
     public int onStartCommand(Intent intent, final int flags, int startId) {
         Log.d("aaa", "MusicService-------onStartCommand");
         MediaButtonReceiver.handleIntent(mSessionCompat, intent);
-        return START_NOT_STICKY;
+        return START_STICKY;
     }
 
 
@@ -379,6 +384,12 @@ public class MusicService extends MediaBrowserServiceCompat {
                             MusicService.this.stopSelf();
                         } else {
                             currentPlayVO = vo;
+                            Bundle bundle = getContentResolver().call(Uri.parse("content://music"), "music", null, null);
+                            long skipSecond = bundle.getLong("second");
+                            if (skipSecond != -1) {
+                                msg = PLAY_SEEK_TIME_MSG;
+                                time = skipSecond;
+                            }
                             play();
                         }
                     } else {
@@ -393,6 +404,12 @@ public class MusicService extends MediaBrowserServiceCompat {
                                 MusicService.this.stopSelf();
                             } else {
                                 currentPlayVO = vo;
+                                Bundle bundle = getContentResolver().call(Uri.parse("content://music"), "music", null, null);
+                                long skipSecond = bundle.getLong("second");
+                                if (skipSecond != -1) {
+                                    msg = PLAY_SEEK_TIME_MSG;
+                                    time = skipSecond;
+                                }
                                 play();
                             }
                         } else if (currentPlayVO.getPosition() >= endPosition) {
@@ -411,6 +428,12 @@ public class MusicService extends MediaBrowserServiceCompat {
                             } else {
                                 Log.d("aaa", "下一集");
                                 currentPlayVO = vo;
+                                Bundle bundle = getContentResolver().call(Uri.parse("content://music"), "music", null, null);
+                                long skipSecond = bundle.getLong("second");
+                                if (skipSecond != -1) {
+                                    msg = PLAY_SEEK_TIME_MSG;
+                                    time = skipSecond;
+                                }
                                 play();
                             }
                         }
@@ -722,6 +745,12 @@ public class MusicService extends MediaBrowserServiceCompat {
                         MusicService.this.stopSelf();
                     } else {
                         currentPlayVO = vo;
+                        Bundle bundle = getContentResolver().call(Uri.parse("content://music"), "music", null, null);
+                        long skipSecond = bundle.getLong("second");
+                        if (skipSecond != -1) {
+                            msg = PLAY_SEEK_TIME_MSG;
+                            time = skipSecond;
+                        }
                         play();
                     }
                 } else {
@@ -735,6 +764,12 @@ public class MusicService extends MediaBrowserServiceCompat {
                         } else {
                             Log.d("aaa", "下一集");
                             currentPlayVO = vo;
+                            Bundle bundle = getContentResolver().call(Uri.parse("content://music"), "music", null, null);
+                            long skipSecond = bundle.getLong("second");
+                            if (skipSecond != -1) {
+                                msg = PLAY_SEEK_TIME_MSG;
+                                time = skipSecond;
+                            }
                             play();
                         }
                     } else {
@@ -757,7 +792,6 @@ public class MusicService extends MediaBrowserServiceCompat {
 
 
     private final class ExoPlayerEventListener implements ExoPlayer.EventListener {
-
 
 
         @Override
@@ -878,7 +912,7 @@ public class MusicService extends MediaBrowserServiceCompat {
         @Override
         public void onStop() {
             super.onStop();
-            if(mState == State.Paused || mState == State.Playing || mState == State.Preparing) {
+            if (mState == State.Paused || mState == State.Playing || mState == State.Preparing) {
                 musicStop();
             }
         }
@@ -903,11 +937,23 @@ public class MusicService extends MediaBrowserServiceCompat {
                     play();
                 } else {
                     if (!TextUtils.isEmpty(currentPlayVO.getUrl())) {
+                        Bundle bundle = getContentResolver().call(Uri.parse("content://music"), "music", null, null);
+                        long skipSecond = bundle.getLong("second");
+                        if (skipSecond != -1) {
+                            msg = PLAY_SEEK_TIME_MSG;
+                            time = skipSecond;
+                        }
                         play();
                     }
                 }
             } else {
                 if (!TextUtils.isEmpty(currentPlayVO.getUrl())) {
+                    Bundle bundle = getContentResolver().call(Uri.parse("content://music"), "music", null, null);
+                    long skipSecond = bundle.getLong("second");
+                    if (skipSecond != -1) {
+                        msg = PLAY_SEEK_TIME_MSG;
+                        time = skipSecond;
+                    }
                     play();
                 }
             }
@@ -955,6 +1001,12 @@ public class MusicService extends MediaBrowserServiceCompat {
                     } else {
                         record();
                         currentPlayVO = vo;
+                        Bundle bundle = getContentResolver().call(Uri.parse("content://music"), "music", null, null);
+                        long skipSecond = bundle.getLong("second");
+                        if (skipSecond != -1) {
+                            msg = PLAY_SEEK_TIME_MSG;
+                            time = skipSecond;
+                        }
                         play();
                     }
                 } else {
@@ -997,6 +1049,12 @@ public class MusicService extends MediaBrowserServiceCompat {
                     } else {
                         record();
                         currentPlayVO = vo;
+                        Bundle bundle = getContentResolver().call(Uri.parse("content://music"), "music", null, null);
+                        long skipSecond = bundle.getLong("second");
+                        if (skipSecond != -1) {
+                            msg = PLAY_SEEK_TIME_MSG;
+                            time = skipSecond;
+                        }
                         play();
                     }
                 }

@@ -46,7 +46,9 @@ public class MyDouAdapter extends RecyclerView.Adapter<MyDouAdapter.ItemViewHold
             @Override
             public void onClick(View v) {
                 PayDialog dialog = new PayDialog(mActivity);
-                dialog.setVO(vo);
+                dialog.setNum(vo.getMoneyNum());
+                dialog.setPrice(vo.getMoneyPrice());
+                dialog.setDesc(vo.getMoneyDesc());
                 dialog.show();
             }
         });

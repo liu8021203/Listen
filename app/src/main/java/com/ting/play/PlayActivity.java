@@ -15,13 +15,22 @@ import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.bytedance.sdk.openadsdk.AdSlot;
+import com.bytedance.sdk.openadsdk.TTAdConstant;
+import com.bytedance.sdk.openadsdk.TTAdNative;
+import com.bytedance.sdk.openadsdk.TTAdSdk;
+import com.bytedance.sdk.openadsdk.TTFeedAd;
+import com.bytedance.sdk.openadsdk.TTNativeAd;
 import com.ting.R;
 import com.ting.base.BaseActivity;
 import com.ting.base.BaseObserver;
@@ -36,6 +45,7 @@ import com.ting.db.DBListenHistory;
 import com.ting.download.DownloadController;
 import com.ting.play.controller.MusicDBController;
 import com.ting.play.dialog.PlayListDialog;
+import com.ting.play.dialog.SettingSecondDialog;
 import com.ting.play.dialog.ShareDialog;
 import com.ting.play.dialog.SpeedDialog;
 import com.ting.play.dialog.TimeSettingDialog;
@@ -46,6 +56,7 @@ import com.ting.util.UtilGlide;
 import com.ting.util.UtilIntent;
 import com.ting.util.UtilListener;
 import com.ting.util.UtilNetStatus;
+import com.ting.util.UtilPixelTransfrom;
 import com.ting.util.UtilRetrofit;
 import com.umeng.analytics.MobclickAgent;
 
@@ -58,6 +69,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import androidx.cardview.widget.CardView;
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -70,30 +82,33 @@ public class PlayActivity extends PlayerBaseActivity {
     private static final long PROGRESS_UPDATE_INTERNAL = 1000;
     private static final long PROGRESS_UPDATE_INITIAL_INTERVAL = 100;
 
+    private ImageView ivImg;
     private ImageView ivClose;
     private ImageView ivPrevious;
     private ImageView ivNext;
     private ImageView ivPlay;
     private ImageView ivList;
     private TextView tvTiming;
-    private CircleImageView playImage;
     private TextView play_name;
     private TextView program_number;
-    private PlayerReceiver mPlayerReceiver;
     private TextView tvShare;
     private TextView tvSpeed;
+    private TextView tvSetting;
     private SeekBar music_seekbar;
     private TextView tv_current_time;
     private TextView tv_total_time;
     private ProgressBar music_progress;
-    //在线数据
-    private List<DBChapter> data;
-    private ObjectAnimator animator;
     //书籍ID
     private String bookId;
 
+    private CardView mCardView;
+    private ImageView ivAdImg;
+    private TextView tvAdTitle;
+    private ImageView ivAdClose;
+    private RelativeLayout rlAdLayout;
 
-    private PlayListDialog mDialog;
+    private TTAdNative mTTAdNative;
+
 
     private int position = 1;
 
@@ -160,16 +175,90 @@ public class PlayActivity extends PlayerBaseActivity {
         music_progress = flContent.findViewById(R.id.music_progress);
         tvShare = flContent.findViewById(R.id.tv_share);
         tvShare.setOnClickListener(this);
-        playImage = flContent.findViewById(R.id.play_image);
-        animator = ObjectAnimator.ofFloat(playImage, "rotation", 0.0f, 360.0f);
-        animator.setRepeatCount(-1);
-        animator.setRepeatMode(ValueAnimator.RESTART);
-        animator.setInterpolator(new LinearInterpolator());
-        animator.setDuration(5000);
         ivList = flContent.findViewById(R.id.iv_list);
         ivList.setOnClickListener(this);
         tvSpeed = findViewById(R.id.tv_speed);
         tvSpeed.setOnClickListener(this);
+        ivImg = findViewById(R.id.iv_img);
+        mCardView = findViewById(R.id.card_view);
+        int width = 0;
+        if (UtilPixelTransfrom.getScreenHeight(this) > 1000 && UtilPixelTransfrom.getScreenHeight(this) <= 1500) {
+            width = UtilPixelTransfrom.dip2px(this, 150);
+        } else if (UtilPixelTransfrom.getScreenHeight(this) > 1500 && UtilPixelTransfrom.getScreenHeight(this) <= 1900) {
+            width = UtilPixelTransfrom.dip2px(this, 200);
+        } else {
+            width = UtilPixelTransfrom.dip2px(this, 250);
+        }
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(width, (int) (width / 1.52f));
+        params.addRule(RelativeLayout.CENTER_HORIZONTAL);
+        params.topMargin = UtilPixelTransfrom.dip2px(this, 80);
+//        params.setMargins(0, 20,0,0);
+        mCardView.setLayoutParams(params);
+        ivAdImg = findViewById(R.id.iv_ad_img);
+        tvAdTitle = findViewById(R.id.tv_ad_title);
+        ivAdClose = findViewById(R.id.iv_ad_close);
+        ivAdClose.setOnClickListener(this);
+        ivAdClose.setColorFilter(0xffffffff);
+        rlAdLayout = findViewById(R.id.rl_ad_layout);
+        tvSetting = findViewById(R.id.tv_setting);
+        tvSetting.setOnClickListener(this);
+
+        AdSlot adSlot = new AdSlot.Builder()
+                .setCodeId("938728263") //广告位id
+                .setSupportDeepLink(true)
+                .setAdCount(1) //请求广告数量为1到3条
+                .setImageAcceptedSize(width, (int) (width / 1.52f))//这个参数设置即可，不影响模板广告的size
+                .build();
+        mTTAdNative = TTAdSdk.getAdManager().createAdNative(this);
+        mTTAdNative.loadFeedAd(adSlot, new TTAdNative.FeedAdListener() {
+            @Override
+            public void onError(int i, String s) {
+
+            }
+
+            @Override
+            public void onFeedAdLoad(List<TTFeedAd> list) {
+                if (list != null && !list.isEmpty()) {
+                    rlAdLayout.setVisibility(View.VISIBLE);
+                    TTFeedAd ad = list.get(0);
+                    UtilGlide.loadImg(mActivity, ad.getImageList().get(0).getImageUrl(), ivAdImg);
+                    Log.d("ad", "url=====" + ad.getIcon().getImageUrl());
+                    tvAdTitle.setText(ad.getDescription());
+                    //可以被点击的view, 也可以把convertView放进来意味item可被点击
+                    List<View> clickViewList = new ArrayList<>();
+                    clickViewList.add(rlAdLayout);
+                    List<View> creativeViewList = new ArrayList<>();
+                    creativeViewList.add(rlAdLayout);
+                    ad.registerViewForInteraction(rlAdLayout, clickViewList, creativeViewList, new TTNativeAd.AdInteractionListener() {
+                        @Override
+                        public void onAdClicked(View view, TTNativeAd ad) {
+
+                        }
+
+                        @Override
+                        public void onAdCreativeClick(View view, TTNativeAd ad) {
+                            rlAdLayout.setVisibility(View.GONE);
+                        }
+
+                        @Override
+                        public void onAdShow(TTNativeAd ad) {
+
+                        }
+
+
+                    });
+
+
+                    switch (ad.getInteractionType()) {
+                        case TTAdConstant.INTERACTION_TYPE_DOWNLOAD:
+                            //如果初始化ttAdManager.createAdNative(getApplicationContext())没有传入activity 则需要在此传activity，否则影响使用Dislike逻辑
+                            ad.setActivityForDownloadApp(mActivity);
+                            break;
+
+                    }
+                }
+            }
+        });
     }
 
     @Override
@@ -241,7 +330,7 @@ public class PlayActivity extends PlayerBaseActivity {
                 if (data != null && data.getData() != null && data.getData().getList() != null && !data.getData().getList().isEmpty()) {
                     playQueue = data.getData().getList();
                     DBChapter chapter = data.getData().getList().get(0);
-                    UtilGlide.loadImg(mActivity, chapter.getBookImage(), playImage);
+                    UtilGlide.loadImg(mActivity, chapter.getBookImage(), ivImg);
                     if (isPlay) {
                         DBListenHistory history = MusicDBController.getLastDBListenHistoryByBookId(bookId);
                         Bundle bundle = new Bundle();
@@ -449,6 +538,15 @@ public class PlayActivity extends PlayerBaseActivity {
                 bundle.putString("bookId", bookId);
                 mActivity.intent(BookDetailsActivity.class, bundle);
                 break;
+
+            case R.id.iv_ad_close:
+                rlAdLayout.setVisibility(View.GONE);
+                break;
+
+            case R.id.tv_setting:
+                SettingSecondDialog secondDialog = new SettingSecondDialog(mActivity);
+                secondDialog.show();
+                break;
             default:
                 break;
         }
@@ -512,9 +610,7 @@ public class PlayActivity extends PlayerBaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (mDialog != null) {
-            mDialog.unRegister();
-        }
+
     }
 
     @Override
@@ -636,7 +732,7 @@ public class PlayActivity extends PlayerBaseActivity {
                     }
                     play_name.setText(bookTitle);
                     program_number.setText(chapterTitle);
-                    UtilGlide.loadImg(mActivity, bookImage, playImage);
+                    UtilGlide.loadImg(mActivity, bookImage, ivImg);
                     timer = bundle.getInt("timer");
                     if (timer <= 0) {
                         tvTiming.setText("定时");
@@ -653,7 +749,6 @@ public class PlayActivity extends PlayerBaseActivity {
                         Log.d("aaa", "notifyServiceConnected==========STATE_PLAYING");
                         playQueue = bundle.getParcelableArrayList("playQueue");
                         updateProgress();
-                        animator.start();
                         ivPlay.setImageResource(R.drawable.vector_play);
                         scheduleSeekbarUpdate();
                     } else if (getPlaybackStateCompat().getState() == PlaybackStateCompat.STATE_PAUSED) {
@@ -675,9 +770,7 @@ public class PlayActivity extends PlayerBaseActivity {
             }
         } else {
             Log.d("aaa", "notifyServiceConnected==========没有播放状态");
-            if (animator.isRunning()) {
-                notifyStop();
-            }
+            notifyStop();
             loadingPlayData();
         }
     }
@@ -712,29 +805,17 @@ public class PlayActivity extends PlayerBaseActivity {
         Log.d("aaa", "通知播放");
         isPlay = false;
         this.bookId = bookId;
-        if (!animator.isRunning()) {
-            if (animator.isStarted()) {
-                animator.resume();
-            } else {
-                animator.start();
-            }
-        } else {
-            if (animator.isStarted()) {
-                animator.resume();
-            } else {
-                animator.start();
-            }
-        }
+
         play_name.setText(bookTitle);
         program_number.setText(chapterTitle);
         tv_total_time.setText(UtilDate.format(duration, "mm:ss"));
         ivPlay.setVisibility(View.VISIBLE);
         ivPlay.setImageResource(R.drawable.vector_play);
 
-        long currentPosition = getPlaybackStateCompat().getPosition();
-        if (currentPosition == 0) {
-            tv_current_time.setText("00:00");
-        }
+//        long currentPosition = getPlaybackStateCompat().getPosition();
+//        if (currentPosition == 0) {
+//            tv_current_time.setText("00:00");
+//        }
         music_seekbar.setMax((int) duration);
         Log.d("aaa", "duration----------" + duration);
         scheduleSeekbarUpdate();
@@ -743,7 +824,6 @@ public class PlayActivity extends PlayerBaseActivity {
     @Override
     protected void notifyPause() {
         super.notifyPause();
-        animator.pause();
         ivPlay.setImageResource(R.drawable.vector_pause);
         stopSeekbarUpdate();
     }
@@ -751,7 +831,6 @@ public class PlayActivity extends PlayerBaseActivity {
     @Override
     protected void notifyStop() {
         super.notifyStop();
-        animator.end();
         ivPlay.setImageResource(R.drawable.vector_pause);
         music_seekbar.setProgress(0);
         tv_current_time.setText("--:--");
