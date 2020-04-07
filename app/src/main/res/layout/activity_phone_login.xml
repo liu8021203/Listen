@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/transparent">
+
+
+    <ImageView
+        android:id="@+id/login_top_image"
+        android:layout_width="@dimen/dp750_150"
+        android:layout_height="@dimen/dp750_150"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/dp750_88"
+        android:src="@drawable/login_top_image" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/login_top_image"
+        android:layout_marginTop="@dimen/dp750_80"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp750_90"
+            android:background="#f8f8f8"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="@dimen/dp750_30"
+                android:layout_height="@dimen/dp750_30"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="@dimen/dp750_36"
+                android:src="@drawable/svg_account"></ImageView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="@dimen/dp750_26"
+                android:text="账号"
+                android:textColor="@color/c666666"
+                android:textSize="@dimen/px28"
+
+                />
+
+            <View
+                android:layout_width="@dimen/dp750_1"
+                android:layout_height="@dimen/dp750_45"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="@dimen/dp750_16"
+                android:background="@color/cdcdcdc"></View>
+
+            <EditText
+                android:id="@+id/user_name_editext"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@null"
+                android:gravity="center_vertical"
+                android:hint="请输入手机号 "
+                android:paddingLeft="@dimen/dp750_10"
+                android:singleLine="true"
+                android:textColor="@color/c666666"
+                android:textColorHint="@color/cdcdcdc"
+                android:textSize="@dimen/px28" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp750_1"
+            android:background="@color/cdcdcdc"></View>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp750_90"
+            android:background="#f8f8f8"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="@dimen/dp750_30"
+                android:layout_height="@dimen/dp750_30"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="@dimen/dp750_36"
+                android:src="@drawable/svg_password"></ImageView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="@dimen/dp750_26"
+                android:text="密码"
+                android:textColor="@color/c666666"
+                android:textSize="@dimen/px28"
+
+                />
+
+            <View
+                android:layout_width="@dimen/dp750_1"
+                android:layout_height="@dimen/dp750_45"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="@dimen/dp750_16"
+                android:background="@color/cdcdcdc"></View>
+
+            <EditText
+                android:id="@+id/password_editext"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@null"
+                android:gravity="center_vertical"
+                android:hint="请输入密码"
+                android:paddingLeft="@dimen/dp750_10"
+                android:password="true"
+                android:singleLine="true"
+                android:textColor="@color/c666666"
+                android:textColorHint="@color/cdcdcdc"
+                android:textSize="@dimen/px28" />
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp750_54"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/forget_password_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="？忘记密码"
+                android:textColor="@color/c666666"
+                android:textSize="@dimen/px28" />
+
+            <View
+                android:layout_width="@dimen/dp750_1"
+                android:layout_height="@dimen/dp750_30"
+                android:layout_marginLeft="@dimen/dp750_34"
+                android:background="@color/cb6b6b6"></View>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/dp750_34"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="@dimen/dp750_30"
+                    android:layout_height="@dimen/dp750_30"
+                    android:src="@drawable/svg_persson_add" />
+
+                <TextView
+                    android:id="@+id/to_regist_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/dp750_5"
+                    android:text="立即注册"
+                    android:textColor="@color/c666666"
+                    android:textSize="@dimen/px28" />
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/login_immediately"
+            android:layout_width="@dimen/dp750_300"
+            android:layout_height="@dimen/dp750_80"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/dp750_50"
+            android:background="@drawable/login_background"
+            android:gravity="center"
+            android:text="登录"
+            android:textColor="@color/white"
+            android:textSize="@dimen/px30" />
+
+    </LinearLayout>
+
+
+
+</RelativeLayout>

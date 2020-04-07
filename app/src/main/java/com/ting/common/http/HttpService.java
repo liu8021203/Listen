@@ -10,6 +10,7 @@ import com.ting.bean.CommentListResult;
 import com.ting.bean.ExpenseResult;
 import com.ting.bean.HostDetailResult;
 import com.ting.bean.MoneyResult;
+import com.ting.bean.NoticeResult;
 import com.ting.bean.anchor.AnchorMessResult;
 import com.ting.bean.anchor.AnchorResult;
 import com.ting.bean.anchor.LiWuResult;
@@ -49,6 +50,7 @@ import com.ting.bean.vo.CommentListVO;
 import com.ting.bean.vo.GiftVO;
 import com.ting.bean.vo.HostVO;
 import com.ting.bean.vo.HotSearchVO;
+import com.ting.bean.vo.MessageListVO;
 import com.ting.db.DBChapter;
 
 import java.util.List;
@@ -352,9 +354,6 @@ public interface HttpService {
     Observable<RandomRackResult> get_guess_like(@QueryMap Map<String, String> map);
 
 
-    @POST("index.php?s=Home/App/get_systemmsg_list")
-    Observable<MessageJavaResult> get_systemmsg_list(@QueryMap Map<String, String> map);
-
     @POST("index.php?s=Home/App/check_new_systemmsg")
     Observable<CheckMessageResult> check_new_systemmsg(@QueryMap Map<String, String> map);
 
@@ -629,4 +628,28 @@ public interface HttpService {
     //判断书籍是否更新
     @GET("listen/api/isBookUpdateStatus")
     Observable<BaseResult<List<BookListUpdateVO>>> isBookUpdateStatus(@QueryMap Map<String, String> map);
+
+
+    //获取公告
+    @GET("listen/api/getNotice")
+    Observable<BaseResult<NoticeResult>> getNotice(@QueryMap Map<String, String> map);
+
+
+    //获取公告数量
+    @GET("listen/api/getNoticeNum")
+    Observable<BaseResult<Integer>> getNoticeNum(@QueryMap Map<String, String> map);
+
+
+    //获取回复列表
+    @GET("listen/api/getMessageListByUserId")
+    Observable<BaseResult<List<MessageListVO>>> getMessageListByUserId(@QueryMap Map<String, String> map);
+
+    //阅读回复消息
+    @POST("listen/api/readMessageByUserId")
+    Observable<BaseResult> readMessageByUserId(@QueryMap Map<String, String> map);
+
+
+    //判断书籍是否完结
+    @POST("listen/api/isBookFinish")
+    Observable<BaseResult<Integer>> isBookFinish(@QueryMap Map<String, String> map);
 }

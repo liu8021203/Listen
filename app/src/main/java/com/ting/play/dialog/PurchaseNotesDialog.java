@@ -11,13 +11,13 @@ import android.widget.TextView;
 
 import com.ting.R;
 
-public class ContactDialog extends Dialog implements View.OnClickListener {
+public class PurchaseNotesDialog extends Dialog implements View.OnClickListener {
     private TextView tvContact;
     private Button btnOk;
     private String nickname;
     private String contact;
 
-    public ContactDialog(@NonNull Context context) {
+    public PurchaseNotesDialog(@NonNull Context context) {
         super(context, R.style.CustomDialog);
     }
 

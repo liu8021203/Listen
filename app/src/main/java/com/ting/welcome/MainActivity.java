@@ -26,11 +26,13 @@ import com.ting.R;
 import com.ting.base.BaseObserver;
 import com.ting.base.PlayerBaseActivity;
 import com.ting.bean.BaseResult;
+import com.ting.bean.NoticeResult;
 import com.ting.bean.apk.ApkResult;
 import com.ting.bookcity.HomeFragment;
 import com.ting.bookcity.dialog.ExitDialog;
 import com.ting.bookrack.BookRackFragment;
 import com.ting.category.CategoryFragment;
+import com.ting.common.TokenManager;
 import com.ting.common.dialog.NoticeDialog;
 import com.ting.common.http.HttpService;
 import com.ting.download.receiver.ApkInstallReceiver;
@@ -47,6 +49,7 @@ import java.util.Map;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import q.rorbin.badgeview.QBadgeView;
 
 public class MainActivity extends PlayerBaseActivity implements View.OnClickListener {
     private FragmentManager manager;
@@ -73,7 +76,6 @@ public class MainActivity extends PlayerBaseActivity implements View.OnClickList
     private MineMainFrame mineMainFrame;
 
 
-
     private ApkInstallReceiver receiver;
 
     @Override
@@ -83,7 +85,7 @@ public class MainActivity extends PlayerBaseActivity implements View.OnClickList
         setContentView(R.layout.activity_main);
         init();
         manager = getSupportFragmentManager();
-           /*获取Intent中的Bundle对象*/
+        /*获取Intent中的Bundle对象*/
         setTabSelection(0);
         // 通知状态
         checkUpdate();
@@ -100,18 +102,17 @@ public class MainActivity extends PlayerBaseActivity implements View.OnClickList
         registerReceiver(receiver, intentFilter);
 
 
-        NoticeDialog dialog = new NoticeDialog(mActivity);
-        dialog.show();
+        getNotice();
     }
 
 
     @Override
     protected void notifyPlay(String bookId, String bookTitle, String chapterTitle, String bookImage, long duration) {
         super.notifyPlay(bookId, bookTitle, chapterTitle, bookImage, duration);
-        if(mBookRackFragment != null){
+        if (mBookRackFragment != null) {
             mBookRackFragment.startAnim();
         }
-        if(mHomeFragment != null){
+        if (mHomeFragment != null) {
             mHomeFragment.statAnim();
         }
     }
@@ -119,10 +120,10 @@ public class MainActivity extends PlayerBaseActivity implements View.OnClickList
     @Override
     protected void notifyPause() {
         super.notifyPause();
-        if(mBookRackFragment != null){
+        if (mBookRackFragment != null) {
             mBookRackFragment.stopAnim();
         }
-        if(mHomeFragment != null){
+        if (mHomeFragment != null) {
             mHomeFragment.stopAnim();
         }
     }
@@ -130,10 +131,10 @@ public class MainActivity extends PlayerBaseActivity implements View.OnClickList
     @Override
     protected void notifyStop() {
         super.notifyStop();
-        if(mBookRackFragment != null){
+        if (mBookRackFragment != null) {
             mBookRackFragment.stopAnim();
         }
-        if(mHomeFragment != null){
+        if (mHomeFragment != null) {
             mHomeFragment.stopAnim();
         }
     }
@@ -143,37 +144,36 @@ public class MainActivity extends PlayerBaseActivity implements View.OnClickList
     protected void notifyServiceConnected() {
         super.notifyServiceConnected();
         if (getPlaybackStateCompat() != null && (getPlaybackStateCompat().getState() == PlaybackStateCompat.STATE_PLAYING)) {
-            if(mBookRackFragment != null){
+            if (mBookRackFragment != null) {
                 mBookRackFragment.startAnim();
             }
-            if(mHomeFragment != null){
+            if (mHomeFragment != null) {
                 mHomeFragment.statAnim();
             }
         } else if (getPlaybackStateCompat() != null && getPlaybackStateCompat().getState() == PlaybackStateCompat.STATE_PAUSED) {
-            if(mBookRackFragment != null){
+            if (mBookRackFragment != null) {
                 mBookRackFragment.stopAnim();
             }
-            if(mHomeFragment != null){
+            if (mHomeFragment != null) {
                 mHomeFragment.stopAnim();
             }
         } else if (getPlaybackStateCompat() != null && getPlaybackStateCompat().getState() == PlaybackStateCompat.STATE_STOPPED) {
-            if(mBookRackFragment != null){
+            if (mBookRackFragment != null) {
                 mBookRackFragment.stopAnim();
             }
-            if(mHomeFragment != null){
+            if (mHomeFragment != null) {
                 mHomeFragment.stopAnim();
             }
         } else {
-            if(mBookRackFragment != null){
+            if (mBookRackFragment != null) {
                 mBookRackFragment.stopAnim();
             }
-            if(mHomeFragment != null){
+            if (mHomeFragment != null) {
                 mHomeFragment.stopAnim();
             }
         }
 
     }
-
 
 
     @Override
@@ -465,7 +465,6 @@ public class MainActivity extends PlayerBaseActivity implements View.OnClickList
     }
 
 
-
     /**
      * Downloadmanager下载完成接受的广播
      */
@@ -506,6 +505,34 @@ public class MainActivity extends PlayerBaseActivity implements View.OnClickList
             }
         }
     }
+
+
+    private void getNotice() {
+        Map<String, String> map = new HashMap<>();
+        long systemTime = UtilSPutil.getInstance(mActivity).getLong("systemTime", -1L);
+        map.put("systemTime", String.valueOf(systemTime));
+        BaseObserver baseObserver = new BaseObserver<BaseResult<NoticeResult>>(this, BaseObserver.MODEL_ONLY_SHOW_DIALOG) {
+            @Override
+            public void success(BaseResult<NoticeResult> data) {
+                super.success(data);
+                NoticeResult result = data.getData();
+                if(result != null){
+                    NoticeDialog dialog = new NoticeDialog(mActivity);
+                    dialog.setContent(result.getContent());
+                    dialog.show();
+                }
+            }
+
+
+            @Override
+            public void error(BaseResult<NoticeResult> value, Throwable e) {
+                super.error(value, e);
+            }
+        };
+        mDisposable.add(baseObserver);
+        UtilRetrofit.getInstance().create(HttpService.class).getNotice(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
+    }
+
 
 
 

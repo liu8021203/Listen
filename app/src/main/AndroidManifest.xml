@@ -338,6 +338,13 @@
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/BaseAppTheme"></activity>
+
+
+        <activity
+            android:name=".login.PhoneLoginActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:theme="@style/BaseAppTheme"></activity>
         
         
         <provider

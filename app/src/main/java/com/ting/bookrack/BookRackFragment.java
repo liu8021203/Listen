@@ -4,12 +4,14 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.os.Build;
 import android.os.Bundle;
+
 import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -40,6 +42,7 @@ import com.ting.util.UtilGlide;
 import com.ting.util.UtilGson;
 import com.ting.util.UtilIntent;
 import com.ting.util.UtilRetrofit;
+import com.ting.util.UtilSPutil;
 import com.ting.view.MusicAnimView;
 import com.umeng.message.PushAgent;
 import com.umeng.message.common.inter.ITagManager;
@@ -52,6 +55,7 @@ import java.util.Map;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import q.rorbin.badgeview.QBadgeView;
 
 /**
  * Created by liu on 2017/11/21.
@@ -70,10 +74,12 @@ public class BookRackFragment extends BaseFragment {
     private MusicAnimView mMusicAnimView;
     private ImageView ivMenu;
     private ImageView ivRed;
+    private ImageView ivMessage;
     private RelativeLayout rlMenu;
     private RelativeLayout rlActionbar;
     private TextView tvComplete;
     private BookRackPopupWindow window;
+    private QBadgeView badgeView;
 
     @Override
     protected void initView() {
@@ -101,6 +107,8 @@ public class BookRackFragment extends BaseFragment {
         if (TokenManager.isLogin(mActivity)) {
             isSign();
         }
+        ivMessage = flContent.findViewById(R.id.iv_message);
+        ivMessage.setOnClickListener(this);
     }
 
 
@@ -108,6 +116,7 @@ public class BookRackFragment extends BaseFragment {
     protected void initData() {
         getListenData();
         recommend();
+        getNoticeNum();
     }
 
     private void getListenData() {
@@ -192,8 +201,6 @@ public class BookRackFragment extends BaseFragment {
         UtilRetrofit.getInstance().create(HttpService.class).isBookUpdateStatus(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(observer);
 
 
-
-
     }
 
     @Override
@@ -250,6 +257,19 @@ public class BookRackFragment extends BaseFragment {
             }
             break;
 
+
+            case R.id.iv_message: {
+                if (TokenManager.isLogin(mActivity)) {
+                    mActivity.intent(MessageJavaActivity.class);
+                    if (badgeView != null) {
+                        badgeView.hide(false);
+                    }
+                } else {
+                    mActivity.intent(LoginMainActivity.class);
+                }
+            }
+            break;
+
             case R.id.tv_complete:
                 rlMenu.setVisibility(View.VISIBLE);
                 mMusicAnimView.setVisibility(View.VISIBLE);
@@ -279,12 +299,7 @@ public class BookRackFragment extends BaseFragment {
                         @Override
                         public void message() {
                             window.dismiss();
-                            if (TokenManager.isLogin(mActivity)) {
-                                mActivity.intent(MessageJavaActivity.class);
-                                ivRed.setVisibility(View.GONE);
-                            } else {
-                                mActivity.intent(LoginMainActivity.class);
-                            }
+
                         }
 
                         @Override
@@ -437,5 +452,36 @@ public class BookRackFragment extends BaseFragment {
         };
         mDisposable.add(baseObserver);
         UtilRetrofit.getInstance().create(HttpService.class).bookrackRecommend().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
+    }
+
+
+    private void getNoticeNum() {
+        Map<String, String> map = new HashMap<>();
+        long systemTime = UtilSPutil.getInstance(mActivity).getLong("systemTime", -1L);
+        map.put("systemTime", String.valueOf(systemTime));
+        if (TokenManager.isLogin(mActivity)) {
+            map.put("uid", TokenManager.getUid(mActivity));
+        }
+        BaseObserver baseObserver = new BaseObserver<BaseResult<Integer>>(this, BaseObserver.MODEL_ONLY_SHOW_DIALOG) {
+            @Override
+            public void success(BaseResult<Integer> data) {
+                super.success(data);
+                int count = data.getData();
+                if (count > 0) {
+                    badgeView = new QBadgeView(mActivity);
+                    badgeView.bindTarget(ivMessage);
+                    badgeView.setBadgeGravity(Gravity.END | Gravity.TOP);
+                    badgeView.setBadgeNumber(count);
+                }
+            }
+
+
+            @Override
+            public void error(BaseResult<Integer> value, Throwable e) {
+                super.error(value, e);
+            }
+        };
+        mDisposable.add(baseObserver);
+        UtilRetrofit.getInstance().create(HttpService.class).getNoticeNum(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
     }
 }

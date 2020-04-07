@@ -14,10 +14,11 @@
 
 
         <ImageView
+            android:id="@+id/iv_message"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@mipmap/message"
-            android:padding="5dp"
+            android:padding="10dp"
             android:layout_marginLeft="10dp"
             android:layout_centerVertical="true"></ImageView>
 

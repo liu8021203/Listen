@@ -1,9 +1,12 @@
 package com.ting.play;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
+
 import androidx.annotation.NonNull;
 
 import com.bytedance.sdk.openadsdk.AdSlot;
@@ -13,7 +16,9 @@ import com.bytedance.sdk.openadsdk.TTAdSdk;
 import com.bytedance.sdk.openadsdk.TTFeedAd;
 import com.bytedance.sdk.openadsdk.TTNativeAd;
 import com.google.android.material.tabs.TabLayout;
+
 import android.support.v4.media.session.PlaybackStateCompat;
+
 import androidx.viewpager.widget.ViewPager;
 
 import android.util.Log;
@@ -40,7 +45,8 @@ import com.ting.db.DBListenHistory;
 import com.ting.login.LoginMainActivity;
 import com.ting.play.adapter.PlayViewPagerAdapter;
 import com.ting.play.controller.MusicDBController;
-import com.ting.play.dialog.ContactDialog;
+import com.ting.play.dialog.ContactHostDialog;
+import com.ting.play.dialog.PurchaseNotesDialog;
 import com.ting.play.dialog.ListenBookDialog;
 import com.ting.play.subview.PlayIntroduceSubView;
 import com.ting.play.subview.PlayListSubView;
@@ -50,6 +56,7 @@ import com.ting.util.UtilIntent;
 import com.ting.util.UtilPermission;
 import com.ting.util.UtilRetrofit;
 import com.ting.view.MusicAnimView;
+
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
@@ -60,7 +67,6 @@ import java.util.Map;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
-
 
 
 /**
@@ -84,6 +90,9 @@ public class BookDetailsActivity extends PlayerBaseActivity implements View.OnCl
     private TextView tvIntroduce;
     //展开
     private ImageView ivOpenClose;
+
+    private RelativeLayout rlContactHost;
+    private RelativeLayout rlBuyBook;
 
     private ImageView ivAdImg;
     private TextView tvAdDesc;
@@ -128,8 +137,6 @@ public class BookDetailsActivity extends PlayerBaseActivity implements View.OnCl
     }
 
 
-
-
     @Override
     protected String setTitle() {
         return null;
@@ -165,11 +172,11 @@ public class BookDetailsActivity extends PlayerBaseActivity implements View.OnCl
         tvTitle = findViewById(R.id.tv_title);
         tvAnchor = findViewById(R.id.tv_anchor);
         tvAnchor.setOnClickListener(this);
-        tvIntroduce =  findViewById(R.id.tv_introduce);
-        ivOpenClose =  findViewById(R.id.iv_open_close);
+        tvIntroduce = findViewById(R.id.tv_introduce);
+        ivOpenClose = findViewById(R.id.iv_open_close);
         ivOpenClose.setOnClickListener(this);
-        llRewardCollect =  findViewById(R.id.ll_reward_collect);
-        rlCollect =  findViewById(R.id.rl_collect);
+        llRewardCollect = findViewById(R.id.ll_reward_collect);
+        rlCollect = findViewById(R.id.rl_collect);
         rlCollect.setOnClickListener(this);
         rlReward = findViewById(R.id.rl_reward);
         rlReward.setOnClickListener(this);
@@ -238,6 +245,10 @@ public class BookDetailsActivity extends PlayerBaseActivity implements View.OnCl
         });
 
         tvUpdateStatus = findViewById(R.id.tv_update_status);
+        rlContactHost = findViewById(R.id.rl_contact_host);
+        rlContactHost.setOnClickListener(this);
+        rlBuyBook = findViewById(R.id.rl_buy_book);
+        rlBuyBook.setOnClickListener(this);
     }
 
     @Override
@@ -274,9 +285,9 @@ public class BookDetailsActivity extends PlayerBaseActivity implements View.OnCl
                 tvActionBarTitle.setText(mBookDataVO.getBookTitle());
                 BookDetailsActivity.this.cardData = result.getCardData();
 
-                if(mBookDataVO.getBookUpdateStatus() == 1){
+                if (mBookDataVO.getBookUpdateStatus() == 1) {
                     tvUpdateStatus.setText("更新状态：已完结");
-                }else{
+                } else {
                     tvUpdateStatus.setText("更新状态：更新至" + mBookDataVO.getCount() + "集");
                 }
 
@@ -298,12 +309,9 @@ public class BookDetailsActivity extends PlayerBaseActivity implements View.OnCl
                     hView.setVisibility(View.GONE);
                 }
 
-                if (mBookDataVO.isCollect())
-                {
+                if (mBookDataVO.isCollect()) {
                     tvCollect.setCompoundDrawablesWithIntrinsicBounds(R.mipmap.bookdetails_collect, 0, 0, 0);
-                } else
-
-                {
+                } else {
                     tvCollect.setCompoundDrawablesWithIntrinsicBounds(R.mipmap.bookdetails_uncollect, 0, 0, 0);
                 }
 
@@ -385,13 +393,25 @@ public class BookDetailsActivity extends PlayerBaseActivity implements View.OnCl
                     return;
                 }
 
-                ContactDialog dialog = new ContactDialog(mActivity);
+                PurchaseNotesDialog dialog = new PurchaseNotesDialog(mActivity);
                 dialog.setData(mInfoVO.getNickname(), mInfoVO.getContact());
                 dialog.show();
             }
-                break;
+            break;
+
+            case R.id.rl_contact_host: {
+                if (mInfoVO == null) {
+                    showToast("主播信息加载失败，请重新加载书籍");
+                    return;
+                }
+
+                ContactHostDialog dialog = new ContactHostDialog(mActivity);
+                dialog.setData(mInfoVO.getNickname(), mInfoVO.getContact());
+                dialog.show();
+            }
+            break;
             case R.id.rl_collect:
-                if(cardData != null && !cardData.isEmpty()) {
+                if (cardData != null && !cardData.isEmpty()) {
                     ListenBookDialog dialog = new ListenBookDialog(this);
                     dialog.setData(cardData);
                     dialog.show();
@@ -435,6 +455,30 @@ public class BookDetailsActivity extends PlayerBaseActivity implements View.OnCl
                 mActivity.intent(AnchorMainActivity.class, bundle);
                 break;
 
+            case R.id.rl_buy_book: {
+                if (mBookDataVO == null) {
+                    showToast("书籍信息加载中");
+                    return;
+                }
+                if (!TokenManager.isLogin(mActivity)) {
+                    mActivity.intent(LoginMainActivity.class);
+                    return;
+                }
+                String str = "";
+                if (mBookDataVO.getBookUpdateStatus() == 1) {
+                    str = "该作品收费属于主播个人行为，本次交易属于主播跟您的自愿行为，发生任何纠纷跟本平台无关";
+                } else {
+                    str = "现在购买全集，并不代表买完以后可以立刻听完全本，只是以后更新的章节不需要再付费。该作品收费属于主播个人行为，本次交易属于主播跟您的自愿行为，发生任何纠纷跟本平台无关";
+                }
+                new AlertDialog.Builder(mActivity).setTitle("提醒").setMessage("确定要花费" + mBookDataVO.getBookPrice() + "听豆购买此书籍\n\n" + str).setNegativeButton("取消", null).setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        buyAll();
+                    }
+                }).show();
+            }
+            break;
+
             default:
                 break;
         }
@@ -455,7 +499,6 @@ public class BookDetailsActivity extends PlayerBaseActivity implements View.OnCl
         unregister();
         EventBus.getDefault().unregister(this);
     }
-
 
 
     @Override
@@ -560,22 +603,22 @@ public class BookDetailsActivity extends PlayerBaseActivity implements View.OnCl
     protected void notifyServiceConnected() {
         super.notifyServiceConnected();
         if (getPlaybackStateCompat() != null && (getPlaybackStateCompat().getState() == PlaybackStateCompat.STATE_PLAYING)) {
-            if(playListSubView != null){
+            if (playListSubView != null) {
                 playListSubView.notifyPlayStateChange();
             }
             startAnim();
         } else if (getPlaybackStateCompat() != null && getPlaybackStateCompat().getState() == PlaybackStateCompat.STATE_PAUSED) {
-            if(playListSubView != null){
+            if (playListSubView != null) {
                 playListSubView.notifyPlayStateChange();
             }
             stopAnim();
         } else if (getPlaybackStateCompat() != null && getPlaybackStateCompat().getState() == PlaybackStateCompat.STATE_STOPPED) {
-            if(playListSubView != null){
+            if (playListSubView != null) {
                 playListSubView.notifyPlayStateChange();
             }
             stopAnim();
         } else {
-            if(playListSubView != null){
+            if (playListSubView != null) {
                 playListSubView.notifyPlayStateChange();
             }
             stopAnim();
@@ -585,7 +628,7 @@ public class BookDetailsActivity extends PlayerBaseActivity implements View.OnCl
     @Override
     protected void notifyPlay(String bookId, String bookTitle, String chapterTitle, String bookImage, long duration) {
         super.notifyPlay(bookId, bookTitle, chapterTitle, bookImage, duration);
-        if(playListSubView != null){
+        if (playListSubView != null) {
             playListSubView.notifyPlayStateChange();
         }
         startAnim();
@@ -595,7 +638,7 @@ public class BookDetailsActivity extends PlayerBaseActivity implements View.OnCl
     @Override
     protected void notifyPause() {
         super.notifyPause();
-        if(playListSubView != null){
+        if (playListSubView != null) {
             playListSubView.notifyPlayStateChange();
         }
         stopAnim();
@@ -604,9 +647,32 @@ public class BookDetailsActivity extends PlayerBaseActivity implements View.OnCl
     @Override
     protected void notifyStop() {
         super.notifyStop();
-        if(playListSubView != null){
+        if (playListSubView != null) {
             playListSubView.notifyPlayStateChange();
         }
         stopAnim();
+    }
+
+
+    /**
+     * 购买全集
+     */
+    private void buyAll() {
+        Map<String, String> map = new HashMap<>();
+        map.put("uid", TokenManager.getUid(mActivity));
+        map.put("bookId", bookId);
+        BaseObserver baseObserver = new BaseObserver<BaseResult>(mActivity, BaseObserver.MODEL_SHOW_DIALOG_TOAST) {
+            @Override
+            public void success(BaseResult data) {
+                super.success(data);
+                if (playListSubView != null) {
+                    playListSubView.getData(0, playListSubView.getNextPage());
+                }
+            }
+
+
+        };
+        mActivity.mDisposable.add(baseObserver);
+        UtilRetrofit.getInstance().create(HttpService.class).buyBook(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
     }
 }

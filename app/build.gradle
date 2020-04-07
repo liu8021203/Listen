@@ -8,8 +8,8 @@ android {
         applicationId "com.ting"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 117
-        versionName "4.3.4"
+        versionCode 119
+        versionName "4.3.6"
         /**
          * 3.0添加，
          * 项目中使用了productFlavors分包，需要添加flavorDimensions，作用是基于多个标准构建多个版本
@@ -19,6 +19,10 @@ android {
         multiDexEnabled true
 
         manifestPlaceholders = [qqappid: "1101054688"]
+        ndk {
+            // 设置支持的 SO 库构架，注意这里要根据你的实际情况来设置
+            abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64', 'armeabi'
+        }
 
     }
 
@@ -92,17 +96,12 @@ android {
     }
 
 
-
-
-
 }
 
 
 greendao {
     schemaVersion 1008
 }
-
-
 
 
 dependencies {
@@ -139,7 +138,6 @@ dependencies {
     implementation 'com.belerweb:pinyin4j:2.5.0'
     //稳定版
     implementation 'com.scwang.smartrefresh:SmartRefreshLayout:1.0.3'
-    implementation 'androidx.multidex:multidex:2.0.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'com.google.android.material:material:1.0.0'
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
@@ -165,7 +163,7 @@ dependencies {
     compile 'pl.droidsonroids.gif:android-gif-drawable:1.2.6'
 
     //友盟统计
-    implementation  'com.umeng.umsdk:analytics:8.0.0'
+    implementation 'com.umeng.umsdk:analytics:8.0.0'
 
     //友盟推送
     //PushSDK必须依赖基础组件库，所以需要加入对应依赖
@@ -174,7 +172,6 @@ dependencies {
     implementation 'com.umeng.umsdk:utdid:1.1.5.3'
     //PushSDK
     implementation 'com.umeng.umsdk:push:6.0.1'
-
 
 
     //华为Push通道
@@ -191,4 +188,5 @@ dependencies {
     //小米Push通道
     implementation 'com.umeng.umsdk:xiaomi-push:3.6.17'
     implementation 'com.umeng.umsdk:xiaomi-umengaccs:1.1.0'
+    implementation 'androidx.multidex:multidex:2.0.1'
 }

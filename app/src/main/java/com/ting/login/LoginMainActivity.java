@@ -47,10 +47,9 @@ public class LoginMainActivity extends BaseActivity implements UtilPermission.Pe
     private TextView login_immediately;
     private TextView to_regist_text;
     private TextView forget_password_textview;
-    private EditText user_name_editext;
-    private EditText password_editext;
     private ImageView qq_login;//qq登录
     private ImageView weixin_login;//微信登录
+    private TextView tvPhoneLogin;
     private UMShareAPI mShareAPI;
     private String source;
 
@@ -74,8 +73,6 @@ public class LoginMainActivity extends BaseActivity implements UtilPermission.Pe
         login_immediately = (TextView) findViewById(R.id.login_immediately);
         to_regist_text = (TextView) findViewById(R.id.to_regist_text);
         forget_password_textview = (TextView) findViewById(R.id.forget_password_textview);
-        user_name_editext = (EditText) findViewById(R.id.user_name_editext);//用户名
-        password_editext = (EditText) findViewById(R.id.password_editext);//密码
         qq_login = (ImageView) findViewById(R.id.qq_login);//QQ登录
         weixin_login = (ImageView) findViewById(R.id.weixin_login);//微信登录
         qq_login.setOnClickListener(this);
@@ -83,11 +80,8 @@ public class LoginMainActivity extends BaseActivity implements UtilPermission.Pe
         login_immediately.setOnClickListener(this);
         to_regist_text.setOnClickListener(this);
         forget_password_textview.setOnClickListener(this);
-        String name = UtilSPutil.getInstance(mActivity).getString("user_name");
-        if (!TextUtils.isEmpty(name)) {
-            user_name_editext.setText(name);
-            user_name_editext.setSelection(name.length());
-        }
+        tvPhoneLogin = findViewById(R.id.tv_phone_login);
+        tvPhoneLogin.setOnClickListener(this);
     }
 
     @Override
@@ -118,25 +112,16 @@ public class LoginMainActivity extends BaseActivity implements UtilPermission.Pe
                 UMShareAPI.get(mActivity).getPlatformInfo(mActivity, SHARE_MEDIA.WEIXIN, umAuthListener);
 
                 break;
-            case R.id.login_immediately:
-                String user_name = user_name_editext.getText().toString().trim();
-                String password = password_editext.getText().toString();
-                if (TextUtils.isEmpty(user_name)) {
-                    showToast("请输入用户名");
-                    return;
-                }
-                if (TextUtils.isEmpty(password)) {
-                    showToast("请输入密码");
-                    return;
-                }
-                Login(user_name, password);
-
-                break;
             case R.id.to_regist_text:
                 intent(RegistMainActivity.class);
                 break;
             case R.id.forget_password_textview:
                 intent(FindPasswordActivity.class);
+                break;
+
+            case R.id.tv_phone_login:
+                intent(PhoneLoginActivity.class);
+                finish();
                 break;
             default:
                 break;
@@ -196,42 +181,7 @@ public class LoginMainActivity extends BaseActivity implements UtilPermission.Pe
     }
 
 
-    private void Login(String user_name, String password) {
-        Map<String, String> map = new HashMap<>();
-        String name = null;
-        String pwd = StrUtil.md5(password);
-        UtilSPutil.getInstance(mActivity).setString("user_name", user_name);
-        try {
-            name = URLEncoder.encode(user_name, "utf-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        map.put("phone", name);
-        map.put("type", "1");
-        map.put("password", pwd);
-        BaseObserver baseObserver = new BaseObserver<BaseResult<UserInfoResult>>(mActivity, BaseObserver.MODEL_SHOW_DIALOG_TOAST) {
-            @Override
-            public void success(BaseResult<UserInfoResult> data) {
-                super.success(data);
-                UserInfoResult result = data.getData();
-                if(result != null){
-                    TokenManager.setInfo(result);
-                    TokenManager.setUid(mActivity, String.valueOf(result.getId()));
-                    TokenManager.setToken(mActivity, result.getToken());
-                    EventBus.getDefault().post(new MessageEventBus(MessageEventBus.LOGIN));
-                    showToast("登陆成功");
-                    finish();
-                }
-            }
 
-            @Override
-            public void error(BaseResult<UserInfoResult> value, Throwable e) {
-                super.error(value, e);
-            }
-        };
-        mDisposable.add(baseObserver);
-        UtilRetrofit.getInstance().create(HttpService.class).login(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
-    }
 
     private void loginOther(String type, String nickname, String sex, String uuid, String thumb) {
         Map<String, String> map = new HashMap<>();

@@ -9,6 +9,7 @@ import com.ting.base.BaseActivity;
 import com.ting.base.BaseObserver;
 import com.ting.bean.BaseResult;
 import com.ting.bean.myself.MessageJavaResult;
+import com.ting.bean.vo.MessageListVO;
 import com.ting.common.TokenManager;
 import com.ting.common.http.HttpService;
 import com.ting.myself.adapter.MessageJavaAdapter;
@@ -16,6 +17,7 @@ import com.ting.util.UtilRetrofit;
 import com.ting.view.CustomItemDecoration;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -53,18 +55,18 @@ public class MessageJavaActivity extends BaseActivity{
     protected void initData() {
         Map<String, String> map = new HashMap<>();
         map.put("uid", TokenManager.getUid(mActivity));
-        map.put("page", "1");
-        map.put("count", "200");
-        BaseObserver baseObserver = new  BaseObserver<MessageJavaResult>(this){
-
-
+        BaseObserver baseObserver = new  BaseObserver<BaseResult<List<MessageListVO>>>(this, BaseObserver.MODEL_ALL){
 
             @Override
-            public void success(MessageJavaResult data) {
+            public void success(BaseResult<List<MessageListVO>> data) {
                 super.success(data);
-                MessageJavaAdapter adapter = new MessageJavaAdapter();
-                adapter.setData(data.getData());
-                mRecyclerView.setAdapter(adapter);
+                if(data != null && data.getData() != null && !data.getData().isEmpty()) {
+                    MessageJavaAdapter adapter = new MessageJavaAdapter();
+                    adapter.setData(data.getData());
+                    mRecyclerView.setAdapter(adapter);
+                }else{
+                    showErrorEmpty("还没有相关消息");
+                }
             }
 
             @Override
@@ -73,7 +75,7 @@ public class MessageJavaActivity extends BaseActivity{
             }
         };
         mDisposable.add(baseObserver);
-        UtilRetrofit.getInstance().create(HttpService.class).get_systemmsg_list(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
+        UtilRetrofit.getInstance().create(HttpService.class).getMessageListByUserId(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
     }
 
     @Override
@@ -92,6 +94,6 @@ public class MessageJavaActivity extends BaseActivity{
         map.put("uid", TokenManager.getUid(mActivity));
         BaseObserver baseObserver = new BaseObserver<BaseResult>();
         mDisposable.add(baseObserver);
-        UtilRetrofit.getInstance().create(HttpService.class).read_systemmsg(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
+        UtilRetrofit.getInstance().create(HttpService.class).readMessageByUserId(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
     }
 }

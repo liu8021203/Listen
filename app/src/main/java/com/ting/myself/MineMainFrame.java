@@ -306,4 +306,6 @@ public class MineMainFrame extends BaseFragment implements View.OnClickListener,
     public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
 
     }
+
+
 }

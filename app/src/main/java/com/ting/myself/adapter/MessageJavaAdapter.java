@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import com.ting.R;
 import com.ting.bean.myself.MessageJavaVO;
+import com.ting.bean.vo.MessageListVO;
 import com.ting.util.UtilDate;
 
 import java.util.List;
@@ -17,9 +18,9 @@ import java.util.List;
  */
 
 public class MessageJavaAdapter extends RecyclerView.Adapter<MessageJavaAdapter.ItemViewHolder>{
-    private List<MessageJavaVO> data;
+    private List<MessageListVO> data;
 
-    public void setData(List<MessageJavaVO> data) {
+    public void setData(List<MessageListVO> data) {
         this.data = data;
     }
 
@@ -32,10 +33,10 @@ public class MessageJavaAdapter extends RecyclerView.Adapter<MessageJavaAdapter.
 
     @Override
     public void onBindViewHolder(ItemViewHolder holder, int position) {
-        MessageJavaVO vo = data.get(position);
+        MessageListVO vo = data.get(position);
         holder.tvTitle.setText(vo.getTitle());
         holder.tvDesc.setText(vo.getContent());
-        holder.tvTime.setText(UtilDate.format(vo.getCreate_time() * 1000, "yyyy-MM-dd HH:mm:ss"));
+        holder.tvTime.setText(vo.getTime());
     }
 
     @Override
