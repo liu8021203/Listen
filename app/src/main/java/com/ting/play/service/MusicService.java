@@ -824,6 +824,7 @@ public class MusicService extends MediaBrowserServiceCompat {
 //                    notifyLoading();
                     break;
                 case Player.STATE_READY:
+                    Log.d("hhh", "播放了=========" + playWhenReady);
                     if (playWhenReady) {
                         if (msg == PLAY_SEEK_TIME_MSG) {
                             if (mExoPlayer != null) {

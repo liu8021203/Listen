@@ -1,48 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:orientation="vertical">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
 
-        <RelativeLayout
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dip">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="选集"
+            android:textColor="#222222"
+            android:textSize="18sp" />
+
+
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/iv_close"
+            style="@style/Base.Widget.AppCompat.ActionButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="15dip"
+            android:src="@mipmap/dialog_close" />
+
+
+        <View
             android:layout_width="match_parent"
-            android:layout_height="50dip">
+            android:layout_height="0.1dip"
+            android:layout_alignParentBottom="true"
+            android:background="@color/lineColor"></View>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:textColor="#222222"
-                android:textSize="18sp"
-                android:text="选集"/>
+    </RelativeLayout>
 
+    <LinearLayout
+        android:id="@+id/ll_ad"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"></LinearLayout>
 
-            <androidx.appcompat.widget.AppCompatImageButton
-                android:id="@+id/iv_close"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@mipmap/dialog_close"
-                style="@style/Base.Widget.AppCompat.ActionButton"
-                android:layout_centerVertical="true"
-                android:layout_alignParentRight="true"
-                android:layout_marginRight="15dip"/>
-
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="0.1dip"
-                android:background="@color/lineColor"
-                android:layout_alignParentBottom="true"></View>
-
-        </RelativeLayout>
-        
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycle_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="10dip">
-    </androidx.recyclerview.widget.RecyclerView>
-        
+        android:layout_margin="10dip"></androidx.recyclerview.widget.RecyclerView>
+
 </LinearLayout>

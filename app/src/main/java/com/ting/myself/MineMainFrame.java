@@ -1,11 +1,22 @@
 package com.ting.myself;
 
+import android.location.Location;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
+
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.lechuan.midunovel.base.util.FoxBaseCommonUtils;
+import com.lechuan.midunovel.base.util.FoxBaseGsonUtil;
+import com.lechuan.midunovel.view.FoxCustomerTm;
+import com.lechuan.midunovel.view.FoxNsTmListener;
+import com.lechuan.midunovel.view.video.bean.FoxResponseBean;
 import com.ting.R;
 import com.ting.base.BaseFragment;
 import com.ting.base.BaseObserver;
@@ -50,18 +61,28 @@ public class MineMainFrame extends BaseFragment implements View.OnClickListener,
     private TextView tvLoginHint;
     private TextView tvName;
     private TextView tvMoney;
-//    private RelativeLayout rlJifen;
+    private RelativeLayout rlAd;
+    private TextView tvAdTitle;
+    private TextView tvAdDesc;
+    private ImageView ivAd;
+    //    private RelativeLayout rlJifen;
+    private FoxCustomerTm mOxCustomerTm;
+    private FoxResponseBean.DataBean mDataBean;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EventBus.getDefault().register(this);
+
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
+        if (mOxCustomerTm != null) {
+            mOxCustomerTm.destroy();
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -78,7 +99,7 @@ public class MineMainFrame extends BaseFragment implements View.OnClickListener,
 //            }else{
 //                tvName.setCompoundDrawablesWithIntrinsicBounds(0, 0,R.mipmap.vip, 0);
 //            }
-        }else if(event.getType() == MessageEventBus.MODIFY){
+        } else if (event.getType() == MessageEventBus.MODIFY) {
             setUserInfo(TokenManager.getUserInfo());
         }
     }
@@ -147,6 +168,47 @@ public class MineMainFrame extends BaseFragment implements View.OnClickListener,
         rlMoneyDetails.setOnClickListener(this);
 //        rlJifen = flContent.findViewById(R.id.rl_jifen);
 //        rlJifen.setOnClickListener(this);
+
+        rlAd = flContent.findViewById(R.id.rl_ad);
+        rlAd.setOnClickListener(this);
+        ivAd = flContent.findViewById(R.id.iv_ad);
+        tvAdTitle = flContent.findViewById(R.id.tv_ad_title);
+        tvAdDesc = flContent.findViewById(R.id.tv_ad_desc);
+
+        mOxCustomerTm = new FoxCustomerTm(mActivity);
+        mOxCustomerTm.setAdListener(new FoxNsTmListener() {
+            @Override
+            public void onReceiveAd(String result) {
+                Log.d("========", "onReceiveAd:" + result);
+                if (!FoxBaseCommonUtils.isEmpty(result)) {
+                    FoxResponseBean.DataBean dataBean = FoxBaseGsonUtil.GsonToBean(result, FoxResponseBean.DataBean.class);
+                    if (dataBean != null) {
+                        mDataBean = dataBean;
+                        rlAd.setVisibility(View.VISIBLE);
+                        UtilGlide.loadImg(mActivity, dataBean.getImageUrl(), ivAd);
+                        tvAdTitle.setText(dataBean.getExtTitle());
+                        tvAdDesc.setText(dataBean.getExtDesc());
+                    }
+                    //素材加载成功时候调用素材加载曝光方法
+                    mOxCustomerTm.adExposed();
+                }
+            }
+
+            @Override
+            public void onFailedToReceiveAd() {
+                Log.d("========", "onFailedToReceiveAd");
+            }
+
+            @Override
+            public void onAdActivityClose(String s) {
+                Log.d("========", "onAdActivityClose" + s);
+                if (!FoxBaseCommonUtils.isEmpty(s)) {
+//                    ToastUtils.showShort(s);
+                }
+            }
+
+        });
+        mOxCustomerTm.loadAd(360453, TokenManager.getUid(mActivity));
     }
 
     @Override
@@ -262,6 +324,14 @@ public class MineMainFrame extends BaseFragment implements View.OnClickListener,
                     mActivity.intent(BuyBookActivity.class);
                 } else {
                     intent(LoginMainActivity.class);
+                }
+                break;
+
+            case R.id.rl_ad:
+                if (mOxCustomerTm != null && mDataBean != null && !FoxBaseCommonUtils.isEmpty(mDataBean.getActivityUrl())) {
+                    //素材点击时候调用素材点击曝光方法
+                    mOxCustomerTm.adClicked();
+                    mOxCustomerTm.openFoxActivity(mDataBean.getActivityUrl());
                 }
                 break;
 

@@ -26,6 +26,15 @@ android {
 
     }
 
+
+    packagingOptions {
+        doNotStrip "*/armeabi-v7a/*.so"
+        doNotStrip "*/x86/*.so"
+        doNotStrip "*/arm64-v8a/*.so"
+        doNotStrip "*/x86_64/*.so"
+        doNotStrip "armeabi.so"
+    }
+
     signingConfigs {
         release {
             keyAlias 'listen'
@@ -189,4 +198,9 @@ dependencies {
     implementation 'com.umeng.umsdk:xiaomi-push:3.6.17'
     implementation 'com.umeng.umsdk:xiaomi-umengaccs:1.1.0'
     implementation 'androidx.multidex:multidex:2.0.1'
+
+    implementation ('com.tuia:sdk:2.8.0.0'){
+        transitive = true
+    }
+    implementation(name: 'miit_mdid_1.0.13', ext: 'aar')
 }

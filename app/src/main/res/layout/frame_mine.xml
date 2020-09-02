@@ -92,6 +92,51 @@
 
 
             <RelativeLayout
+                android:id="@+id/rl_ad"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:visibility="gone"
+                android:background="@color/white"
+                android:padding="10dp">
+
+                <ImageView
+                    android:id="@+id/iv_ad"
+                    android:layout_width="55dp"
+                    android:layout_height="55dp"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/book_def"></ImageView>
+
+
+                <TextView
+                    android:id="@+id/tv_ad_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@+id/iv_ad"
+                    android:layout_toRightOf="@+id/iv_ad"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:lines="1"
+                    android:ellipsize="end"
+                    android:textColor="@color/black"></TextView>
+
+
+                <TextView
+                    android:id="@+id/tv_ad_desc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/iv_ad"
+                    android:layout_toRightOf="@+id/iv_ad"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:lines="1"
+                    android:ellipsize="end"
+                    android:textColor="#333333"></TextView>
+
+            </RelativeLayout>
+
+
+            <RelativeLayout
                 android:id="@+id/rl_money"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/dp750_80"

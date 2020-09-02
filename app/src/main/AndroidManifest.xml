@@ -444,6 +444,19 @@
         <meta-data
             android:name="com.huawei.hms.client.appid"
             android:value="appid=10616106" />
+
+
+
+
+
+        <!-- 推啊appkey-->
+        <meta-data
+            android:name="TUIA_APPKEY"
+            android:value="2baHjAeaD2ScnT6q7saL2ieAKrxX" />
+        <!-- 推啊appSecret -->
+        <meta-data
+            android:name="TUIA_APPSECRET"
+            android:value="3XUfbzZcGQA7Pt7zPnXz1JNenYEdfzt2zc8nZmA" />
         
         
         

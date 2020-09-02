@@ -11,6 +11,7 @@ import android.util.Log;
 import com.bytedance.sdk.openadsdk.TTAdConfig;
 import com.bytedance.sdk.openadsdk.TTAdConstant;
 import com.bytedance.sdk.openadsdk.TTAdSdk;
+import com.lechuan.midunovel.view.FoxSDK;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.DefaultRefreshFooterCreater;
 import com.scwang.smartrefresh.layout.api.DefaultRefreshHeaderCreater;
@@ -33,8 +34,6 @@ import org.android.agoo.oppo.OppoRegister;
 import org.android.agoo.xiaomi.MiPushRegistar;
 import org.greenrobot.greendao.database.Database;
 
-import java.util.ArrayList;
-import java.util.List;
 
 import androidx.multidex.MultiDex;
 
@@ -96,6 +95,7 @@ public class BaseApplication extends Application {
                         //.httpStack(new MyOkStack3())//自定义网络库，demo中给出了okhttp3版本的样例，其余请自行开发或者咨询工作人员。
                         .build());
         initUM();
+        FoxSDK.init(this);
     }
 
     public DaoSession getDaoSession() {
