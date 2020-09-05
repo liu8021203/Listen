@@ -202,9 +202,6 @@ public class MineMainFrame extends BaseFragment implements View.OnClickListener,
             @Override
             public void onAdActivityClose(String s) {
                 Log.d("========", "onAdActivityClose" + s);
-                if (!FoxBaseCommonUtils.isEmpty(s)) {
-//                    ToastUtils.showShort(s);
-                }
             }
 
         });
