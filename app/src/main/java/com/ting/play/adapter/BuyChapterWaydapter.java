@@ -44,7 +44,6 @@ public class BuyChapterWaydapter extends RecyclerView.Adapter<BuyChapterWaydapte
 
     public void setData(List<BuyChapterWayVO> data) {
         this.data = data;
-//        defVO = data.get(0);
     }
 
 
