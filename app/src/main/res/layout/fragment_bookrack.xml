@@ -98,9 +98,53 @@
     </RelativeLayout>
 
 
+
+    <RelativeLayout
+        android:id="@+id/rl_ad_layout"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:visibility="gone"
+        android:background="@color/white">
+
+        <ImageView
+            android:id="@+id/iv_ad_img"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="15dp"></ImageView>
+
+        <TextView
+            android:id="@+id/tv_ad_desc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="13sp"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/iv_ad_img"
+            android:layout_toLeftOf="@+id/iv_ad_right"
+            android:lines="1"
+            android:ellipsize="end"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:textColor="#333333"></TextView>
+
+
+        <ImageView
+            android:id="@+id/iv_ad_right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="15dp"
+            android:src="@mipmap/gray_arrow_right"></ImageView>
+
+
+    </RelativeLayout>
+
+
+
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="160dp"
+        android:layout_height="140dp"
         android:paddingLeft="@dimen/dp750_40"
         android:paddingRight="@dimen/dp750_40">
 

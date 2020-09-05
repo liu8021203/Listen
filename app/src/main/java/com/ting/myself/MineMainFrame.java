@@ -208,7 +208,7 @@ public class MineMainFrame extends BaseFragment implements View.OnClickListener,
             }
 
         });
-        mOxCustomerTm.loadAd(360453, TokenManager.getUid(mActivity));
+        mOxCustomerTm.loadAd(360702, TokenManager.getUid(mActivity));
     }
 
     @Override
@@ -376,6 +376,7 @@ public class MineMainFrame extends BaseFragment implements View.OnClickListener,
     public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
 
     }
+
 
 
 }

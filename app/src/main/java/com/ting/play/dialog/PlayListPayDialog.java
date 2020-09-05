@@ -101,13 +101,13 @@ public class PlayListPayDialog extends Dialog implements OnClickListener{
             vo1.setBookId(vo.getBookId());
             vo1.setCardId(vo.getChapterId());
             vo1.setType(0);
-            vo1.setDesc("购买单集《" + vo.getTitle() + "》" + vo.getPrice() + "听豆");
+            vo1.setDesc("购买单集《" + vo.getTitle() + "》" + vo.getPrice() + "听豆/" + vo.getPrice() * 0.05 + "元");
             data.add(vo1);
             BuyChapterWayVO vo2 = new BuyChapterWayVO();
             vo2.setBookId(vo.getBookId());
             vo2.setCardId(vo.getChapterId());
             vo2.setType(1);
-            vo2.setDesc("购买全集" + vo.getBookPrice() + "听豆");
+            vo2.setDesc("购买全集" + vo.getBookPrice() + "听豆/" + vo.getBookPrice() * 0.05 + "元");
             data.add(vo2);
             for (int i = 0; i < cardData.size(); i++){
                 BuyChapterWayVO cardVO = new BuyChapterWayVO();
@@ -123,13 +123,13 @@ public class PlayListPayDialog extends Dialog implements OnClickListener{
             vo1.setBookId(vo.getBookId());
             vo1.setCardId(vo.getChapterId());
             vo1.setType(0);
-            vo1.setDesc("购买单集《" + vo.getTitle() + "》" + vo.getPrice() + "听豆");
+            vo1.setDesc("购买单集《" + vo.getTitle() + "》" + vo.getPrice() + "听豆/" + vo.getPrice() * 0.05 + "元");
             data.add(vo1);
             BuyChapterWayVO vo2 = new BuyChapterWayVO();
             vo2.setBookId(vo.getBookId());
             vo2.setCardId(vo.getChapterId());
             vo2.setType(1);
-            vo2.setDesc("购买全集" + vo.getBookPrice() + "听豆");
+            vo2.setDesc("购买全集" + vo.getBookPrice() + "听豆/" + vo.getBookPrice() * 0.05 + "元");
             data.add(vo2);
         }
         mWaydapter = new BuyChapterWaydapter(activity);

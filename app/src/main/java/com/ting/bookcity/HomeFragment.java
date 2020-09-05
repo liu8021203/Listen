@@ -3,13 +3,27 @@ package com.ting.bookcity;
 import android.os.Bundle;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.aspsine.swipetoloadlayout.OnRefreshListener;
 import com.aspsine.swipetoloadlayout.SwipeToLoadLayout;
+import com.bytedance.sdk.openadsdk.AdSlot;
+import com.bytedance.sdk.openadsdk.FilterWord;
+import com.bytedance.sdk.openadsdk.TTAdDislike;
+import com.bytedance.sdk.openadsdk.TTAdNative;
+import com.bytedance.sdk.openadsdk.TTAdSdk;
+import com.bytedance.sdk.openadsdk.TTNativeExpressAd;
+import com.lechuan.midunovel.base.util.FoxBaseCommonUtils;
+import com.lechuan.midunovel.view.feed.IFoxTempletInfoFeedAd;
+import com.lechuan.midunovel.view.holder.FoxNativeAdHelper;
+import com.lechuan.midunovel.view.holder.FoxTempletInfoFeedHolder;
 import com.liu.learning.library.LoopViewPager;
 import com.ting.R;
 import com.ting.anchor.HostListActivity;
@@ -22,6 +36,8 @@ import com.ting.bookcity.adapter.HomeTeamAdapter;
 import com.ting.bookcity.adapter.HostAdapter;
 import com.ting.bookcity.adapter.HotRankAdapter;
 import com.ting.common.AppData;
+import com.ting.common.TokenManager;
+import com.ting.common.dialog.DislikeDialog;
 import com.ting.common.http.HttpService;
 import com.ting.db.DBListenHistory;
 import com.ting.play.BookDetailsActivity;
@@ -30,6 +46,7 @@ import com.ting.play.controller.MusicDBController;
 import com.ting.search.SearchActivity;
 import com.ting.util.UtilGlide;
 import com.ting.util.UtilIntent;
+import com.ting.util.UtilPixelTransfrom;
 import com.ting.util.UtilRetrofit;
 import com.ting.view.MusicAnimView;
 import com.ting.view.NoScrollGridLayoutManager;
@@ -61,6 +78,10 @@ public class HomeFragment extends BaseFragment implements OnRefreshListener {
     private RecyclerView specialRecycleView;
     private RecyclerView teamRecyclerView;
     private TextView tvHostMore;
+    private LinearLayout llAd;
+    private TTAdNative mTTAdNative;
+    private TTNativeExpressAd mTTAd;
+
 
     private int hotPage = 1;
 
@@ -102,6 +123,8 @@ public class HomeFragment extends BaseFragment implements OnRefreshListener {
         rlTeam = flContent.findViewById(R.id.rl_team);
         tvHostMore = flContent.findViewById(R.id.tv_host_more);
         tvHostMore.setOnClickListener(this);
+        llAd = flContent.findViewById(R.id.ll_ad);
+
     }
 
     @Override
@@ -189,6 +212,7 @@ public class HomeFragment extends BaseFragment implements OnRefreshListener {
                         rlTeam.setVisibility(View.GONE);
                         teamRecyclerView.setVisibility(View.GONE);
                     }
+                    loadAd();
                 }
             }
 
@@ -304,5 +328,91 @@ public class HomeFragment extends BaseFragment implements OnRefreshListener {
 
     public void stopAnim() {
         mMusicAnimView.stop();
+    }
+
+    @Override
+    public void onDestroy() {
+        if (null != mTTAd) {
+            mTTAd.destroy();
+        }
+        super.onDestroy();
+    }
+
+
+    private void loadAd() {
+        //设置广告参数
+        int screenWidth = UtilPixelTransfrom.getScreenWidth(mActivity);
+        AdSlot adSlot = new AdSlot.Builder()
+                .setCodeId("945455393") //广告位id
+                .setSupportDeepLink(true)
+                .setAdCount(1) //请求广告数量为1到3条
+                .setExpressViewAcceptedSize(UtilPixelTransfrom.px2dip(mActivity,screenWidth), 0) //必填：期望个性化模板广告view的size,单位dp
+                .build();
+        mTTAdNative = TTAdSdk.getAdManager().createAdNative(mActivity);
+        //加载广告
+        mTTAdNative.loadNativeExpressAd(adSlot, new TTAdNative.NativeExpressAdListener() {
+            @Override
+            public void onError(int i, String s) {
+                Log.d("aaa", "ad加载失败======" + s);
+            }
+
+            @Override
+            public void onNativeExpressAdLoad(List<TTNativeExpressAd> list) {
+                if (list == null || list.isEmpty()) {
+                    return;
+                }
+                mTTAd = list.get(0);
+                mTTAd.setExpressInteractionListener(new TTNativeExpressAd.ExpressAdInteractionListener() {
+                    @Override
+                    public void onAdClicked(View view, int i) {
+
+                    }
+
+                    @Override
+                    public void onAdShow(View view, int i) {
+
+                    }
+
+                    @Override
+                    public void onRenderFail(View view, String s, int i) {
+                    }
+
+                    @Override
+                    public void onRenderSuccess(View view, float v, float v1) {
+                        llAd.removeAllViews();
+                        llAd.addView(view);
+                    }
+                });
+                mTTAd.render();
+                //dislike设置
+                bindDislike(mTTAd);
+            }
+        });
+
+    }
+
+
+
+    /**
+     * 设置广告的不喜欢，注意：强烈建议设置该逻辑，如果不设置dislike处理逻辑，则模板广告中的 dislike区域不响应dislike事件。
+     * @param ad
+     */
+    private void bindDislike(TTNativeExpressAd ad) {
+        ad.setDislikeCallback(mActivity, new TTAdDislike.DislikeInteractionCallback() {
+            @Override
+            public void onSelected(int position, String value) {
+                //用户选择不喜欢原因后，移除广告展示
+                llAd.removeAllViews();
+            }
+
+            @Override
+            public void onCancel() {
+            }
+
+            @Override
+            public void onRefuse() {
+
+            }
+        });
     }
 }

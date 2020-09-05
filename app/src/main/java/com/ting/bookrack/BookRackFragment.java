@@ -14,10 +14,19 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.huawei.hms.api.Api;
+import com.lechuan.midunovel.base.util.FoxBaseCommonUtils;
+import com.lechuan.midunovel.base.util.FoxBaseGsonUtil;
+import com.lechuan.midunovel.view.FoxCustomerTm;
+import com.lechuan.midunovel.view.FoxNsTmListener;
+import com.lechuan.midunovel.view.holder.FoxNativeAdHelper;
+import com.lechuan.midunovel.view.holder.FoxTextLintAd;
+import com.lechuan.midunovel.view.interfaces.FoxTextLinkHolder;
+import com.lechuan.midunovel.view.video.bean.FoxResponseBean;
 import com.ting.R;
 import com.ting.base.BaseApplication;
 import com.ting.base.BaseFragment;
@@ -80,6 +89,12 @@ public class BookRackFragment extends BaseFragment {
     private TextView tvComplete;
     private BookRackPopupWindow window;
     private QBadgeView badgeView;
+    private FoxTextLinkHolder nativeInfoHolder;
+    private RelativeLayout rlAd;
+    private ImageView ivAd;
+    private TextView tvAdDesc;
+    private FoxCustomerTm mOxCustomerTm;
+    private FoxResponseBean.DataBean mDataBean;
 
     @Override
     protected void initView() {
@@ -109,6 +124,46 @@ public class BookRackFragment extends BaseFragment {
         }
         ivMessage = flContent.findViewById(R.id.iv_message);
         ivMessage.setOnClickListener(this);
+
+        rlAd = flContent.findViewById(R.id.rl_ad_layout);
+        rlAd.setOnClickListener(this);
+        ivAd = flContent.findViewById(R.id.iv_ad_img);
+        tvAdDesc = flContent.findViewById(R.id.tv_ad_desc);
+
+
+        mOxCustomerTm = new FoxCustomerTm(mActivity);
+        mOxCustomerTm.setAdListener(new FoxNsTmListener() {
+            @Override
+            public void onReceiveAd(String result) {
+                Log.d("========", "onReceiveAd:" + result);
+                if (!FoxBaseCommonUtils.isEmpty(result)) {
+                    FoxResponseBean.DataBean dataBean = FoxBaseGsonUtil.GsonToBean(result, FoxResponseBean.DataBean.class);
+                    if (dataBean != null) {
+                        mDataBean = dataBean;
+                        rlAd.setVisibility(View.VISIBLE);
+                        UtilGlide.loadImg(mActivity, dataBean.getImageUrl(), ivAd);
+                        tvAdDesc.setText(dataBean.getExtDesc());
+                    }
+                    //素材加载成功时候调用素材加载曝光方法
+                    mOxCustomerTm.adExposed();
+                }
+            }
+
+            @Override
+            public void onFailedToReceiveAd() {
+                Log.d("========", "onFailedToReceiveAd");
+            }
+
+            @Override
+            public void onAdActivityClose(String s) {
+                Log.d("========", "onAdActivityClose" + s);
+                if (!FoxBaseCommonUtils.isEmpty(s)) {
+//                    ToastUtils.showShort(s);
+                }
+            }
+
+        });
+        mOxCustomerTm.loadAd(360702, TokenManager.getUid(mActivity));
     }
 
 
@@ -256,6 +311,14 @@ public class BookRackFragment extends BaseFragment {
                 mActivity.intent(BookDetailsActivity.class, bundle);
             }
             break;
+
+            case R.id.rl_ad_layout:
+                if (mOxCustomerTm != null && mDataBean != null && !FoxBaseCommonUtils.isEmpty(mDataBean.getActivityUrl())) {
+                    //素材点击时候调用素材点击曝光方法
+                    mOxCustomerTm.adClicked();
+                    mOxCustomerTm.openFoxActivity(mDataBean.getActivityUrl());
+                }
+                break;
 
 
             case R.id.iv_message: {
@@ -483,5 +546,14 @@ public class BookRackFragment extends BaseFragment {
         };
         mDisposable.add(baseObserver);
         UtilRetrofit.getInstance().create(HttpService.class).getNoticeNum(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(baseObserver);
+    }
+
+
+    @Override
+    public void onDestroy() {
+        if (mOxCustomerTm != null) {
+            mOxCustomerTm.destroy();
+        }
+        super.onDestroy();
     }
 }

@@ -8,8 +8,8 @@ android {
         applicationId "com.ting"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 119
-        versionName "4.3.6"
+        versionCode 120
+        versionName "4.3.8"
         /**
          * 3.0添加，
          * 项目中使用了productFlavors分包，需要添加flavorDimensions，作用是基于多个标准构建多个版本
@@ -168,7 +168,7 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v13:1.0.0'
     implementation 'pub.devrel:easypermissions:2.0.1'
     //穿山甲
-    compile(name: 'open_ad_sdk', ext: 'aar')
+    implementation(name: 'open_ad_sdk', ext: 'aar')
     compile 'pl.droidsonroids.gif:android-gif-drawable:1.2.6'
 
     //友盟统计
